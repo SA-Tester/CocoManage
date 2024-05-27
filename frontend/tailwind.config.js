@@ -1,14 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./index.html", 
+    "./src/**/*.{js,ts,jsx,tsx}", 
+    "./node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/flowbite-react/lib/esm/**/*.js"],
 
   fontFamily: {
     noto: "'Noto Sans', 'sans-serif'",
     ABeeZee: "'ABeeZee', 'sans-serif'",
     Poppins: "'Poppins', 'sans-serif'",
   },
-  
+
   theme: {
     colors: {
       // transparent: 'transparent',
@@ -23,5 +27,6 @@ export default {
     },
     extend: {},
   },
+  
   plugins: [],
 };
