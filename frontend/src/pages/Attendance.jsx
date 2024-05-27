@@ -76,7 +76,7 @@ const Attendance = () => {
 
 	return (
 		// Main container for the attendance page
-		<div className="flex flex-col md:flex-row left-0 w-full text-white absolute bg-green pl-5 pr-5">
+		<div className="flex flex-col md:flex-row left-0 w-full h-screen text-white absolute bg-green pl-5 pr-5">
 			{/* Rendering the Toast Container for Notifications */}
 			<ToastContainer />
 
@@ -112,7 +112,7 @@ const Attendance = () => {
 						Last Updated At: {currentDate} {currentTime}
 					</h6>
 				</div>
-				<div className="pt-10">
+				<div className="pt-10 overflow-x-auto">
 					<Table className="text-center text-xs">
 						<Table.Head className="bg-grey">
 							<Table.HeadCell>Employee No</Table.HeadCell>
@@ -125,19 +125,19 @@ const Attendance = () => {
 								<Table.Cell>001</Table.Cell>
 								<Table.Cell>John Doe</Table.Cell>
 								<Table.Cell>08:00</Table.Cell>
-								<Table.Cell>15</Table.Cell>
+								<Table.Cell>22</Table.Cell>
 							</Table.Row>
 							<Table.Row className="bg-gray-50 dark:bg-gray-700">
 								<Table.Cell>002</Table.Cell>
-								<Table.Cell>John Doe</Table.Cell>
-								<Table.Cell>09:00</Table.Cell>
+								<Table.Cell>John Mark</Table.Cell>
+								<Table.Cell>07:45</Table.Cell>
 								<Table.Cell>11</Table.Cell>
 							</Table.Row>
 							<Table.Row className="bg-white dark:bg-gray-800">
 								<Table.Cell>003</Table.Cell>
-								<Table.Cell>John Doe</Table.Cell>
+								<Table.Cell>Mark Doe</Table.Cell>
 								<Table.Cell>08:30</Table.Cell>
-								<Table.Cell>22</Table.Cell>
+								<Table.Cell>13</Table.Cell>
 							</Table.Row>
 						</Table.Body>
 					</Table>
