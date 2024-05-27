@@ -5,7 +5,7 @@ const Navbar2 = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-badge text-black fixed w-full top-0 left-0 z-50">
+    <nav className="bg-badge text-black fixed w-full top-0 left-0">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="text-lg font-bold">
           <img src={logo} alt="Logo" className="w-2/4 md:w-1/3 lg:w-2/5" />
