@@ -11,7 +11,7 @@ const Navbar2 = () => {
 
         <div className="space-x-4">
           <a
-            href="#home"
+            href="/signin"
             className="bg-white py-3 px-3 rounded-md outline outline-black hover:bg-light-grey"
           >
             Sign In
