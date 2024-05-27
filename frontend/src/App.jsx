@@ -1,18 +1,22 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import HelloWorld from "./HelloWorld";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+// import HelloWorld from "./HelloWorld";
+import SignIn from './pages/SignIn.jsx';
+import SignUp from './pages/SignUp.jsx';
+import Attendance from './pages/Attendance.jsx';
 
-function App() {
-  const [count, setCount] = useState(0);
-
+export default function App() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline text-center">Hello World!</h1>
-      <HelloWorld />
-    </div>
+    // <div>
+    //   {/* <HelloWorld /> */}
+    //   <Attendance />
+    // </div>
+    <BrowserRouter>
+      <Routes>
+          <Route index element={<Attendance />} />
+          <Route path="signin" element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
