@@ -55,22 +55,22 @@ const Attendance = () => {
 
 		// Send the photo to the Django server
 		axios
-			.post("http://localhost:8000/api/upload/", formData, {
+			.post("http://localhost:8000/api/verify/", formData, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
 			})
 			// Handle the response from the server [success]
 			.then((response) => {
-				console.log("Photo uploaded:", response.data);
-				toast.success("Photo uploaded successfully!");
+				console.log("Employee no:", response.data);
+				toast.success("Employee verified successfully!");
 				setCurrentDate(getDate());
 				setCurrentTime(getTime());
 			})
 			// Handle the response from the server [error]
 			.catch((error) => {
-				console.error("Error uploading the photo:", error);
-				toast.error("Error uploading the photo!");
+				console.error("Error:", error);
+				toast.error("Unidentified. Please try again!");
 			});
 	}, [webcamRef, setImgSrc]);
 
