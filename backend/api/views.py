@@ -4,13 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 from .db import init_db
-from deepface import DeepFace
+from .classes.Attendance import Attendance
 import os
 
-database = init_db()
+# Initialize the firebase database object
+database_obj = init_db()
 
 # @api_view(['GET'])
 # def hello_world(request):
@@ -18,53 +17,41 @@ database = init_db()
 #     return Response({'message': test_name})
 
 class VerifyEmployeeView(APIView):
+    # Define the main directory, temp directory and registry directory
+    main_dir = 'media'
+    temp_dir = 'temp'
+    registry_dir = 'registry'
+
+    # Define the parser classes
     parser_classes = (MultiPartParser, FormParser)
 
-    # Function to verify the employee
-    def verify_employee(img1_path, img2_path):
-        result = DeepFace.verify(img1_path=img1_path, img2_path=img2_path)
-        return result["verified"]
+    # Initialize the Attendance class
+    attendance = Attendance()
 
-
-    # Function to post the result for the client side
     def post(self, request, *args, **kwargs):
-        # Define the main and temp directories
-        main_dir = 'media'
-        temp_dir = 'temp'
-        registry_dir = 'registry'
+        # Clear the temp folder
+        self.attendance.clear_temp_folder(self.main_dir, self.temp_dir)
 
-        # Remove the existing files in the temp folder
-        for file in os.listdir(os.path.join(main_dir, temp_dir)):
-            folder_path = os.path.join(main_dir, temp_dir)
-            file_path = os.path.join(folder_path, file)
-            os.unlink(file_path)
-        
-        # Save the uploaded file to the temp folder
-        file = request.FILES['photo']
-        file_path = os.path.join(temp_dir, file.name)
-        default_storage.save(file_path, ContentFile(file.read()))
-        
-        # Store the uploaded file path
-        uploaded_file_path = os.path.join(main_dir, temp_dir, file.name)
+        # Save the uploaded file to the temp folder and get the uploaded file path
+        uploaded_file_path = self.attendance.save_uploaded_file(request, self.main_dir, self.temp_dir)
 
         # Initialize the employee number
         emp_no = None
 
-        # Loop through the registry folder to verify the image of the employee uploaded
-        for file in os.listdir(os.path.join(main_dir, registry_dir)):
-            # Store the current file path of the iteration
-            current_file_path = os.path.join(main_dir, registry_dir, file)
+        # Loop through the registry directory and verify whether the uploaded employee is in the registry
+        for file in os.listdir(os.path.join(self.main_dir, self.registry_dir)):
+            current_file_path = os.path.join(self.main_dir, self.registry_dir, file)
 
-            # Try catch method to verify the employee
+            # Verify the employee from Deepface image recognition and save attendance to database
             try:
-                if VerifyEmployeeView.verify_employee(current_file_path, uploaded_file_path):
+                if self.attendance.verify_employee(current_file_path, uploaded_file_path):
                     emp_no = file.split(".")[0]
+                    self.attendance.record_attendance(database_obj, emp_no)
                     break
-                
+
             except Exception:
                 emp_no = None
-        
-        # Return the employee number
-        if emp_no != None:
+
+        if emp_no is not None:
             return Response({"emp_no": emp_no}, status=status.HTTP_201_CREATED)
         return Response({"emp_no": emp_no}, status=status.HTTP_401_UNAUTHORIZED)
