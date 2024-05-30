@@ -55,3 +55,11 @@ class VerifyEmployeeView(APIView):
         if emp_no is not None:
             return Response({"emp_no": emp_no}, status=status.HTTP_201_CREATED)
         return Response({"emp_no": emp_no}, status=status.HTTP_401_UNAUTHORIZED)
+
+class GetAttendanceView(APIView): 
+    # Initialize the Attendance class
+    attendance = Attendance()
+
+    def get(self, request, *args, **kwargs):
+        att_dict = self.attendance.get_attendance_per_day(database_obj)
+        return Response({"data": att_dict}, status=status.HTTP_200_OK)
