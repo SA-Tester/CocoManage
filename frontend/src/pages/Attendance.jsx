@@ -83,7 +83,6 @@ const Attendance = () => {
 			.get("http://localhost:8000/api/get_attendance/")
 			.then((response) => {
 				setAttendanceData(response.data);
-				console.log("Attendance data:", response.data);
 			})
 			.catch((error) => {
 				console.error(
