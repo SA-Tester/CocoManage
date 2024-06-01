@@ -4,6 +4,7 @@ import Layout from "./pages/Layout.jsx";
 import SignIn from "./pages/SignIn.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import Attendance from "./pages/Attendance.jsx";
+import Order from "./pages/Order.jsx";
 // import HelloWorld from "./HelloWorld";
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
 					<Route index element={<Attendance />} />
 					<Route path="signin" element={<SignIn />} />
 					<Route path="signup" element={<SignUp />} />
+					<Route path="order" element={<Order />} />
 				</Routes>
 			</Layout>
 		</Router>
