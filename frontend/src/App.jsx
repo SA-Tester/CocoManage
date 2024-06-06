@@ -9,6 +9,7 @@ import Order from "./pages/Order.jsx";
 
 const App = () => {
 	return (
+		// Test Code Page
 		// <div>
 		//   <HelloWorld />
 		// </div>
@@ -19,7 +20,6 @@ const App = () => {
 					<Route index element={<Attendance />} />
 					<Route path="signin" element={<SignIn />} />
 					<Route path="signup" element={<SignUp />} />
-					{/* <Route index element={<AdminDashboard />} /> */}
 					<Route path="admin_dashboard" element={<AdminDashboard />} />
 					<Route path="order" element={<Order />} />
 				</Routes>
