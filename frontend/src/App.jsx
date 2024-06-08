@@ -6,6 +6,7 @@ import SignUp from "./pages/SignUp.jsx";
 import Attendance from "./pages/Attendance.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import Order from "./pages/Order.jsx";
+import OrderManagement from "./pages/OrderManagement.jsx";
 
 const App = () => {
 	return (
@@ -22,6 +23,7 @@ const App = () => {
 					<Route path="signup" element={<SignUp />} />
 					<Route path="admin_dashboard" element={<AdminDashboard />} />
 					<Route path="order" element={<Order />} />
+					<Route path="order_management" element={<OrderManagement />} />
 				</Routes>
 			</Layout>
 		</Router>

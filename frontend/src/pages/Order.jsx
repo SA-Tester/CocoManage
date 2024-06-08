@@ -11,11 +11,10 @@ const Order = () => {
             <div className='flex flex-col gap-6 lg:w-2/4 items-center'>
                 <img src={coconutPlant} alt="Coconut Plants" className='w-5/6 h-5/6 aspect-square object-cover rounded-xl' />
             </div>
-            <div className='flex flex-col gap-4 text-justify lg:w-2/4'>
+            <div className='flex flex-col gap-4 text-justify lg:w-2/4 items-start'>
                 <div>
                     <span className='text-green-400 font-semibold'>Unique Coconut Variety</span>
                     <h1 className='text-3xl font-bold text-white'>Moorock Cononut Plants</h1>
-
                 </div>
                 <p className='text-light-grey'>
                 Embrace excellence in coconut cultivation with the Moorock variety, a top performer in yield and quality for over a century. 
