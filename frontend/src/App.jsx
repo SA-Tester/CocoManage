@@ -9,26 +9,24 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import Order from "./pages/Order.jsx";
 import OrderManagement from "./pages/OrderManagement.jsx";
 const Home = lazy(() => import("../src/pages/Home.jsx"));
-// import HelloWorld from "./HelloWorld";
 
 const App = () => {
-  return (
-    // <div>
-    //   <HelloWorld />
-    // </div>
+	return (
 
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="attendance" element={<Attendance />
-          <Route path="signin" element={<SignIn />} />
-          <Route path="signup" element={<SignUp />} />
-          <Route path="order" element={<Order />} />
-          <Route path="order_management" element={<OrderManagement />} />
-        </Routes>
-      </Layout>
-    </Router>
-  );
+		<Router>
+			<Layout>
+				<Routes>
+					<Route path="/" element={<Home />} />
+					<Route path="attendance" element={<Attendance />} />
+                    <Route path="admin_dashboard" element={<AdminDashboard />} />
+					<Route path="signin" element={<SignIn />} />
+					<Route path="signup" element={<SignUp />} />
+					<Route path="order" element={<Order />} />
+					<Route path="order_management" element={<OrderManagement />} />
+				</Routes>
+			</Layout>
+		</Router>
+	);
+};
 
 export default App;
