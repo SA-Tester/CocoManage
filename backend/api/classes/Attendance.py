@@ -63,16 +63,17 @@ class Attendance():
 
         att_table = database_obj.child("Attendance").child(self.current_year).child(self.current_month).get()
         i = 0
-        for att in att_table.each():
-            emp_no = att.key()
-            tot_att_per_month = len(att.val())
-            today_time = att.val().get(str(self.current_day))
+        if att_table.each() != None:
+            for att in att_table.each():
+                emp_no = att.key()
+                tot_att_per_month = len(att.val())
+                today_time = att.val().get(str(self.current_day))
 
-            emp_table = database_obj.child("Employee").child(att.key()).get()
-            emp_name = emp_table.val().get("name")
+                emp_table = database_obj.child("Employee").child(att.key()).get()
+                emp_name = emp_table.val().get("name")
 
-            if today_time != None:
-                att_dict[i] = {"emp_no": emp_no, "emp_name": emp_name, "today_time": today_time, "tot_att_per_month": tot_att_per_month}
-                i += 1
+                if today_time != None:
+                    att_dict[i] = {"emp_no": emp_no, "emp_name": emp_name, "today_time": today_time, "tot_att_per_month": tot_att_per_month}
+                    i += 1
 
         return att_dict
