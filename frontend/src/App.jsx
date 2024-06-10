@@ -7,6 +7,7 @@ import SignUp from "./pages/SignUp.jsx";
 import Attendance from "./pages/Attendance.jsx";
 import Order from "./pages/Order.jsx";
 const Home = lazy(() => import("../src/pages/Home.jsx"));
+const Payroll = lazy(() => import("../src/pages/Payroll.jsx"));
 // import HelloWorld from "./HelloWorld";
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="signin" element={<SignIn />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="order" element={<Order />} />
+          <Route path="payroll" element={<Payroll />} />
         </Routes>
       </Layout>
     </Router>

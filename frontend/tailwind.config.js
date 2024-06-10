@@ -22,10 +22,11 @@ export default {
       black: "#000000",
       badge: "#F5EFE6",
       green: "#1A4D2E",
-      lightGreen: "#4F6F52",
+      "light-green": "#4F6F52",
       grey: "#4B514D",
       "light-grey": "#D9D9D9",
       paleCream: "#E8DFCA",
+      "gray-400": "#9ca3af",
     },
 
     extend: {},
