@@ -2,10 +2,11 @@
 
 export default {
   content: [
-    "./index.html", 
-    "./src/**/*.{js,ts,jsx,tsx}", 
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
-    "./node_modules/flowbite-react/lib/esm/**/*.js"],
+    "./node_modules/flowbite-react/lib/esm/**/*.js",
+  ],
 
   fontFamily: {
     noto: "'Noto Sans', 'sans-serif'",
@@ -21,13 +22,15 @@ export default {
       black: "#000000",
       badge: "#F5EFE6",
       green: "#1A4D2E",
-      "light-green": "#4F6F52",
+      lightGreen: "#4F6F52",
       grey: "#4B514D",
       "light-grey": "#D9D9D9",
+      paleCream: "#E8DFCA",
       blue: "#0E489E",
     },
+
     extend: {},
   },
-  
-  plugins: ['flowbite/plugin'],
+
+  plugins: ["flowbite/plugin"],
 };
