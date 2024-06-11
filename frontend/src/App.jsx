@@ -13,18 +13,17 @@ const Payroll = lazy(() => import("../src/pages/Payroll.jsx"));
 
 const App = () => {
 	return (
-
 		<Router>
 			<Layout>
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="attendance" element={<Attendance />} />
-          <Route path="admin_dashboard" element={<AdminDashboard />} />
+					<Route path="admin_dashboard" element={<AdminDashboard />} />
 					<Route path="signin" element={<SignIn />} />
 					<Route path="signup" element={<SignUp />} />
 					<Route path="order" element={<Order />} />
 					<Route path="order_management" element={<OrderManagement />} />
-          <Route path="payroll" element={<Payroll />} />         
+					<Route path="payroll" element={<Payroll />} />
 				</Routes>
 			</Layout>
 		</Router>
