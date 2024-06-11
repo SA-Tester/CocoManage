@@ -1,7 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import Navbar1 from "../components/navbar/Navbar1";
-import Navbar2 from "../components/navbar/Navbar2";
+import Navbar1 from "../components/common/Navbar1";
+import Navbar2 from "../components/common/Navbar2";
 
 const Layout = ({ children }) => {
 	const location = useLocation();

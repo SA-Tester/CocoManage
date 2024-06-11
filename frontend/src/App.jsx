@@ -10,7 +10,6 @@ import Order from "./pages/Order.jsx";
 import OrderManagement from "./pages/OrderManagement.jsx";
 const Home = lazy(() => import("../src/pages/Home.jsx"));
 const Payroll = lazy(() => import("../src/pages/Payroll.jsx"));
-// import HelloWorld from "./HelloWorld";
 
 const App = () => {
   return (
