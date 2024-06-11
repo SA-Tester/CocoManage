@@ -9,6 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import Order from "./pages/Order.jsx";
 import OrderManagement from "./pages/OrderManagement.jsx";
 const Home = lazy(() => import("../src/pages/Home.jsx"));
+const Payroll = lazy(() => import("../src/pages/Payroll.jsx"));
 
 const App = () => {
 	return (
@@ -18,11 +19,12 @@ const App = () => {
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="attendance" element={<Attendance />} />
-                    <Route path="admin_dashboard" element={<AdminDashboard />} />
+          <Route path="admin_dashboard" element={<AdminDashboard />} />
 					<Route path="signin" element={<SignIn />} />
 					<Route path="signup" element={<SignUp />} />
 					<Route path="order" element={<Order />} />
 					<Route path="order_management" element={<OrderManagement />} />
+          <Route path="payroll" element={<Payroll />} />         
 				</Routes>
 			</Layout>
 		</Router>
