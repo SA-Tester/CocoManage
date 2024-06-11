@@ -27,6 +27,7 @@ export default {
       "light-grey": "#D9D9D9",
       paleCream: "#E8DFCA",
       "gray-400": "#9ca3af",
+      blue: "#0E489E",
     },
 
     extend: {},
