@@ -1,6 +1,6 @@
 import React, { lazy, useEffect } from "react";
 
-const Navbar = lazy(() => import("../components/common/Navbar3"));
+const Navbar = lazy(() => import("../components/common/Navbar2"));
 const Footer = lazy(() => import("../components/common/Footer"));
 
 import customerIcon from '../assets/customer-icons.png';
@@ -26,7 +26,7 @@ const clientAccount = () => {
         <React.Fragment>
             <div className="flex flex-col min-h-screen">
                 {/* Navbar */}
-                <Navbar />
+               
 
                 {/* Main Content */}
                 <div className="flex flex-col lg:flex-row justify-center items-start bg-gray-100 p-8 text-black gap-8 flex-grow">
