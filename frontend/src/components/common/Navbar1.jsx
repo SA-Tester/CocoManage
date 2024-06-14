@@ -14,10 +14,10 @@ const Navbar1 = () => {
 
 				<div className="hidden md:flex space-x-6">
 					<a
-						href="/home"
+						href="/attendance"
 						className="hover:bg-grey hover:text-white rounded-lg p-2 transition duration-300 ease-in-out"
 					>
-						Home
+						Attendance
 					</a>
 					<a
 						href="/admin_dashboard"
@@ -26,7 +26,7 @@ const Navbar1 = () => {
 						Dashboard
 					</a>
 					<a
-						href="/order"
+						href="/order_management"
 						className="hover:bg-grey hover:text-white rounded-lg p-2 transition duration-300 ease-in-out"
 					>
 						Orders
@@ -78,10 +78,10 @@ const Navbar1 = () => {
 			{isOpen && (
 				<div className="md:hidden bg-badge py-2">
 					<a
-						href="/home"
+						href="/attendance"
 						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
 					>
-						Home
+						Attendance
 					</a>
 					<a
 						href="/admin_dashboard"
