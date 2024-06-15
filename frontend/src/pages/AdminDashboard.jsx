@@ -1,5 +1,6 @@
-import React from "react";
-import { ToastContainer } from "react-toastify";
+import React, { useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 import { Datepicker, Button, Label, Select, TextInput } from "flowbite-react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import "flowbite/dist/flowbite.css"; // Ensure Flowbite CSS is imported
@@ -8,6 +9,54 @@ import sunny from "../assets/sunny.png";
 import cloudy from "../assets/cloudy.png";
 
 const AdminDashboard = () => {
+	const [formAction, setFormAction] = useState("");
+	const [date, setDate] = useState("");
+	const [nutCount, setNutCount] = useState(0);
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+
+		const formData = new FormData(event.target);
+
+		if (formAction === "search") {
+			let str_date = formData.get("date");
+			formData.delete("date");
+			let year = new Date(str_date).getFullYear();
+			formData.append("year", year);
+
+			axios
+				.post("http://localhost:8000/api/search_pick/", formData)
+				.then((response) => {
+					toast.success("Pick Data Found");
+
+					let formatted_date = new Date(response.data["Date"]).toISOString().split('T')[0];
+					setDate(formatted_date);
+					setNutCount(response.data["Nuts"]);
+				})
+				.catch((error) => {
+					toast.error("No Pick Data Found");
+					console.log(error);
+				});
+		} else if (formAction === "add_update") {
+			let str_date = formData.get("date");
+			let date_obj = new Date(str_date);
+			let date = date_obj.getFullYear() + "/" + (date_obj.getMonth() + 1) + "/" + date_obj.getDate();
+			formData.set("date", date);
+
+			axios
+				.post("http://localhost:8000/api/add_update_pick/", formData)
+				.then((response) => {
+					toast.success("Nut Harvest Updated Successfully");
+					console.log(response.data);
+				})
+				.catch((error) => {
+					toast.error("Error Updating Nut Harvest");
+					console.log(error);
+				});
+		} else if (formAction === "delete") {
+		}
+	};
+
 	return (
 		<div className="flex flex-col md:flex-row left-0 w-full absolute bg-green p-5">
 			<ToastContainer />
@@ -108,7 +157,10 @@ const AdminDashboard = () => {
 
 			<div className="flex-auto w-full md:w-1/2 lg:w-1/2 p-4 rounded-lg shadow-md grid grid-cols-1 gap-8">
 				<div className="grid grid-cols-1 grid-rows-2 gap-8 font-bold bg-white rounded-lg p-5">
-					<form className="border-2 rounded-lg border-black p-5">
+					<form
+						className="border-2 rounded-lg border-black p-5"
+						onSubmit={handleSubmit}
+					>
 						<h1 className="text-center pb-3">Nut Harvest</h1>
 
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
@@ -116,12 +168,13 @@ const AdminDashboard = () => {
 								<div className="mb-2 block">
 									<Label
 										htmlFor="pick_number"
-										value="Select Pick Number: "
+										value="Pick Number: "
 										style={{ color: "black" }}
 									/>
 								</div>
 								<Select
 									id="pick_number"
+									name="pick_number"
 									className="bg-grey rounded-md w-full text-black"
 									style={{ color: "black" }}
 									required
@@ -139,40 +192,76 @@ const AdminDashboard = () => {
 								<div className="mb-2 block">
 									<Label
 										htmlFor="date"
-										value="Enter Date: "
+										value="Date: "
 										style={{ color: "black" }}
 									/>
 								</div>
-								<Datepicker
+								<TextInput
 									id="date"
+									name="date"
+									type="date"
+									placeholder="yyyy/mm/dd"
+									style={{ color: "black" }}
+									value={date}
+									onChange={(e) => setDate(e.target.value)}
+									required
+								/>
+								{/* <Datepicker
+									id="date"
+									name="date"
 									placement="bottom"
 									className="border border-gray-300 rounded-md p-2"
 									style={{ color: "black" }}
-								/>
+									onChange={(e) => setDate(e.target.value)}
+									// value = {date}
+								/> */}
 							</div>
 							<div className="flex flex-col justify-center w-full">
 								<div className="mb-2 block">
 									<Label
 										htmlFor="nut_count"
-										value="Enter Nut Count: "
+										value="Nut Count: "
 										style={{ color: "black" }}
 									/>
 								</div>
 								<TextInput
 									id="nut_count"
+									name="nut_count"
 									type="number"
 									placeholder="0"
 									style={{ color: "black" }}
+									value={nutCount}
+									onChange={(e) => setNutCount(e.target.value)}
 									required
 								/>
 							</div>
 						</div>
-						<div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center pt-5">
-							<Button color="success">Add</Button>
-							<Button color="success">Update</Button>
-							<Button color="success">Delete</Button>
-							<Button color="success">View</Button>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center pt-5">
+							<Button
+								color="success"
+								type="submit"
+								onClick={() => setFormAction("search")}
+							>
+								Search
+							</Button>
+							<Button
+								color="success"
+								type="submit"
+								onClick={() => setFormAction("add_update")}
+							>
+								Add/ Update
+							</Button>
+							<Button
+								color="success"
+								type="submit"
+								onClick={() => setFormAction("delete")}
+							>
+								Delete
+							</Button>
 						</div>
+						<p className="text-xs text-right py-3 italic">
+							**Select the pick number and the year to search
+						</p>
 					</form>
 					<div className="flex flex-col h-100 items-center">
 						<h2>Nut Harvest Variation</h2>
