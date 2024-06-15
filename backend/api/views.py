@@ -93,3 +93,17 @@ class AddUpdatePickView(APIView):
             return Response({"message": "Failed to add nut count"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Nut count added successfully"}, status=status.HTTP_201_CREATED)
     
+
+class DeletePickView(APIView):
+    # Initialize the NutHarvest class
+    nut_harvest = NutHarvest()
+
+    def post(self, request, *args, **kwargs):
+        pick_number = request.data.get("pick_number")
+        year = request.data.get("year")
+
+        result = self.nut_harvest.delete_pick(database_obj, pick_number, year)
+        if result == 1:
+            return Response({"message": "Failed to delete pick"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Pick deleted successfully"}, status=status.HTTP_201_CREATED)
+    

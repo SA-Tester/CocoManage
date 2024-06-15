@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { Datepicker, Button, Label, Select, TextInput } from "flowbite-react";
+import { Button, Label, Select, TextInput } from "flowbite-react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import "flowbite/dist/flowbite.css"; // Ensure Flowbite CSS is imported
 import rainy from "../assets/rainy.png";
@@ -54,6 +54,21 @@ const AdminDashboard = () => {
 					console.log(error);
 				});
 		} else if (formAction === "delete") {
+			let str_date = formData.get("date");
+			formData.delete("date");
+			let year = new Date(str_date).getFullYear();
+			formData.append("year", year);
+
+			axios
+				.post("http://localhost:8000/api/delete_pick/", formData)
+				.then((response) => {
+					toast.success("Pick Deleted Successfully");
+					console.log(response.data)
+				})
+				.catch((error) => {
+					toast.error("No Pick Data Found");
+					console.log(error);
+				});
 		}
 	};
 
@@ -206,15 +221,6 @@ const AdminDashboard = () => {
 									onChange={(e) => setDate(e.target.value)}
 									required
 								/>
-								{/* <Datepicker
-									id="date"
-									name="date"
-									placement="bottom"
-									className="border border-gray-300 rounded-md p-2"
-									style={{ color: "black" }}
-									onChange={(e) => setDate(e.target.value)}
-									// value = {date}
-								/> */}
 							</div>
 							<div className="flex flex-col justify-center w-full">
 								<div className="mb-2 block">
@@ -259,7 +265,7 @@ const AdminDashboard = () => {
 								Delete
 							</Button>
 						</div>
-						<p className="text-xs text-right py-3 italic">
+						<p className="text-xs text-right pt-3 italic">
 							**Select the pick number and the year to search
 						</p>
 					</form>
@@ -285,7 +291,7 @@ const AdminDashboard = () => {
 							]}
 							height={150}
 							margin={{ left: 50, right: 20, top: 10, bottom: 20 }}
-							grid={{ vertical: true, horizontal: true }}
+							grid={{ vertical: false, horizontal: true }}
 						/>
 					</div>
 				</div>

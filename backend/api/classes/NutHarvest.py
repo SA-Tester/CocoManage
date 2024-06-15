@@ -34,8 +34,14 @@ class NutHarvest():
 
 
     # Delete a Pick
-    def delete_pick():
-        return
+    def delete_pick(self, database_obj, pick_number, year):
+        try:
+            harvest_table = database_obj.child("NutHarvest").child(str(year)).child(str(pick_number))
+            harvest_table.remove()
+            return 0
+        
+        except Exception:
+            return 1
 
 
     # Get Yearly Nut Counts (For Chart)
