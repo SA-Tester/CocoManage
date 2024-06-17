@@ -8,7 +8,7 @@ import Attendance from "./pages/Attendance.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import Order from "./pages/Order.jsx";
 import OrderManagement from "./pages/OrderManagement.jsx";
-import clientAccount from "./pages/ClientAccount.jsx";
+import ClientAccount from "./pages/ClientAccount.jsx";
 import StaffDirectory from "./pages/StaffDirectory.jsx";
 
 const Home = lazy(() => import("../src/pages/Home.jsx"));
@@ -26,7 +26,7 @@ const App = () => {
 					<Route path="signup" element={<SignUp />} />
 					<Route path="order" element={<Order />} />
 					<Route path="order_management" element={<OrderManagement />} />
-					<Route path="client_account" element={<clientAccount/>} />
+					<Route path="client_account" element={<ClientAccount/>} />
 					<Route path="staff_directory" element={<StaffDirectory/>} />
 					<Route path="payroll" element={<Payroll />} />
 				</Routes>
