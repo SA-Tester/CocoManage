@@ -107,3 +107,13 @@ class DeletePickView(APIView):
             return Response({"message": "Failed to delete pick"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Pick deleted successfully"}, status=status.HTTP_201_CREATED)
     
+
+class GetNutCountView(APIView):
+    # Initialize the NutHarvest class
+    nut_harvest = NutHarvest()
+
+    def get(self, request, *args, **kwargs):
+        result = self.nut_harvest.get_nut_count_per_year(database_obj)
+        if result["Error"] != None:
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+        return Response(result, status=status.HTTP_200_OK)

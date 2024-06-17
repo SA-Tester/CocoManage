@@ -7,4 +7,5 @@ urlpatterns = [
     path('add_update_pick/', views.AddUpdatePickView.as_view(), name='add_update_pick'),
     path('search_pick/', views.SearchPickView.as_view(), name='search_pick'),
     path('delete_pick/', views.DeletePickView.as_view(), name='delete_pick'),
+    path('get_nut_count/', views.GetNutCountView.as_view(), name='get_nut_count'),
 ]

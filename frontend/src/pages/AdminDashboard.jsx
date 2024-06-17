@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { Button, Label, Select, TextInput } from "flowbite-react";
@@ -12,6 +12,24 @@ const AdminDashboard = () => {
 	const [formAction, setFormAction] = useState("");
 	const [date, setDate] = useState("");
 	const [nutCount, setNutCount] = useState(0);
+	const [years, setYears] = useState([2023, 2024]);
+	const [yearlyNutCount, setYearlyNutCount] = useState([1000, 2000]);
+
+	// Axis Formatting for Nut Harvest Graph
+	const xNutHarvest = years.map((year) => new Date(year, 0, 1));
+
+
+	useEffect(() => {
+		axios
+			.get("http://localhost:8000/api/get_nut_count/")
+			.then((response) => {
+				setYears(response.data["Years"]);
+				setYearlyNutCount(response.data["Nuts"]);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	},[]);
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -29,7 +47,9 @@ const AdminDashboard = () => {
 				.then((response) => {
 					toast.success("Pick Data Found");
 
-					let formatted_date = new Date(response.data["Date"]).toISOString().split('T')[0];
+					let formatted_date = new Date(response.data["Date"])
+						.toISOString()
+						.split("T")[0];
 					setDate(formatted_date);
 					setNutCount(response.data["Nuts"]);
 				})
@@ -40,7 +60,12 @@ const AdminDashboard = () => {
 		} else if (formAction === "add_update") {
 			let str_date = formData.get("date");
 			let date_obj = new Date(str_date);
-			let date = date_obj.getFullYear() + "/" + (date_obj.getMonth() + 1) + "/" + date_obj.getDate();
+			let date =
+				date_obj.getFullYear() +
+				"/" +
+				(date_obj.getMonth() + 1) +
+				"/" +
+				date_obj.getDate();
 			formData.set("date", date);
 
 			axios
@@ -63,7 +88,7 @@ const AdminDashboard = () => {
 				.post("http://localhost:8000/api/delete_pick/", formData)
 				.then((response) => {
 					toast.success("Pick Deleted Successfully");
-					console.log(response.data)
+					console.log(response.data);
 				})
 				.catch((error) => {
 					toast.error("No Pick Data Found");
@@ -266,7 +291,8 @@ const AdminDashboard = () => {
 							</Button>
 						</div>
 						<p className="text-xs text-right pt-3 italic">
-							**Select the pick number and the year to search
+							**Select the pick number and a random date with correct year to
+							search
 						</p>
 					</form>
 					<div className="flex flex-col h-100 items-center">
@@ -275,19 +301,13 @@ const AdminDashboard = () => {
 							xAxis={[
 								{
 									scaleType: "time",
-									data: [
-										new Date(2019, 0, 1),
-										new Date(2020, 0, 1),
-										new Date(2021, 0, 1),
-										new Date(2022, 0, 1),
-										new Date(2023, 0, 1),
-									],
+									data: xNutHarvest,
 									valueFormatter: (date) => date.getFullYear().toString(),
-									tickNumber: 5,
+									tickNumber: years.length,
 								},
 							]}
 							series={[
-								{ curve: "linear", data: [5500, 4500, 3452, 6123, 4123] },
+								{ curve: "linear", data: yearlyNutCount },
 							]}
 							height={150}
 							margin={{ left: 50, right: 20, top: 10, bottom: 20 }}

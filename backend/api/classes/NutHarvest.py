@@ -45,3 +45,30 @@ class NutHarvest():
 
 
     # Get Yearly Nut Counts (For Chart)
+    def get_nut_count_per_year(self, database_obj):
+        years = []
+        nuts = []
+
+        try:
+            harvest_table = database_obj.child("NutHarvest").get()
+            for year in harvest_table.each():
+                if year.key() not in years:
+                    years.append(year.key())
+                
+                picks = database_obj.child("NutHarvest").child(year.key()).get()
+                nuts_per_year = 0
+                for pick in picks.each():
+                    nuts_per_pick = 0
+
+                    if pick.key() != 0:
+                        nuts_per_pick = int(pick.val().get("Nuts"))
+                        nuts_per_year += nuts_per_pick
+                
+                nuts.append(nuts_per_year)
+
+            return {"Error": None, "Years": years, "Nuts": nuts}
+        
+        except Exception:
+            return {"Error": "Failed to get Nut Counts"}
+        
+        
