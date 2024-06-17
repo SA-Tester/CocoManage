@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import searchIcon from '../assets/search-icon.png';
 
-const Navbar = lazy(() => import("../components/common/Navbar1"));
-const Footer = lazy(() => import("../components/common/Footer"));
-
-import { Table, Pagination, Button } from "flowbite-react";
-import searchIcon from '../assets/search-icon.png';
+import { Table, Pagination, Button, Modal, Label, TextInput } from "flowbite-react";
 
 const StaffDirectory = () => {
     const [searchTerm, setSearchTerm] = useState("");

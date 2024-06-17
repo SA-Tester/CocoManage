@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logo from "../../assets/logo.png";
 import { Avatar } from "flowbite-react";
 
-const Navbar1 = () => {
+const Navbar3 = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
@@ -14,44 +14,39 @@ const Navbar1 = () => {
 
 				<div className="hidden md:flex space-x-6">
 					<a
-						href="/attendance"
+						href="/"
 						className="hover:bg-grey hover:text-white rounded-lg p-2 transition duration-300 ease-in-out"
 					>
-						Attendance
+						Home
 					</a>
 					<a
-						href="/admin_dashboard"
+						href="/order"
 						className="hover:bg-grey hover:text-white rounded-lg p-2 transition duration-300 ease-in-out"
 					>
-						Dashboard
+						Order
 					</a>
 					<a
-						href="/order_management"
+						href="/contact_us"
 						className="hover:bg-grey hover:text-white rounded-lg p-2 transition duration-300 ease-in-out"
 					>
-						Orders
+						Contact Us
 					</a>
+                    <div className="hidden md:flex space-x-4">
 					<a
-						href="/staff_directory"
-						className="hover:bg-grey hover:text-white rounded-lg p-2 transition duration-300 ease-in-out"
+						href="/signin"
+						className="bg-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
 					>
-						Staff
+						Sign In
 					</a>
+				</div>
+                <div className="hidden md:flex space-x-4">
 					<a
-						href="/payroll"
-						className="hover:bg-grey hover:text-white rounded-lg p-2 transition duration-300 ease-in-out"
+						href="/signup"
+						className="bg-green text-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
 					>
-						Payroll
+						Sign Up
 					</a>
-					<div className="flex items-center space-x-2">
-						<a href="/signin">
-							<Avatar
-								placeholderInitials="RR"
-								rounded
-								className="hover:shadow-lg shadow-gray-500 transition duration-300 ease-in-out"
-							/>
-						</a>
-					</div>
+				</div>
 				</div>
 				<div className="md:hidden">
 					<button
@@ -78,34 +73,22 @@ const Navbar1 = () => {
 			{isOpen && (
 				<div className="md:hidden bg-badge py-2">
 					<a
-						href="/attendance"
+						href="/"
 						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
 					>
-						Attendance
-					</a>
-					<a
-						href="/admin_dashboard"
-						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
-					>
-						Dashboard
+						Home
 					</a>
 					<a
 						href="/order"
 						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
 					>
-						Orders
+						Order
 					</a>
 					<a
-						href="/staff"
+						href="/contact_us"
 						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
 					>
-						Staff
-					</a>
-					<a
-						href="/payroll"
-						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
-					>
-						Payroll
+						Contact Us
 					</a>
 					<a
 						href="/signin"
@@ -113,10 +96,16 @@ const Navbar1 = () => {
 					>
 						Sign In
 					</a>
+                    <a
+						href="/signup"
+						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
+					>
+						Sign Up
+					</a>
 				</div>
 			)}
 		</nav>
 	);
 };
 
-export default Navbar1;
+export default Navbar3;
