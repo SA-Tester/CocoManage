@@ -15,10 +15,6 @@ const AdminDashboard = () => {
 	const [years, setYears] = useState([2023, 2024]);
 	const [yearlyNutCount, setYearlyNutCount] = useState([1000, 2000]);
 
-	// Axis Formatting for Nut Harvest Graph
-	const xNutHarvest = years.map((year) => new Date(year, 0, 1));
-
-
 	useEffect(() => {
 		axios
 			.get("http://localhost:8000/api/get_nut_count/")
@@ -301,7 +297,7 @@ const AdminDashboard = () => {
 							xAxis={[
 								{
 									scaleType: "time",
-									data: xNutHarvest,
+									data: years.map((year) => new Date(year, 0, 1)),
 									valueFormatter: (date) => date.getFullYear().toString(),
 									tickNumber: years.length,
 								},
