@@ -23,12 +23,6 @@ const Cart = () => {
 const CartWithItems = () => {
     const [amount, setAmount] = useState(1);
 
-    const [borderColor, setBorderColor] = useState('border-b-gray-400');
-
-    const handleClick = () => {
-        setBorderColor(borderColor === 'border-b-gray-400' ? 'border-green-500 bg:green-100 rounded-md' : 'border-b-gray-400');
-    }
-
     return (
         <div className="flex flex-col container my-5 mx-3 justify-center gap-8 lg:flex-row align-middle">
             <div className="bg-white rounded-xl text-black px-12 py-6 w-full lg:w-1/2">
@@ -76,17 +70,17 @@ const CartWithItems = () => {
                     </div>
                     <h3 className="my-4 text-gray-700 font-2xl">Delivery</h3>
                     <div className="mt-5 border border-green-500 bg-green-100 py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center">
-                        <input type="radio" name="delivary" id="pickup" value="pickup" className="text-green-500 py-2 px-2 rounded-full" checked/>
+                        <input type="radio" name="delivary" id="pickup" value="pickup" className="text-green-500 py-2 px-2 rounded-full  focus:ring-green-500" checked/>
                         <label htmlFor="pickup" className="text-gray-700 w-full">Pick up in the state</label>
                     </div>
                     <h3 className="my-4 text-gray-700 font-2xl">Payment</h3>
                     <div className="border border-gray-400 rounded-md mb-5">
-                        <div className={`py-2 px-2 w-full flex flex-row gap-4 align-middle items-center border-b ${borderColor}`} onClick={handleClick}>
-                            <input type="radio" name="payment" id="bank" value="bank" className="text-green-500 py-2 px-2 rounded-full"/>
+                        <div className="py-2 px-2 w-full flex flex-row gap-4 align-middle items-center border-b border-b-gray-400">
+                            <input type="radio" name="payment" id="bank" value="bank" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500"/>
                             <label htmlFor="bank" className="text-gray-700 w-full">Bank Deposit</label>
                         </div>
-                        <div className={`py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center ${borderColor}`} onClick={handleClick}>
-                            <input type="radio" name="payment" id="cod" value="cod" className="text-green-500 py-2 px-2 rounded-full"/>
+                        <div className='py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center'>
+                            <input type="radio" name="payment" id="cod" value="cod" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500"/>
                             <label htmlFor="cod" className="text-gray-700 w-full">Cash on Delivery</label>
                         </div>
                     </div>
