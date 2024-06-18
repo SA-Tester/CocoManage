@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import coconutPlant from '../assets/coconut-plant.jpg';
 import cartIcon from '../assets/cart-icon.png';
@@ -6,8 +7,13 @@ const Order = () => {
 
     const[amount, setAmount] = useState(1);
 
+    const navigate = useNavigate();
+    const goToCart = () => {
+        navigate('/cart')
+    };
+
     return (
-        <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full h-full">
+        <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full  max-h-fit lg:h-full">
             <div className='flex flex-col gap-6 lg:w-2/4 items-center'>
                 <img src={coconutPlant} alt="Coconut Plants" className='w-5/6 h-5/6 aspect-square object-cover rounded-xl' />
             </div>
@@ -28,7 +34,7 @@ const Order = () => {
                         <button className='bg-white py-2 px-4 rounded-lg text-green-600 text-3xl' onClick={() => setAmount((prev)=>prev+1)}>+</button>
                     </div>
                     <button className='bg-white text-green-600 font-semibold py-4 px-16 rounded-xl h-full'>Add to Cart</button>
-                    <div className='w-10 h-10 bg-white rounded-full flex justify-center items-center relative'>
+                    <div onClick={goToCart} className='w-10 h-10 bg-white rounded-full flex justify-center items-center relative'>
                         <img src={cartIcon} alt="" className='w-6'/>
                         <span className='absolute top-2/3 right-1/2 bg-green-400 text-white text-sm w-5 h-5 rounded-full flex justify-center items-center'>0</span>
                     </div>
