@@ -2,8 +2,8 @@
 A comprehensive estate management system for Moorcock Estate
 
 <h4>To install Node packages run: </h4><p>npm install</p>
-<h4>To install Python packages run: </h4>
-<ol>
+<h4>To install Python packages run: </h4><p>pip install -r requirements.txt</p> (navigate to backend folder)
+<!--ol>
   <li>pip install djangorestframework</li>
   <li>pip install django-cors-headers</li>
   <li>pip insall openmeteo_requests</li>
@@ -13,7 +13,7 @@ A comprehensive estate management system for Moorcock Estate
   <li>pip install pandas</li>
   <li>pip install pyrebase4</li>
   <li>pip install dotenv</li>
-</ol>
+</ol-->
 
 <p><b>Create a .env file in the backend folder to store database credentials and other necessary variables.</b><br> The .env file has following variables</p>
 <div>
