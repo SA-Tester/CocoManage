@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import searchIcon from '../assets/search-icon.png';
 
-import { Table, Pagination, Button, Modal, Label, TextInput } from "flowbite-react";
+import { Table, Pagination, Button, Modal, Label, TextInput, ImageInput } from "flowbite-react";
 
 const StaffDirectory = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [staff, setStaff] = useState([
-        { id: 1, name: "John Doe", position: "Manager", email: "john.doe@example.com", phone: "0711111111" },
-        { id: 2, name: "Jane Smith", position: "Assistant", email: "jane.smith@example.com", phone: "0711222222" },
-        { id: 3, name: "Alice Johnson", position: "Clerk", email: "alice.johnson@example.com", phone: "0711333333" }
+        { id: 1, name: "John Doe", position: "Manager", email: "john.doe@example.com", phone: "0711111111", image: "" },
+        { id: 2, name: "Jane Smith", position: "Assistant", email: "jane.smith@example.com", phone: "0711222222", image: "" },
+        { id: 3, name: "Alice Johnson", position: "Clerk", email: "alice.johnson@example.com", phone: "0711333333", image: "" }
     ]);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [staffPerPage] = useState(10);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [newStaff, setNewStaff] = useState({ name: "", position: "", email: "", phone: "" });
+    const [newStaff, setNewStaff] = useState({ name: "", position: "", email: "", phone: "", image: "" });
     const [currentStaff, setCurrentStaff] = useState({});
 
     const handleSearch = (e) => {
@@ -28,14 +28,15 @@ const StaffDirectory = () => {
 
     const handleEditStaff = (staff) => {
         setCurrentStaff(staff);
+        setNewStaff({...staff, image: staff.image})
         setShowEditModal(true);
     };
 
     const handleSubmitNew = () => {
         const newId = staff.length ? staff[staff.length - 1].id + 1 : 1;
-        setStaff([...staff, { ...newStaff, id: newId }]);
+        setStaff([...staff, { ...newStaff, id: newId, image: newStaff.image}]);
         setShowAddModal(false);
-        setNewStaff({ name: "", position: "", email: "", phone: "" });
+        setNewStaff({ name: "", position: "", email: "", phone: "", image: "" });
     };
 
     const handleSubmitEdit = () => {
@@ -170,6 +171,16 @@ const StaffDirectory = () => {
                                 required
                             />
                         </div>
+                        <div>
+                            <Label htmlFor="image" value="Image" />
+                            <ImageInput
+                                id="image-input"
+                                name="image"
+                                value={newStaff.image}
+                                onChange={(e) => setNewStaff({ ...newStaff, image: e.target.value })}
+                                required
+                            />
+                        </div>
                         <div className="flex justify-end">
                             <Button onClick={handleSubmitNew}>Add Staff Member</Button>
                         </div>
@@ -221,6 +232,15 @@ const StaffDirectory = () => {
                                 value={currentStaff.phone}
                                 onChange={(e) => setCurrentStaff({ ...currentStaff, phone: e.target.value })}
                                 required
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="edit-image" value="Image" />
+                            <ImageInput
+                                id="image-input"
+                                name="image"
+                                value={newStaff.image}
+                                onChange={(e) => setNewStaff({ ...newStaff, image: e.target.value })}
                             />
                         </div>
                         <div className="flex justify-end">
