@@ -8,6 +8,7 @@ from .db import init_db
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
 import os
+import time
 
 # Initialize the firebase database object
 database_obj = init_db()
@@ -32,24 +33,11 @@ class VerifyEmployeeView(APIView):
         # Save the uploaded file to the temp folder and get the uploaded file path
         uploaded_file_path = self.attendance.save_uploaded_file(request, self.main_dir, self.temp_dir)
 
-        # Initialize the employee number
-        emp_no = None
-
-        # Loop through the registry directory and verify whether the uploaded employee is in the registry
-        for file in os.listdir(os.path.join(self.main_dir, self.registry_dir)):
-            current_file_path = os.path.join(self.main_dir, self.registry_dir, file)
-
-            # Verify the employee from Deepface image recognition and save attendance to database
-            try:
-                if self.attendance.verify_employee(current_file_path, uploaded_file_path):
-                    emp_no = file.split(".")[0]
-                    self.attendance.record_attendance(database_obj, emp_no)
-                    break
-
-            except Exception:
-                emp_no = None
+        # Get the employee number of the verified employee
+        emp_no = self.attendance.verify_employee(uploaded_file_path)
 
         if emp_no is not None:
+            self.attendance.record_attendance(database_obj, emp_no)
             return Response({"emp_no": emp_no}, status=status.HTTP_201_CREATED)
         return Response({"emp_no": emp_no}, status=status.HTTP_401_UNAUTHORIZED)
 

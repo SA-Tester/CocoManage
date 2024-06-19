@@ -10,6 +10,8 @@ class Attendance():
     current_month = None
     current_day = None
     current_time = None
+    main_dir = 'media'
+    registry_dir = 'registry'
 
     # Function to initialize current date and time
     def init_date_time(self):
@@ -38,9 +40,33 @@ class Attendance():
         return uploaded_file_path
 
     # Function to verify the employee
-    def verify_employee(self, img1_path, img2_path):
-        result = DeepFace.verify(img1_path=img1_path, img2_path=img2_path)
-        return result["verified"]
+    def verify_employee(self, uploaded_file_path):
+        identified_emp = None
+        dissimilarity_index = 1
+        
+        for file in os.listdir(os.path.join(self.main_dir, self.registry_dir)):
+            current_file_path = os.path.join(self.main_dir, self.registry_dir, file)
+            
+            # Verify the employee from Deepface image recognition 
+            try:
+                # According to Deepface documentation Facenet512, retinaface and euclidean_l2 output the most accurate results
+                result = DeepFace.verify(img1_path=current_file_path, 
+                                         img2_path=uploaded_file_path, 
+                                         model_name="Facenet512", 
+                                         detector_backend="retinaface", 
+                                         distance_metric="euclidean_l2", 
+                                         align=True, 
+                                         enforce_detection=True)
+                
+                # print(file, result["verified"])
+                if result["distance"] < dissimilarity_index and result["verified"] == True:
+                    dissimilarity_index = result["distance"]
+                    identified_emp = file.split(".")[0]
+
+            except Exception as e:
+                print(e)
+
+        return identified_emp
     
 
     # Function to save attendance to database
