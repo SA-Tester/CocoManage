@@ -20,6 +20,7 @@ class NutHarvest():
     def add_update_pick(self, database_obj, date, pick_number, nut_count):
         try:
             year = date.split("/")[0].strip()
+            
             # Reference to the specific location in the database and append the nut count  
             harvest_table_date = database_obj.child("NutHarvest").child(year).child(str(pick_number))
             harvest_table_date.child("Date").set(date)

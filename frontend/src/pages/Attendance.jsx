@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Webcam from "react-webcam";
-import { Table, Button } from "flowbite-react";
 import axios from "axios";
+import { Table, Button } from "flowbite-react";
 import { ToastContainer, toast } from "react-toastify";
+import Spinner from "../components/common/Spinner";
 import "react-toastify/dist/ReactToastify.css";
 
 const Attendance = () => {
@@ -13,6 +14,9 @@ const Attendance = () => {
 	// Initialize the webcam reference and image source
 	const webcamRef = React.useRef(null);
 	const [imgSrc, setImgSrc] = React.useState(null);
+
+	// Initialize spinner
+	const [loading, setLoading] = useState(false);
 
 	// Function to get the current date in the desired format
 	function getDate() {
@@ -32,10 +36,27 @@ const Attendance = () => {
 		return `${hours}:${minutes}:${seconds}`;
 	}
 
+	// Funtion to get the attendance data from the backend
+	function get_attendance() {
+		axios
+			.get("http://localhost:8000/api/get_attendance/")
+			.then((response) => {
+				setAttendanceData(response.data);
+			})
+			.catch((error) => {
+				console.error(
+					"There was an error fetching the attendance data!",
+					error
+				);
+			});
+	}
+
 	// Function to get a photo from the webcam
 	const capture = React.useCallback(() => {
 		const imageSrc = webcamRef.current.getScreenshot();
 		setImgSrc(imageSrc);
+
+		setLoading(true)
 
 		// Convert the data URL to a Blob
 		const byteString = atob(imageSrc.split(",")[1]); // Decode data which has been encoded using Base64 encoding
@@ -66,30 +87,23 @@ const Attendance = () => {
 				toast.success("Employee verified successfully!");
 				setCurrentDate(getDate());
 				setCurrentTime(getTime());
+				get_attendance();
+				setLoading(false);
 			})
 			// Handle the response from the server [error]
 			.catch((error) => {
 				console.error("Error:", error);
 				toast.error("Unidentified. Please try again!");
+				setLoading(false);
 			});
 	}, [webcamRef, setImgSrc]);
 
 	// Render the attendance page
 	const [attendance_data, setAttendanceData] = useState([]);
 
+	// Fetch the attendance data from the backend
 	useEffect(() => {
-		// Fetch the attendance data from the backend
-		axios
-			.get("http://localhost:8000/api/get_attendance/")
-			.then((response) => {
-				setAttendanceData(response.data);
-			})
-			.catch((error) => {
-				console.error(
-					"There was an error fetching the attendance data!",
-					error
-				);
-			});
+		get_attendance();
 	},[]);
 
 	return (
@@ -97,6 +111,9 @@ const Attendance = () => {
 		<div className="flex flex-col md:flex-row left-0 w-full h-screen text-white absolute bg-green pl-5 pr-5">
 			{/* Rendering the Toast Container for Notifications */}
 			<ToastContainer />
+
+			{/* Spinner for loading state */}
+			{loading && <Spinner />}
 
 			{/* Left section for greeting and webcam */}
 			<div className="flex-auto w-full md:w-1/3 lg:w-1/2 p-4 sm:p-2 md:p-3 lg:p-4">
