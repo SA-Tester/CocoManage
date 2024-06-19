@@ -24,8 +24,8 @@ class NutHarvest():
             harvest_table_date = database_obj.child("NutHarvest").child(year).child(str(pick_number))
             harvest_table_date.child("Date").set(date)
 
-            harvest_table_date = database_obj.child("NutHarvest").child(year).child(str(pick_number))
-            harvest_table_date.child("Nuts").set(nut_count)
+            harvest_table_nuts = database_obj.child("NutHarvest").child(year).child(str(pick_number))
+            harvest_table_nuts.child("Nuts").set(nut_count)
 
             return 0
         

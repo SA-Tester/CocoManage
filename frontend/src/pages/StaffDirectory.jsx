@@ -1,7 +1,6 @@
 import React, { useState } from "react";
+import { Table, Pagination, Button, Modal, Label, TextInput } from "flowbite-react";
 import searchIcon from '../assets/search-icon.png';
-
-import { Table, Pagination, Button, Modal, Label, TextInput, ImageInput } from "flowbite-react";
 
 const StaffDirectory = () => {
     const [searchTerm, setSearchTerm] = useState("");
