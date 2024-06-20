@@ -7,6 +7,7 @@ import {
 	Label,
 	TextInput,
 	FileInput,
+	Select,
 } from "flowbite-react";
 import searchIcon from "../assets/search-icon.png";
 
@@ -19,6 +20,7 @@ const StaffDirectory = () => {
 			position: "Manager",
 			email: "john.doe@example.com",
 			phone: "0711111111",
+			gender: "Male",
 			image: "",
 		},
 		{
@@ -27,6 +29,7 @@ const StaffDirectory = () => {
 			position: "Assistant",
 			email: "jane.smith@example.com",
 			phone: "0711222222",
+			gender: "Female",
 			image: "",
 		},
 		{
@@ -35,6 +38,7 @@ const StaffDirectory = () => {
 			position: "Clerk",
 			email: "alice.johnson@example.com",
 			phone: "0711333333",
+			gender: "Female",
 			image: "",
 		},
 	]);
@@ -48,6 +52,7 @@ const StaffDirectory = () => {
 		position: "",
 		email: "",
 		phone: "",
+		gender: "",
 		image: "",
 	});
 	const [currentStaff, setCurrentStaff] = useState({});
@@ -70,7 +75,7 @@ const StaffDirectory = () => {
 		const newId = staff.length ? staff[staff.length - 1].id + 1 : 1;
 		setStaff([...staff, { ...newStaff, id: newId, image: newStaff.image }]);
 		setShowAddModal(false);
-		setNewStaff({ name: "", position: "", email: "", phone: "", image: "" });
+		setNewStaff({ name: "", position: "", email: "", phone: "", gender: "", image: "" });
 	};
 
 	const handleSubmitEdit = () => {
@@ -134,6 +139,7 @@ const StaffDirectory = () => {
 							<Table.HeadCell>Position</Table.HeadCell>
 							<Table.HeadCell>Email</Table.HeadCell>
 							<Table.HeadCell>Phone</Table.HeadCell>
+							<Table.HeadCell>Gender</Table.HeadCell>
 							<Table.HeadCell>Action</Table.HeadCell>
 						</Table.Head>
 						<Table.Body className="pt-3 pb-3 bg-white text-black">
@@ -143,6 +149,7 @@ const StaffDirectory = () => {
 									<Table.Cell>{member.position}</Table.Cell>
 									<Table.Cell>{member.email}</Table.Cell>
 									<Table.Cell>{member.phone}</Table.Cell>
+									<Table.Cell>{member.gender}</Table.Cell>
 									<Table.Cell>
 										<button
 											onClick={() => handleEditStaff(member)}
@@ -228,6 +235,22 @@ const StaffDirectory = () => {
 							/>
 						</div>
 						<div>
+							<Label htmlFor="gender" value="Gender" />
+							<Select
+								id="gender"
+								value={newStaff.gender}
+								onChange={(e) =>
+									setNewStaff({ ...newStaff, gender: e.target.value })
+								}
+								required
+							>
+								<option value="" disabled>Select Gender</option>
+								<option value="Male">Male</option>
+								<option value="Female">Female</option>
+								<option value="Other">Other</option>
+							</Select>
+						</div>
+						<div>
 							<Label htmlFor="image" value="Image" />
 							<FileInput
 								id="image-input"
@@ -306,6 +329,22 @@ const StaffDirectory = () => {
 								}
 								required
 							/>
+						</div>
+						<div>
+							<Label htmlFor="edit-gender" value="Gender" />
+							<Select
+								id="edit-gender"
+								value={currentStaff.gender}
+								onChange={(e) =>
+									setCurrentStaff({ ...currentStaff, gender: e.target.value })
+								}
+								required
+							>
+								<option value="" disabled>Select Gender</option>
+								<option value="Male">Male</option>
+								<option value="Female">Female</option>
+								<option value="Other">Other</option>
+							</Select>
 						</div>
 						<div>
 							<Label htmlFor="edit-image" value="Image" />
