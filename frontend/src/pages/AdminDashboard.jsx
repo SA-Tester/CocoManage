@@ -319,33 +319,125 @@ const AdminDashboard = () => {
 				<div className="bg-white rounded-lg p-5 font-bold text-black h-fit">
 					<div className="flex flex-col md:flex-row items-center justify-between">
 						<div className="flex items-center gap-4 pb-4 md:pb-0">
-							<h1>Weather Prediction</h1>
+							<h1>Weather Information</h1>
 						</div>
 						<div className="text-center md:text-right">
 							<h6 className="text-xs italic">
 								Updated 5 mins ago
-								<br /> Data based on Colombo region
+								<br /> Data based on Kurunegala region
 							</h6>
 						</div>
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-						<div className="flex flex-col items-center">
+					<div className="bg-grey">
+						<div className="flex flex-col p-3">
+							<h1>Today's Weather</h1>
+						</div>
+						<div className="flex flex-col items-center p-4">
 							<img src={rainy} alt="rainy" className="h-16 w-16" />
 							<h3 className="text-xl text-blue">
 								28<sup>o</sup>C
 							</h3>
+							<h4>23th June 2024</h4>
 						</div>
-						<div className="flex flex-col items-center">
-							<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-							<h3 className="text-xl text-blue">
-								32<sup>o</sup>C
-							</h3>
+					</div>
+
+					<div className="bg-green">
+						<div className="flex flex-col p-3">
+							<h1>Last Week's Weather</h1>
 						</div>
-						<div className="flex flex-col items-center">
-							<img src={sunny} alt="sunny" className="h-16 w-16" />
-							<h3 className="text-xl text-blue">
-								30<sup>o</sup>C
-							</h3>
+						<div className="grid grid-cols-6 md:grid-cols-6 gap-4 p-4">
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>17th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>17th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>17th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>17th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>17th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>17th June 2024</h4>
+							</div>
+						</div>
+					</div>
+
+					<div className="bg-light-grey">
+						<div className="flex flex-col p-3">
+							<h1>Coming Week's Weather</h1>
+						</div>
+						<div className="grid grid-cols-6 md:grid-cols-6 gap-4 p-4">
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>24th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>24th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>24th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>24th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>24th June 2024</h4>
+							</div>
+							<div className="flex flex-col items-center">
+								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
+								<h3 className="text-xl text-blue">
+									32<sup>o</sup>C
+								</h3>
+								<h4>24th June 2024</h4>
+							</div>
 						</div>
 					</div>
 				</div>
