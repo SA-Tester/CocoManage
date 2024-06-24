@@ -7,6 +7,7 @@ from rest_framework import status
 from .db import init_db
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
+from .classes.Weather import Weather
 import os
 import time
 
@@ -72,11 +73,11 @@ class AddUpdatePickView(APIView):
     nut_harvest = NutHarvest()
 
     def post(self, request, *args, **kwargs):
-        date = request.data.get("date")
+        pick_date = request.data.get("pick_date")
         pick_number = request.data.get("pick_number")
         nut_count = request.data.get("nut_count")
 
-        state = self.nut_harvest.add_update_pick(database_obj, date, pick_number, nut_count)
+        state = self.nut_harvest.add_update_pick(database_obj, pick_date, pick_number, nut_count)
         if state == 1:
             return Response({"message": "Failed to add nut count"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Nut count added successfully"}, status=status.HTTP_201_CREATED)
@@ -105,3 +106,15 @@ class GetNutCountView(APIView):
         if result["Error"] != None:
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
+    
+
+class GetWeatherView(APIView):
+    weather = Weather()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            weather_data = self.weather.get_weather()
+            return Response(weather_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
