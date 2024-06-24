@@ -62,11 +62,7 @@ const AdminDashboard = () => {
 				let tempWeatherTemperatures = [];
 
 				// Get today's date in local time (Sri Lanka Timezone)
-				const localDate = new Date();
-				const year = localDate.getFullYear();
-				const month = String(localDate.getMonth() + 1).padStart(2, "0");
-				const day = String(localDate.getDate()).padStart(2, "0");
-				let todays_date = `${year}-${month}-${day}`;
+				let todays_date = new Date().toISOString().split("T")[0];
 
 				for (let i = 0; i < 14; i++) {
 					if (response.data[0][i] === todays_date) {
