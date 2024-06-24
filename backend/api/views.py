@@ -14,7 +14,7 @@ import time
 # Initialize the firebase database object
 database_obj = init_db()
 
-# Views related to Verifying Employee Attendance
+# View related to Verifying Employee Attendance
 class VerifyEmployeeView(APIView):
     # Define the main directory, temp directory and registry directory
     main_dir = 'media'
@@ -43,7 +43,7 @@ class VerifyEmployeeView(APIView):
         return Response({"emp_no": emp_no}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-# Views related to Getting Employee Attendance
+# View related to Getting Employee Attendance
 class GetAttendanceView(APIView): 
     # Initialize the Attendance class
     attendance = Attendance()
@@ -53,7 +53,7 @@ class GetAttendanceView(APIView):
         return Response({"data": att_dict}, status=status.HTTP_200_OK)
     
 
-# Views related to Nut Harvest in Admin Dashboard
+# View related to searching Nut Harvest in Admin Dashboard
 class SearchPickView(APIView):
     # Initialize the NutHarvest class
     nut_harvest = NutHarvest()
@@ -67,7 +67,7 @@ class SearchPickView(APIView):
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
     
-
+# View related to adding/ updating Nut Harvest in Admin Dashboard
 class AddUpdatePickView(APIView):
     # Initialize the NutHarvest class
     nut_harvest = NutHarvest()
@@ -82,7 +82,7 @@ class AddUpdatePickView(APIView):
             return Response({"message": "Failed to add nut count"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Nut count added successfully"}, status=status.HTTP_201_CREATED)
     
-
+# View related to deleting a Nut Harvest in Admin Dashboard
 class DeletePickView(APIView):
     # Initialize the NutHarvest class
     nut_harvest = NutHarvest()
@@ -96,7 +96,7 @@ class DeletePickView(APIView):
             return Response({"message": "Failed to delete pick"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Pick deleted successfully"}, status=status.HTTP_201_CREATED)
     
-
+# View related to getting the yearly Nut Harvest in Admin Dashboard
 class GetNutCountView(APIView):
     # Initialize the NutHarvest class
     nut_harvest = NutHarvest()
@@ -107,7 +107,7 @@ class GetNutCountView(APIView):
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
     
-
+# Views related to retrieving API Weather Data
 class GetWeatherView(APIView):
     weather = Weather()
 

@@ -32,6 +32,12 @@ const AdminDashboard = () => {
 	const [todaysWeatherCode, setTodaysWeatherCode] = useState("");
 	const [todaysTemperature, setTodaysTemperature] = useState(0);
 
+	// Using functions to display information on load
+	useEffect(() => {
+		get_nut_count();
+		get_weather();
+	}, [2]);
+
 	// Function to get the nut count for the graph
 	function get_nut_count() {
 		axios
@@ -50,10 +56,17 @@ const AdminDashboard = () => {
 		axios
 			.get("http://localhost:8000/api/get_weather/")
 			.then((response) => {
+				// Temporary arrays to store the weather data
 				let tempWeatherDates = [];
 				let tempWeatherCodes = [];
 				let tempWeatherTemperatures = [];
-				let todays_date = new Date().toISOString().split("T")[0];
+
+				// Get today's date in local time (Sri Lanka Timezone)
+				const localDate = new Date();
+				const year = localDate.getFullYear();
+				const month = String(localDate.getMonth() + 1).padStart(2, "0");
+				const day = String(localDate.getDate()).padStart(2, "0");
+				let todays_date = `${year}-${month}-${day}`;
 
 				for (let i = 0; i < 14; i++) {
 					if (response.data[0][i] === todays_date) {
@@ -124,12 +137,6 @@ const AdminDashboard = () => {
 			return "Thunderstorm with slight and heavy hail";
 		}
 	}
-
-	// Using functions to display information on load
-	useEffect(() => {
-		get_nut_count();
-		get_weather();
-	}, []);
 
 	// Function to handle form submission of the nut harvest
 	const handleSubmit = (event) => {
