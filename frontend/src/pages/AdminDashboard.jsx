@@ -4,18 +4,35 @@ import { ToastContainer, toast } from "react-toastify";
 import { Button, Label, Select, TextInput } from "flowbite-react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import "flowbite/dist/flowbite.css"; // Ensure Flowbite CSS is imported
-import rainy from "../assets/rainy.png";
-import sunny from "../assets/sunny.png";
-import cloudy from "../assets/cloudy.png";
+import clear from "../assets/weather/0.png";
+import mainlyClear from "../assets/weather/1-2-3.png";
+import fog from "../assets/weather/45-48.png";
+import drizzle from "../assets/weather/51-53-55.png";
+import freezingDrizzle from "../assets/weather/56-57.png";
+import rain from "../assets/weather/61-63-65.png";
+import freezingRain from "../assets/weather/66-67.png";
+import rainShowers from "../assets/weather/80-81-82.png";
+import thunderstorm from "../assets/weather/95.png";
+import thunderstormHail from "../assets/weather/96-99.png";
 
 const AdminDashboard = () => {
+	// State variables to store data associated with Nut Harvest
 	const [formAction, setFormAction] = useState("search");
-	const [date, setDate] = useState("");
+	const [pickDate, setPickDate] = useState("");
 	const [nutCount, setNutCount] = useState(0);
 	const [pickNumber, setPickNumber] = useState(0);
 	const [years, setYears] = useState([2023, 2024]);
 	const [yearlyNutCount, setYearlyNutCount] = useState([1000, 2000]);
 
+	// State variables to store data associated with Weather
+	const [weatherDates, setWeatherDates] = useState([]);
+	const [weatherCodes, setWeatherCodes] = useState([]);
+	const [weatherTemperatures, setWeatherTemperatures] = useState([]);
+	const [todaysDate, setTodaysDate] = useState("");
+	const [todaysWeatherCode, setTodaysWeatherCode] = useState("");
+	const [todaysTemperature, setTodaysTemperature] = useState(0);
+
+	// Function to get the nut count for the graph
 	function get_nut_count() {
 		axios
 			.get("http://localhost:8000/api/get_nut_count/")
@@ -28,18 +45,102 @@ const AdminDashboard = () => {
 			});
 	}
 
+	// Function to get the weather data
+	function get_weather() {
+		axios
+			.get("http://localhost:8000/api/get_weather/")
+			.then((response) => {
+				let tempWeatherDates = [];
+				let tempWeatherCodes = [];
+				let tempWeatherTemperatures = [];
+				let todays_date = new Date().toISOString().split("T")[0];
+
+				for (let i = 0; i < 14; i++) {
+					if (response.data[0][i] === todays_date) {
+						setTodaysDate(new Date(response.data[0][i]).toDateString());
+						setTodaysWeatherCode(response.data[1][i]);
+						setTodaysTemperature(response.data[2][i]);
+					} else {
+						tempWeatherDates.push(new Date(response.data[0][i]).toDateString());
+						tempWeatherCodes.push(response.data[1][i]);
+						tempWeatherTemperatures.push(response.data[2][i]);
+					}
+				}
+				setWeatherDates(tempWeatherDates);
+				setWeatherCodes(tempWeatherCodes);
+				setWeatherTemperatures(tempWeatherTemperatures);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	// Function to get the image based on the weather code
+	function getImageFromWeatherCode(code) {
+		if (code === 0) {
+			return clear;
+		} else if (code === 1 || code === 2 || code === 3) {
+			return mainlyClear;
+		} else if (code === 45 || code === 48) {
+			return fog;
+		} else if (code === 51 || code === 53 || code === 55) {
+			return drizzle;
+		} else if (code === 56 || code === 57) {
+			return freezingDrizzle;
+		} else if (code === 61 || code === 63 || code === 65) {
+			return rain;
+		} else if (code === 66 || code === 67) {
+			return freezingRain;
+		} else if (code === 80 || code === 81 || code === 82) {
+			return rainShowers;
+		} else if (code === 95) {
+			return thunderstorm;
+		} else if (code === 96 || code === 99) {
+			return thunderstormHail;
+		}
+	}
+
+	// Function to get the name of the weather condition based on the weather code
+	function getNameFromWeatherCode(code) {
+		if (code === 0) {
+			return "Clear sky";
+		} else if (code === 1 || code === 2 || code === 3) {
+			return "Mainly clear, partly cloudy, and overcast";
+		} else if (code === 45 || code === 48) {
+			return "Fog and depositing rime fog";
+		} else if (code === 51 || code === 53 || code === 55) {
+			return "Drizzle: Light, moderate, and dense intensity";
+		} else if (code === 56 || code === 57) {
+			return "Freezing Drizzle: Light and dense intensity";
+		} else if (code === 61 || code === 63 || code === 65) {
+			return "Rain: Slight, moderate and heavy intensity";
+		} else if (code === 66 || code === 67) {
+			return "Freezing Rain: Light and heavy intensity";
+		} else if (code === 80 || code === 81 || code === 82) {
+			return "Rain Showers";
+		} else if (code === 95) {
+			return "Thunderstorm: Slight or moderate";
+		} else if (code === 96 || code === 99) {
+			return "Thunderstorm with slight and heavy hail";
+		}
+	}
+
+	// Using functions to display information on load
 	useEffect(() => {
 		get_nut_count();
+		get_weather();
 	}, []);
 
+	// Function to handle form submission of the nut harvest
 	const handleSubmit = (event) => {
 		event.preventDefault();
 
 		const formData = new FormData(event.target);
 
+		// If search button was clicked
 		if (formAction === "search") {
-			let str_date = formData.get("date");
-			formData.delete("date");
+			let str_date = formData.get("pick_date");
+			formData.delete("pick_date");
 			let year = new Date(str_date).getFullYear();
 			formData.append("year", year);
 
@@ -51,7 +152,7 @@ const AdminDashboard = () => {
 					let formatted_date = new Date(response.data["Date"])
 						.toISOString()
 						.split("T")[0];
-					setDate(formatted_date);
+					setPickDate(formatted_date);
 					setNutCount(response.data["Nuts"]);
 					setPickNumber(response.data["PickNumber"]);
 				})
@@ -59,20 +160,23 @@ const AdminDashboard = () => {
 					toast.error("No Pick Data Found");
 					console.log(error);
 				});
-		} else if (formAction === "add_update") {
+		}
+		// If add/ update button was clicked
+		else if (formAction === "add_update") {
 			const confirmAddUpdate = window.confirm(
 				"Are you sure you want to add/ update data?"
 			);
+			// Only submit the form if user agrees to add/update
 			if (confirmAddUpdate) {
-				let str_date = formData.get("date");
+				let str_date = formData.get("pick_date");
 				let date_obj = new Date(str_date);
-				let date =
+				let pick_date =
 					date_obj.getFullYear() +
 					"/" +
 					(date_obj.getMonth() + 1) +
 					"/" +
 					date_obj.getDate();
-				formData.set("date", date);
+				formData.set("pick_date", pick_date);
 
 				axios
 					.post("http://localhost:8000/api/add_update_pick/", formData)
@@ -86,13 +190,16 @@ const AdminDashboard = () => {
 						console.log(error);
 					});
 			}
-		} else if (formAction === "delete") {
+		}
+		// If delete button was clicked
+		else if (formAction === "delete") {
 			const confirmDelete = window.confirm(
 				"Are you sure you want to delete the data?"
 			);
+			// Only submit the form if user agrees to delete
 			if (confirmDelete) {
-				let str_date = formData.get("date");
-				formData.delete("date");
+				let str_date = formData.get("pick_date");
+				formData.delete("pick_date");
 				let year = new Date(str_date).getFullYear();
 				formData.append("year", year);
 
@@ -114,6 +221,7 @@ const AdminDashboard = () => {
 		<div className="flex flex-col w-full p-5 bg-green mt-5">
 			<ToastContainer />
 
+			{/* Start of Sensor Data, Order and Attendance Count Display */}
 			<div className="flex flex-col md:flex-row mb-5">
 				<div className="flex-auto w-full md:w-1/2 p-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-black font-bold">
@@ -208,7 +316,9 @@ const AdminDashboard = () => {
 						</div>
 					</div>
 				</div>
+				{/* Start of Sensor Data, Order and Attendance Count Display */}
 
+				{/* Start of Nut Harvest Form and Graph */}
 				<div className="flex-auto w-full md:w-1/2 p-4 rounded-lg shadow-sm">
 					<div className="grid grid-cols-1 gap-8 font-bold bg-white rounded-lg p-5">
 						<form
@@ -219,16 +329,16 @@ const AdminDashboard = () => {
 							<div className="flex flex-col md:flex-row justify-between items-center md:space-x-4 md:space-y-0 space-y-4">
 								<div className="flex flex-col justify-center w-full">
 									<div className="mb-2 block">
-										<Label htmlFor="date" value="Date" />
+										<Label htmlFor="pick_date" value="Date" />
 									</div>
 									<TextInput
-										id="date"
-										name="date"
+										id="pick_date"
+										name="pick_date"
 										type="date"
 										placeholder="yyyy/mm/dd"
 										style={{ color: "black" }}
-										value={date}
-										onChange={(e) => setDate(e.target.value)}
+										value={pickDate}
+										onChange={(e) => setPickDate(e.target.value)}
 										required
 									/>
 								</div>
@@ -314,12 +424,14 @@ const AdminDashboard = () => {
 					</div>
 				</div>
 			</div>
+			{/* End of Nut Harvest Form and Graph */}
 
+			{/* Start of Weather Information Display from API */}
 			<div className="mt-3 p-5">
 				<div className="bg-white rounded-lg p-5 font-bold text-black h-fit">
-					<div className="flex flex-col md:flex-row items-center justify-between">
+					<div className="flex flex-col md:flex-row items-center justify-between mb-4">
 						<div className="flex items-center gap-4 pb-4 md:pb-0">
-							<h1>Weather Information</h1>
+							<h1 className="text-lg md:text-xl">Weather Information</h1>
 						</div>
 						<div className="text-center md:text-right">
 							<h6 className="text-xs italic">
@@ -328,120 +440,83 @@ const AdminDashboard = () => {
 							</h6>
 						</div>
 					</div>
-					<div className="bg-grey">
+
+					<div className="border-2 rounded p-4 mb-4">
 						<div className="flex flex-col p-3">
-							<h1>Today's Weather</h1>
+							<h1 className="text-lg md:text-xl">Today's Weather</h1>
 						</div>
 						<div className="flex flex-col items-center p-4">
-							<img src={rainy} alt="rainy" className="h-16 w-16" />
-							<h3 className="text-xl text-blue">
-								28<sup>o</sup>C
+							<h4 className="text-md">{todaysDate}</h4>
+							<img
+								src={getImageFromWeatherCode(todaysWeatherCode)}
+								alt="today's weather"
+								className="h-24 w-24"
+							/>
+							<h5 className="text-xs">
+								{getNameFromWeatherCode(todaysWeatherCode)}
+							</h5>
+							<h3 className="text-2xl text-blue">
+								{todaysTemperature}
+								<sup>o</sup>C
 							</h3>
-							<h4>23th June 2024</h4>
 						</div>
 					</div>
 
-					<div className="bg-green">
+					<div className="border-2 rounded p-4 mb-4">
 						<div className="flex flex-col p-3">
-							<h1>Last Week's Weather</h1>
+							<h1 className="text-lg md:text-xl">Last Week's Weather</h1>
 						</div>
-						<div className="grid grid-cols-6 md:grid-cols-6 gap-4 p-4">
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>17th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>17th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>17th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>17th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>17th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>17th June 2024</h4>
-							</div>
+						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 p-4">
+							{weatherDates.slice(0, 7).map((date, index) => (
+								<div key={index} className="flex flex-col items-center">
+									<h4 className="text-md">{weatherDates[index]}</h4>
+									<h3 className="text-xl text-blue">
+										{weatherTemperatures[index]}
+										<sup>o</sup>C
+									</h3>
+									<img
+										src={getImageFromWeatherCode(weatherCodes[index])}
+										alt="weather_image"
+										className="h-24 w-24 p-3"
+									/>
+									<h5 className="text-xs text-center">
+										{getNameFromWeatherCode(weatherCodes[index])}
+									</h5>
+								</div>
+							))}
 						</div>
 					</div>
 
-					<div className="bg-light-grey">
+					<div className="border-2 rounded p-4">
 						<div className="flex flex-col p-3">
-							<h1>Coming Week's Weather</h1>
+							<h1 className="text-lg md:text-xl">Coming Week's Weather</h1>
 						</div>
-						<div className="grid grid-cols-6 md:grid-cols-6 gap-4 p-4">
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>24th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>24th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>24th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>24th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>24th June 2024</h4>
-							</div>
-							<div className="flex flex-col items-center">
-								<img src={cloudy} alt="cloudy" className="h-16 w-16" />
-								<h3 className="text-xl text-blue">
-									32<sup>o</sup>C
-								</h3>
-								<h4>24th June 2024</h4>
-							</div>
+						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 p-4">
+							{weatherDates.slice(7, 15).map((date, index) => {
+								let actualIndex = index + 7;
+								return (
+									<div key={index} className="flex flex-col items-center">
+										<h4 className="text-md">{weatherDates[actualIndex]}</h4>
+										<h3 className="text-xl text-blue">
+											{weatherTemperatures[actualIndex]}
+											<sup>o</sup>C
+										</h3>
+										<img
+											src={getImageFromWeatherCode(weatherCodes[actualIndex])}
+											alt="weather_image"
+											className="h-24 w-24 p-3"
+										/>
+										<h5 className="text-xs text-center">
+											{getNameFromWeatherCode(weatherCodes[actualIndex])}
+										</h5>
+									</div>
+								);
+							})}
 						</div>
 					</div>
 				</div>
 			</div>
+			{/* End of Weather Information Display from API */}
 		</div>
 	);
 };
