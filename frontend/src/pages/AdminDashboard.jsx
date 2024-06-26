@@ -453,7 +453,7 @@ const AdminDashboard = () => {
 							<img
 								src={getImageFromWeatherCode(todaysWeatherCode)}
 								alt="today's weather"
-								className="h-24 w-24"
+								className="h-24 w-24 hover:scale-125"
 							/>
 							<h5 className="text-xs">
 								{getNameFromWeatherCode(todaysWeatherCode)}
@@ -466,31 +466,6 @@ const AdminDashboard = () => {
 					</div>
 
 					<div className="border-2 rounded p-4 mb-4">
-						<div className="flex flex-col p-3">
-							<h1 className="text-lg md:text-xl">Last Week's Weather</h1>
-						</div>
-						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 p-4">
-							{weatherDates.slice(0, 7).map((date, index) => (
-								<div key={index} className="flex flex-col items-center">
-									<h4 className="text-md">{weatherDates[index]}</h4>
-									<h3 className="text-xl text-blue">
-										{weatherTemperatures[index]}
-										<sup>o</sup>C
-									</h3>
-									<img
-										src={getImageFromWeatherCode(weatherCodes[index])}
-										alt="weather_image"
-										className="h-24 w-24 p-3"
-									/>
-									<h5 className="text-xs text-center">
-										{getNameFromWeatherCode(weatherCodes[index])}
-									</h5>
-								</div>
-							))}
-						</div>
-					</div>
-
-					<div className="border-2 rounded p-4">
 						<div className="flex flex-col p-3">
 							<h1 className="text-lg md:text-xl">Coming Week's Weather</h1>
 						</div>
@@ -507,7 +482,7 @@ const AdminDashboard = () => {
 										<img
 											src={getImageFromWeatherCode(weatherCodes[actualIndex])}
 											alt="weather_image"
-											className="h-24 w-24 p-3"
+											className="h-24 w-24 p-3 hover:scale-125"
 										/>
 										<h5 className="text-xs text-center">
 											{getNameFromWeatherCode(weatherCodes[actualIndex])}
@@ -515,6 +490,31 @@ const AdminDashboard = () => {
 									</div>
 								);
 							})}
+						</div>
+					</div>
+
+					<div className="border-2 rounded p-4">
+						<div className="flex flex-col p-3">
+							<h1 className="text-lg md:text-xl">Last Week's Weather</h1>
+						</div>
+						<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 p-4">
+							{weatherDates.slice(0, 7).map((date, index) => (
+								<div key={index} className="flex flex-col items-center">
+									<h4 className="text-md">{weatherDates[index]}</h4>
+									<h3 className="text-xl text-blue">
+										{weatherTemperatures[index]}
+										<sup>o</sup>C
+									</h3>
+									<img
+										src={getImageFromWeatherCode(weatherCodes[index])}
+										alt="weather_image"
+										className="h-24 w-24 p-3 hover:scale-125"
+									/>
+									<h5 className="text-xs text-center">
+										{getNameFromWeatherCode(weatherCodes[index])}
+									</h5>
+								</div>
+							))}
 						</div>
 					</div>
 				</div>
