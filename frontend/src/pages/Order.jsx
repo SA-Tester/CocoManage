@@ -35,7 +35,7 @@ const Order = () => {
 
     const navigate = useNavigate();
     const goToCart = () => {
-        navigate('/cart',{state: { quantity: quantity }})
+        navigate('/cart',{replace: true, state:{quantity:quantity}})
     };
 
     return (
