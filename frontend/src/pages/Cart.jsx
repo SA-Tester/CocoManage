@@ -1,14 +1,17 @@
 import { React, useState } from "react";
 import cartIcon from '../assets/cart-icon.png';
 import coconutPlant from '../assets/coconut-plant.jpg';
+import { useLocation } from "react-router-dom";
 
 const Cart = () => {
 
-    const totalPrice = 0;
+    const location = useLocation();
+    const amount = location.state.quantity;
+    const totalPrice = amount * 750;
 
     return (
-        <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-black lg:items-center gap-8 absolute left-0 w-full max-h-fit lg:align-middle">
-            {totalPrice == 0 ? <CartWithItems /> : (
+        <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-black lg:items-center gap-8 absolute left-0 w-full min-h-full max-h-fit lg:align-middle">
+            {totalPrice != 0 ? <CartWithItems /> : (
                 <div className="mx-auto text-center bg-white p-20 rounded-xl">
                     <img src={cartIcon} alt="icon" className="w-48 mx-auto" />
                     <div className="mt-4">
@@ -31,9 +34,9 @@ const CartWithItems = () => {
                     <img src={coconutPlant} alt="icon" className="w-12 h-12 rounded-full mx-2" />
                     <h6 className="mx-2 text-gray-500  mt-3 lg:mt-0">{"Coconut Plant"}</h6>
                     <div className='flex flex-row items-center mx-2 mt-3 lg:mt-0'>
-                        <button className='bg-green-500 py-1 px-4 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => prev - 1)}>-</button>
+                        <button className='bg-green-500 py-1 px-4 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => Math.max(prev - 1, 1))}>-</button>
                         <span className='py-4 px-6 rounded-lg text-gray-500'>{amount}</span>
-                        <button className='bg-green-500 py-1 px-3 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => prev + 1)}>+</button>
+                        <button className='bg-green-500 py-1 px-3 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => Math.min(prev + 1, 50))}>+</button>
                     </div>
                     <div className="flex flex-row gap-3">
                         <button className='bg-white border-2 mt-3 lg:mt-0 border-green-500 text-green-500 font-semibold py-2 px-6 rounded-xl'>Edit</button>
@@ -70,7 +73,7 @@ const CartWithItems = () => {
                     </div>
                     <h3 className="my-4 text-gray-700 font-2xl">Delivery</h3>
                     <div className="mt-5 border border-green-500 bg-green-100 py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center">
-                        <input type="radio" name="delivary" id="pickup" value="pickup" className="text-green-500 py-2 px-2 rounded-full  focus:ring-green-500" checked/>
+                        <input type="radio" name="delivary" id="pickup" value="pickup" className="text-green-500 py-2 px-2 rounded-full  focus:ring-green-500" defaultChecked/>
                         <label htmlFor="pickup" className="text-gray-700 w-full">Pick up in the state</label>
                     </div>
                     <h3 className="my-4 text-gray-700 font-2xl">Payment</h3>
