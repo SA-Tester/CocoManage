@@ -8,5 +8,6 @@ urlpatterns = [
     path('search_pick/', views.SearchPickView.as_view(), name='search_pick'),
     path('delete_pick/', views.DeletePickView.as_view(), name='delete_pick'),
     path('get_nut_count/', views.GetNutCountView.as_view(), name='get_nut_count'),
+    path('get_weather/', views.GetWeatherView.as_view(), name='get_weather'),
     path('get_coconut_plant_count/', views.GetCoconutPlantCountView.as_view(), name='get_coconut_plant_count'),
 ]

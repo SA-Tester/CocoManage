@@ -30,7 +30,8 @@ class NutHarvest():
 
             return 0
         
-        except Exception:
+        except Exception as e:
+            print(e)
             return 1
 
 
