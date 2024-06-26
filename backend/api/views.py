@@ -7,6 +7,7 @@ from rest_framework import status
 from .db import init_db
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
+from .classes.CoconutPlants import CoconutPlants
 import os
 import time
 
@@ -105,3 +106,13 @@ class GetNutCountView(APIView):
         if result["Error"] != None:
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
+
+class GetCoconutPlantCountView(APIView):
+    coconut_plants = CoconutPlants()
+
+    def get(self, request, *args, **kwargs):
+        result = self.coconut_plants.get_coconut_plant_count(database_obj)
+        if result["Error"] != None:
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+        return Response(result, status=status.HTTP_200_OK)
+        
