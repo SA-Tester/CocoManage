@@ -8,6 +8,7 @@ from .db import init_db
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
+from .classes.CoconutPlants import CoconutPlants
 import os
 import time
 
@@ -118,3 +119,12 @@ class GetWeatherView(APIView):
         except Exception as e:
             print(e)
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetCoconutPlantCountView(APIView):
+    coconut_plants = CoconutPlants()
+
+    def get(self, request, *args, **kwargs):
+        result = self.coconut_plants.get_coconut_plant_count(database_obj)
+        if result["Error"] != None:
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+        return Response(result, status=status.HTTP_200_OK)
