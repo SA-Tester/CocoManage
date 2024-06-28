@@ -1,15 +1,43 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import cartIcon from '../assets/cart-icon.png';
 import coconutPlant from '../assets/coconut-plant.jpg';
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 const Cart = () => {
-
+    //get selected quantity value from order page
     const location = useLocation();
     console.log(location);
-    const quantity = (location.state.quantity) === 0 ? (location.state.quantity) : (location.state.quantity.amount);
+    const quantity = (location.state.quantity) === 0 ? (location.state.quantity) : ((location.state.quantity.amount)==null?(location.state.quantity):(location.state.quantity.amount));
     const [amount, setAmount] = useState(quantity);
     const totalPrice = amount * 750;
+
+    useEffect(() => {
+        localStorage.setItem('quantity',amount);
+        if(amount > 0){
+            localStorage.setItem('notification', 1);
+        } else{
+            localStorage.setItem('notification', 0);
+        }
+    }, [amount]);
+
+    //set maximum quantity as the remaining coconut plant count 
+    const[maximumQuantity, setMaximumQuantity] = useState(1);
+
+    function get_coconut_plant_count() {
+		axios
+			.get("http://localhost:8000/api/get_coconut_plant_count/")
+			.then((response) => {
+				setMaximumQuantity(response.data["Quantity"]);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	useEffect(() => {
+		get_coconut_plant_count();
+	}, []);
 
     const navigate = useNavigate();
     const goToOrder = () => {
@@ -24,7 +52,7 @@ const Cart = () => {
                     <div className="mt-4">
                         <h4 className="text-3xl">Your cart is empty :(</h4>
                     </div>
-                    <button className='bg-white border-2 mt-4 lg:mt-6 border-green-500 text-green-500 font-semibold py-2 px-8 rounded-xl' onClick={goToOrder}>Back</button>
+                    <button className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around mt-8' onClick={goToOrder}>Go Back</button>
                 </div>
             ) : (
                 <div className="flex flex-col container my-5 mx-3 justify-center gap-8 lg:flex-row align-middle">
@@ -36,9 +64,9 @@ const Cart = () => {
                             <div className='flex flex-row items-center mx-2 mt-3 lg:mt-0'>
                                 <button className='bg-green-500 py-1 px-4 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => Math.max(prev - 1, 1))}>-</button>
                                 <span className='py-4 px-6 rounded-lg text-gray-500'>{amount}</span>
-                                <button className='bg-green-500 py-1 px-3 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => Math.min(prev + 1, 50))}>+</button>
+                                <button className='bg-green-500 py-1 px-3 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => Math.min(prev + 1, maximumQuantity))}>+</button>
                             </div>
-                            <button className='bg-white border-2 mt-3 lg:mt-0 border-green-500 text-green-500 font-semibold p-2 rounded-xl' onClick={() => setAmount(0)}>Remove</button>
+                            <button className='bg-white border-2 mt-3 lg:mt-0 border-red-500 text-red-500 font-semibold p-2 rounded-xl' onClick={() => setAmount(0)}>Remove</button>
                         </div>
                         <div className="flex flex-row mt-8 p-6 justify-around">
                             <div className="text-gray-500 w-1/2 text-left mx-auto">
@@ -54,6 +82,7 @@ const Cart = () => {
                                 <h6 className="text-lg">Rs.{totalPrice}.00</h6>
                             </div>
                         </div>
+                        <button className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around mt-8' onClick={goToOrder}>Go Back</button>
                     </div>
                     <div className="bg-white rounded-xl text-black px-12 py-6 w-full lg:w-1/2">
                         <h4 className="text-3xl font-semibold text-black-600 mb-5">Checkout</h4>

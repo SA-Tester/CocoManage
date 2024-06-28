@@ -10,9 +10,25 @@ const Order = () => {
     const [quantity, setQuantity] = useState(0);
     const [notification, setNotification] = useState(0);
 
+    useEffect(() => {
+        const storedNotification = parseInt(localStorage.getItem('notification'), 10);
+        const storedQuantity = parseInt(localStorage.getItem('quantity'), 10);
+        if(storedNotification !== null){
+            console.log(storedNotification);
+            setNotification(storedNotification);
+        }
+
+        if(storedNotification !== null){
+            console.log(storedQuantity);
+            setQuantity(storedQuantity);
+        }
+    }, []);
+
     function updateQuantity(id) {
         setQuantity(id);
         setNotification(1);
+        localStorage.setItem('quantity', quantity);
+        localStorage.setItem('notification', 1);
     }
     
     const[maximumQuantity, setMaximumQuantity] = useState(1);
