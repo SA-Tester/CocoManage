@@ -5,13 +5,22 @@ const Footer = lazy(() => import("../components/common/Footer"));
 
 import customerIcon from '../assets/customer-icons.png';
 
+import axios from "axios";
+
 
 const ClientAccount = () => {
     const [profile, setProfile] = useState({
+        user_id: "1",
         name: "Shiran Perera",
         email: "shiranp@example.com",
         contactNo: "0717869354",
         address: "123 Main St,Kandy road,Kandy"
+    });
+
+    const [passwords, setPasswords] = useState({
+        old_password: "",
+        new_password: "",
+        confirm_password: ""
     });
 
     const handleInputChange = (e) => {
@@ -20,6 +29,43 @@ const ClientAccount = () => {
             ...profile,
             [name]: value
         });
+    };
+
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswords({
+            ...passwords,
+            [name]: value
+        });
+    };
+
+    const updateProfile = () => {
+        axios.post("/api/update_profile/", profile)
+            .then(response => {
+                alert(response.data.message);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
+    const changePassword = () => {
+        if (passwords.new_password !== passwords.confirm_password) {
+            alert("New password and confirm password do not match");
+            return;
+        }
+
+        axios.post("/api/change_password/", {
+            user_id: profile.user_id,
+            old_password: passwords.old_password,
+            new_password: passwords.new_password
+        })
+            .then(response => {
+                alert(response.data.message);
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
 
     return (

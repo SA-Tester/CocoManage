@@ -9,6 +9,7 @@ from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
 from .classes.CoconutPlants import CoconutPlants
+from .classes.User import User
 import os
 import time
 
@@ -128,3 +129,34 @@ class GetCoconutPlantCountView(APIView):
         if result["Error"] != None:
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
+
+
+# View related to updating User Profile
+class UpdateUserProfileView(APIView):
+    parser_classes = [JSONParser]
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        data = {
+            'name': request.data.get('name'),
+            'email': request.data.get('email'),
+            'contactNo': request.data.get('contactNo'),
+            'address': request.data.get('address'),
+        }
+        user = User(database_obj)
+        user.update_user(user_id, data)
+        return Response({"message": "Profile updated successfully"}, status=status.HTTP_200_OK)
+
+
+# View related to Changing User Password
+class ChangeUserPasswordView(APIView):
+    parser_classes = [JSONParser]
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        user = User(database_obj)
+        if user.change_password(user_id, old_password, new_password):
+            return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+        return Response({"message": "Old password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
