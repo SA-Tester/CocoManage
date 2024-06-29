@@ -44,6 +44,8 @@ const Cart = () => {
         navigate('/order')
     };
 
+    const [content, setContent] = useState(0);
+
     return (
         <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-black lg:items-center gap-8 absolute left-0 w-full min-h-full max-h-fit lg:align-middle">
             {totalPrice == 0 ? (
@@ -97,21 +99,36 @@ const Cart = () => {
                             <div className="mt-5">
                                 <input type="text" name="" id="" placeholder="Phone" className="border border-gray-400 py-2 px-2 w-full rounded-md" />
                             </div>
-                            <h3 className="my-4 text-gray-700 font-2xl">Delivery</h3>
-                            <div className="mt-5 border border-green-500 bg-green-100 py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center">
-                                <input type="radio" name="delivary" id="pickup" value="pickup" className="text-green-500 py-2 px-2 rounded-full  focus:ring-green-500" defaultChecked />
-                                <label htmlFor="pickup" className="text-gray-700 w-full">Pick up in the state</label>
+                            <h3 className="my-4 text-gray-700 text-xl">Delivery</h3>
+                            <div className="mt-3 bg-red-100 border border-red-500 py-2 px-2 w-full rounded-md text-red-700">
+                                <strong>Note:</strong> Shipping is not available.
                             </div>
-                            <h3 className="my-4 text-gray-700 font-2xl">Payment</h3>
+                            <div className="mt-2 border border-green-500 bg-green-100 py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center">
+                                <input type="radio" name="delivary" id="pickup" value="pickup" className="text-green-500 py-2 px-2 rounded-full  focus:ring-green-500" defaultChecked />
+                                <label htmlFor="pickup" className="text-gray-700 w-full">Pick up in the estate</label>
+                            </div>
+                            <h3 className="my-4 text-gray-700 text-md">Estate Location</h3>
+                            <div className="border border-green-500 bg-green-100 p-4 mb-5 rounded-md text-sm text-gray-600">
+                            MOOROCK ESTATE<br/>
+                            Thalgaspitiya, Ambakote, Mawathagama, Sri Lanka.
+                            </div>
+                            <h3 className="my-4 text-gray-700 text-xl">Payment</h3>
                             <div className="border border-gray-400 rounded-md mb-5">
                                 <div className="py-2 px-2 w-full flex flex-row gap-4 align-middle items-center border-b border-b-gray-400">
-                                    <input type="radio" name="payment" id="bank" value="bank" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" />
+                                    <input type="radio" name="payment" id="bank" value="bank" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" onClick={() => setContent(1)}/>
                                     <label htmlFor="bank" className="text-gray-700 w-full">Bank Deposit</label>
                                 </div>
                                 <div className='py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center'>
-                                    <input type="radio" name="payment" id="cod" value="cod" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" />
+                                    <input type="radio" name="payment" id="cod" value="cod" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" onClick={() => setContent(0)}/>
                                     <label htmlFor="cod" className="text-gray-700 w-full">Cash on Delivery</label>
                                 </div>
+                            </div>
+                            <div className={`border border-green-500 bg-green-100 p-4 mb-5 rounded-md ${content==0? "hidden":""}`}>
+                                    <h4 className="text-gray-800 mb-1">Bank Details</h4>
+                                    <p className="text-gray-500">Bank Name: Peoples' Bank</p>
+                                    <p className="text-gray-500">Account Name: Moorock Estate</p>
+                                    <p className="text-gray-500">Account Number: 1234567890</p>
+                                    <p className="text-gray-500">Branch: Thalgaspitiya</p>
                             </div>
                         </form>
                         <button className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around'>Complete Order</button>
