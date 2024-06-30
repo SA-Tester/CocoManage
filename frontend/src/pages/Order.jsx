@@ -7,11 +7,28 @@ import axios from 'axios';
 const Order = () => {
 
     const[amount, setAmount] = useState(1);
+    const [quantity, setQuantity] = useState(0);
+    const [notification, setNotification] = useState(0);
 
-    const [toggle, setToggle] = useState(0)
+    useEffect(() => {
+        const storedNotification = parseInt(localStorage.getItem('notification'), 10);
+        const storedQuantity = parseInt(localStorage.getItem('quantity'), 10);
+        if(storedNotification !== null){
+            console.log(storedNotification);
+            setNotification(storedNotification);
+        }
 
-    function updateToggle(id) {
-        setToggle(id)
+        if(storedNotification !== null){
+            console.log(storedQuantity);
+            setQuantity(storedQuantity);
+        }
+    }, []);
+
+    function updateQuantity(id) {
+        setQuantity(id);
+        setNotification(1);
+        localStorage.setItem('quantity', quantity);
+        localStorage.setItem('notification', 1);
     }
     
     const[maximumQuantity, setMaximumQuantity] = useState(1);
@@ -34,7 +51,7 @@ const Order = () => {
 
     const navigate = useNavigate();
     const goToCart = () => {
-        navigate('/cart')
+        navigate('/cart',{replace: true, state:{quantity:quantity}})
     };
 
     return (
@@ -58,10 +75,10 @@ const Order = () => {
                         <span className='py-4 px-6 rounded-lg text-light-grey'>{amount}</span>
                         <button className='bg-white py-2 px-4 rounded-lg text-green-600 text-3xl' onClick={() => setAmount((prev)=>Math.min(prev+1, maximumQuantity))}>+</button>
                     </div>
-                    <button className='bg-white text-green-600 font-semibold py-4 px-16 rounded-xl h-full' onClick={() => updateToggle(1)}>Add to Cart</button>
+                    <button className='bg-white text-green-600 font-semibold py-4 px-16 rounded-xl h-full' onClick={() => updateQuantity({amount})}>Add to Cart</button>
                     <div onClick={goToCart} className='w-10 h-10 bg-white rounded-full flex justify-center items-center relative'>
                         <img src={cartIcon} alt="" className='w-6'/>
-                        <span className={`absolute top-2/3 right-1/2 text-sm w-5 h-5 rounded-full flex justify-center items-center text-white ${toggle === 0 ? "bg-green-400" : "bg-red-500"}`}>{toggle}</span>
+                        <span className={`absolute top-2/3 right-1/2 text-sm w-5 h-5 rounded-full flex justify-center items-center text-white ${quantity === 0 ? "bg-green-400" : "bg-red-500"}`}>{notification}</span>
                     </div>
                 </div>
             </div>
