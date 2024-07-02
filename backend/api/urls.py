@@ -10,4 +10,5 @@ urlpatterns = [
     path('get_nut_count/', views.GetNutCountView.as_view(), name='get_nut_count'),
     path('get_weather/', views.GetWeatherView.as_view(), name='get_weather'),
     path('get_coconut_plant_count/', views.GetCoconutPlantCountView.as_view(), name='get_coconut_plant_count'),
+    path('save_order/', views.SaveOrderView.as_view(), name='save_order'),
 ]

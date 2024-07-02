@@ -9,6 +9,7 @@ from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
 from .classes.CoconutPlants import CoconutPlants
+from .classes.Order import Order
 import os
 import time
 
@@ -128,3 +129,23 @@ class GetCoconutPlantCountView(APIView):
         if result["Error"] != None:
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
+
+class SaveOrderView(APIView):
+    order = Order()
+
+    def post(self, request, *args, **kwargs):
+        firstname = request.data.get("firstname")
+        lastname = request.data.get("lastname")
+        name = str(firstname)+ " " + str(lastname)
+        phone= request.data.get("phone")
+        email = request.data.get("email")
+        quantity = request.data.get("quantity")
+        date = request.data.get("date")
+        print(name)
+        print(quantity)
+        print(date)
+
+        state = self.order.save_order(database_obj, name, phone, email, quantity, date)
+        if state == 1:
+            return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
