@@ -1,6 +1,6 @@
 class Order():
 
-    def save_order(self, database_obj, name, phone, email, quantity, date):
+    def save_order(self, database_obj, name, phone, email, quantity, date, total):
         try:
             current_year = date.split("/")[2].strip()
             current_month = date.split("/")[1].strip()
@@ -41,7 +41,9 @@ class Order():
                 "phone": phone,
                 "email": email,
                 "quantity": quantity,
-                "date": date
+                "date": date,
+                "total": total,
+                "status": 0,
             })
 
             return 0

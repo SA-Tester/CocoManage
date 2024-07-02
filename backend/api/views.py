@@ -141,11 +141,9 @@ class SaveOrderView(APIView):
         email = request.data.get("email")
         quantity = request.data.get("quantity")
         date = request.data.get("date")
-        print(name)
-        print(quantity)
-        print(date)
+        total = request.data.get("total")
 
-        state = self.order.save_order(database_obj, name, phone, email, quantity, date)
+        state = self.order.save_order(database_obj, name, phone, email, quantity, date, total)
         if state == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)

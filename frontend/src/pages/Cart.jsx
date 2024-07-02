@@ -144,6 +144,7 @@ const Cart = () => {
                             </div>
                             <input type="text" name="quantity" value={amount} className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500 hidden" />
                             <input type="text" name="date" className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500 hidden" />
+                            <input type="text" name="total" value={totalPrice} className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500 hidden" />
                             <h3 className="my-4 text-gray-700 text-xl">Delivery</h3>
                             <div className="mt-3 bg-red-100 border border-red-500 py-2 px-2 w-full rounded-md text-red-700">
                                 <strong>Note:</strong> Shipping is not available.
