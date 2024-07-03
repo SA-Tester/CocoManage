@@ -3,7 +3,8 @@ class CoconutPlants():
         try:
             database_table = database_obj.child("CoconutPlants").get()
             quantity = database_table.val().get("Quantity")
-            return {"Error": None, "Quantity":quantity}            
+            unitPrice = database_table.val().get("UnitPrice")
+            return {"Error": None, "Quantity":quantity, "UnitPrice":unitPrice}            
         except Exception:
             return {"Error": "Failed to get Plant Counts"}
 
