@@ -1,17 +1,25 @@
-import React, { lazy, useEffect } from "react";
+import React, { useState, lazy, useEffect } from 'react';
 
 const Navbar = lazy(() => import("../components/common/Navbar2"));
 const Footer = lazy(() => import("../components/common/Footer"));
 
 import customerIcon from '../assets/customer-icons.png';
 
+import axios from 'axios';
 
 const ClientAccount = () => {
     const [profile, setProfile] = useState({
+        user_id: "1",
         name: "Shiran Perera",
         email: "shiranp@example.com",
         contactNo: "0717869354",
         address: "123 Main St,Kandy road,Kandy"
+    });
+
+    const [passwords, setPasswords] = useState({
+        old_password: "",
+        new_password: "",
+        confirm_password: ""
     });
 
     const handleInputChange = (e) => {
@@ -22,14 +30,52 @@ const ClientAccount = () => {
         });
     };
 
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswords({
+            ...passwords,
+            [name]: value
+        });
+    };
+
+    const updateProfile = () => {
+        axios.post("/api/update_profile/", profile)
+            .then(response => {
+                alert(response.data.message);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
+    const changePassword = () => {
+        if (passwords.new_password !== passwords.confirm_password) {
+            alert("New password and confirm password do not match");
+            return;
+        }
+
+        axios.post("/api/change_password/", {
+            user_id: profile.user_id,
+            old_password: passwords.old_password,
+            new_password: passwords.new_password
+        })
+            .then(response => {
+                alert(response.data.message);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
+
     return (
         <React.Fragment>
             <div className="flex flex-col min-h-screen">
                 {/* Navbar */}
 
                 {/* Main Content */}
-                <div className="flex flex-col lg:flex-row justify-center items-start bg-gray-100 p-8 text-black gap-8 flex-grow">
-                    <div className='flex flex-col gap-6 w-full lg:w-1/4'>
+                <div className="flex flex-col lg:flex-row justify-center items-start bg-gray-200 p-8 text-black gap-8 flex-grow" style={{ marginTop: '25px' }}>
+                    <div className='flex flex-col gap-6 w-full lg:w-1/4' style={{ marginRight: '100px' }}>
                         <div className="flex flex-col items-center bg-white rounded-lg w-full p-4">
                             <img src={customerIcon} alt="User Icon" className="w-16" />
                             <h3 className="font-semibold text-black text-lg">Profile</h3>
@@ -75,7 +121,7 @@ const ClientAccount = () => {
                                     />
                                 </label>
                             </div>
-                            <button className="mt-4 bg-green-500 text-white py-2 px-4 rounded">Edit</button>
+                            <button className="mt-4 bg-green-500 text-white py-2 px-4 rounded" onClick={updateProfile}>Edit</button>
                         </div>
                     </div>
 
@@ -83,11 +129,34 @@ const ClientAccount = () => {
                         <div className="flex flex-col items-center bg-white rounded-lg w-full p-4">
                             <h3 className="font-semibold text-black text-lg">Change Password</h3>
                             <div className="flex flex-col items-start w-full mt-4">
-                                <input type="password" placeholder="Old Password" className="mb-2 p-2 border rounded w-full" />
-                                <input type="password" placeholder="New Password" className="mb-2 p-2 border rounded w-full" />
-                                <input type="password" placeholder="Confirm Password" className="mb-2 p-2 border rounded w-full" />
+                                <input 
+                                    type="password"
+                                    name="old_password"
+                                    value={passwords.old_password}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Old Password"
+                                    className="mb-2 p-2 border rounded w-full"/>
+
+                                <input 
+                                    type="password"
+                                    name="new_password"
+                                    value={passwords.new_password}
+                                    onChange={handlePasswordChange}
+                                    placeholder="New Password"
+                                    className="mb-2 p-2 border rounded w-full"
+                                />
+
+                                <input 
+                                    type="password"
+                                    name="confirm_password"
+                                    value={passwords.confirm_password}
+                                    onChange={handlePasswordChange}
+                                    placeholder="Confirm Password"
+                                    className="mb-2 p-2 border rounded w-full"
+                                />
+
                             </div>
-                            <button className="mt-4 bg-green-500 text-white py-2 px-4 rounded">Confirm</button>
+                            <button className="mt-4 bg-green-500 text-white py-2 px-4 rounded" onClick={changePassword}>Confirm</button>
                         </div>
                     </div>
                 </div>
