@@ -40,9 +40,9 @@ class Order():
                 "name": name,
                 "phone": phone,
                 "email": email,
-                "quantity": quantity,
+                "quantity": int(quantity),
                 "date": date,
-                "total": total,
+                "total": int(total),
                 "status": 0,
             })
 

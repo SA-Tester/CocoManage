@@ -14,15 +14,7 @@ const Cart = () => {
     const [amount, setAmount] = useState(quantity);
     const totalPrice = amount * 750;
     const [openModal, setOpenModal] = useState(false);
-
-    useEffect(() => {
-        localStorage.setItem('quantity', amount);
-        if (amount > 0) {
-            localStorage.setItem('notification', 1);
-        } else {
-            localStorage.setItem('notification', 0);
-        }
-    }, [amount]);
+    const [content, setContent] = useState(0);
 
     //set maximum quantity as the remaining coconut plant count 
     const [maximumQuantity, setMaximumQuantity] = useState(1);
@@ -42,12 +34,20 @@ const Cart = () => {
         get_coconut_plant_count();
     }, []);
 
+    useEffect(() => {
+        localStorage.setItem('quantity', amount);
+        if (amount > 0) {
+            localStorage.setItem('notification', 1);
+        } else {
+            localStorage.setItem('notification', 0);
+        }
+    }, [amount]);
+
     const navigate = useNavigate();
     const goToOrder = () => {
         navigate('/order')
     };
 
-    const [content, setContent] = useState(0);
 
     // Function to handle form submission of the orders
     const handleSubmit = (event) => {
@@ -60,7 +60,11 @@ const Cart = () => {
         const year = today.getFullYear();
         const date = today.getDate();
         const orderDate = `${date}/${month}/${year}`;
+        const newMaximumQuantity = maximumQuantity-amount;
+        formData.set("quantity", amount);
+        formData.set("total", totalPrice);
         formData.set("date", orderDate);
+        formData.set("newMaximumQuantity", newMaximumQuantity);
 
         axios
             .post("http://localhost:8000/api/save_order/", formData)
@@ -142,9 +146,6 @@ const Cart = () => {
                             <div className="mt-5">
                                 <input type="text" name="phone" placeholder="Phone" className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500" required />
                             </div>
-                            <input type="text" name="quantity" value={amount} className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500 hidden" />
-                            <input type="text" name="date" className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500 hidden" />
-                            <input type="text" name="total" value={totalPrice} className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500 hidden" />
                             <h3 className="my-4 text-gray-700 text-xl">Delivery</h3>
                             <div className="mt-3 bg-red-100 border border-red-500 py-2 px-2 w-full rounded-md text-red-700">
                                 <strong>Note:</strong> Shipping is not available.
