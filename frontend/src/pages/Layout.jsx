@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
 	return (
 		<div>
 			{!isSignInOrSignUp && (
-				<>{location.pathname === "/" ? <Navbar2 /> : <Navbar1 />}</>
+				<>{location.pathname === "attendance" ? <Navbar2 /> : <Navbar1 />}</>
 			)}
 			<div className={isSignInOrSignUp ? "" : "pt-12"}>{children}</div>
 		</div>
