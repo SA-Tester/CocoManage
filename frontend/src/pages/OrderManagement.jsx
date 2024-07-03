@@ -17,7 +17,7 @@ const OrderManagement = () => {
     const onPageChange = (page) => setCurrentPage(page);
 
     return (
-        <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full h-full">
+        <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full  max-h-fit lg:h-full">
             <div className='flex flex-col gap-6 lg:w-1/4 items-center'>
                 <div className="flex flex-col items-center bg-white rounded-lg w-full p-4">
                     <img src={customerIcon} alt="" className="w-8" />
@@ -37,7 +37,7 @@ const OrderManagement = () => {
             </div>
             <div className='flex flex-col gap-6 lg:w-3/4 items-start'>
                 <h1 className="font-bold text-white text-4xl">Order History</h1>
-                <div className="flex flex-row items-center gap-12">
+                <div className="flex flex-col lg:flex-row items-center gap-12">
                     <form className='w-80 relative'>
                         <div className="relative">
                             <input type="search" placeholder='Search' className='w-full p-3 rounded-xl bg-white text-grey-300' />
