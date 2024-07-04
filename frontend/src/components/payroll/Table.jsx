@@ -1,36 +1,65 @@
-import React, { useState } from "react";
-
-const employeeData = [
-  {
-    id: "EMP001",
-    name: "Kasunika Rathnayake",
-    role: "Field Officer",
-    worked: "21 Days",
-    absent: "9 Days",
-    salary: "20,000",
-    status: "Pending",
-  },
-  {
-    id: "EMP002",
-    name: "Jane Smith",
-    role: "Field Officer",
-    worked: "25 Days",
-    absent: "5 Days",
-    salary: "25,000",
-    status: "Paid",
-  },
-];
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { TextInput } from "flowbite-react";
 
 const Table = () => {
-  const [searchItem, setSearchItem] = useState(""); //search bar input
-  const [filterStatus, setFilterStatus] = useState("All"); //status button input
+  const [employeeData, setEmployeeData] = useState([]);
+  const [searchItem, setSearchItem] = useState("");
 
-  const filteredData = employeeData.filter((item) => {
-    const search = item.id.toLowerCase().includes(searchItem.toLowerCase());
+  useEffect(() => {
+    const fetchEmployeeData = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/employee_data/"
+        );
+        console.log(response.data);
+        setEmployeeData(response.data);
+      } catch (error) {
+        console.error("Error fetching employee data:", error);
+      }
+    };
 
-    const status = filterStatus === "All" || item.status === filterStatus;
-    return search && status;
-  });
+    fetchEmployeeData();
+  }, []);
+
+  const handleInputChange = (e, id) => {
+    const { name, value } = e.target;
+    setEmployeeData((prevData) =>
+      prevData.map((item) =>
+        item.employee_id === id ? { ...item, [name]: value } : item
+      )
+    );
+  };
+
+  const calculateSalary = async (id) => {
+    const employee = employeeData.find((item) => item.employee_id === id);
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/calculate_salary/",
+        {
+          employee_id: id,
+          cash_advance: employee.cash_advance,
+          festival_loan: employee.festival_loan,
+        }
+      );
+      console.log(response.data);
+      const updatedEmployee = response.data;
+      setEmployeeData((prevData) =>
+        prevData.map((item) =>
+          item.employee_id === id ? { ...item, ...updatedEmployee } : item
+        )
+      );
+    } catch (error) {
+      console.error("Error calculating salary:", error);
+    }
+  };
+
+  //filter based on employee id
+  const filteredData = Array.isArray(employeeData)
+    ? employeeData.filter((item) =>
+        item.employee_id.toLowerCase().includes(searchItem.toLowerCase())
+      )
+    : [];
 
   return (
     <div className="overflow-x-auto">
@@ -42,38 +71,6 @@ const Table = () => {
           value={searchItem}
           onChange={(e) => setSearchItem(e.target.value)}
         />
-        <div className="flex space-x-2">
-          <button
-            className={`px-4 py-2 rounded ${
-              filterStatus === "All"
-                ? "bg-green text-white"
-                : "bg-gray-200 text-black"
-            }`}
-            onClick={() => setFilterStatus("All")}
-          >
-            All
-          </button>
-          <button
-            className={`px-4 py-2 rounded ${
-              filterStatus === "Paid"
-                ? "bg-green text-white"
-                : "bg-gray-200 text-black"
-            }`}
-            onClick={() => setFilterStatus("Paid")}
-          >
-            Paid
-          </button>
-          <button
-            className={`px-4 py-2 rounded ${
-              filterStatus === "Pending"
-                ? "bg-green text-white"
-                : "bg-gray-200 text-black"
-            }`}
-            onClick={() => setFilterStatus("Pending")}
-          >
-            Unpaid
-          </button>
-        </div>
       </div>
       <table className="table-auto min-w-max w-full whitespace-nowrap">
         <thead>
@@ -85,35 +82,88 @@ const Table = () => {
               Name
             </th>
             <th className="px-4 py-2 text-left text-green font-semibold">
-              Role
+              Worked Days
             </th>
             <th className="px-4 py-2 text-left text-green font-semibold">
-              Worked On
+              Basic Salary
             </th>
             <th className="px-4 py-2 text-left text-green font-semibold">
-              Absent
+              Additional Payment
             </th>
             <th className="px-4 py-2 text-left text-green font-semibold">
-              Salary
+              Total Salary
             </th>
             <th className="px-4 py-2 text-left text-green font-semibold">
-              Status
+              Extra Amount
+            </th>
+            <th className="px-4 py-2 text-left text-green font-semibold">
+              E.P.F
+            </th>
+            <th className="px-4 py-2 text-left text-green font-semibold">
+              Festival Loans
+            </th>
+            <th className="px-4 py-2 text-left text-green font-semibold">
+              Cash Advances
+            </th>
+            <th className="px-4 py-2 text-left text-green font-semibold">
+              Total Deductions
+            </th>
+            <th className="px-4 py-2 text-left text-green font-semibold">
+              Net Salary
+            </th>
+            <th className="px-4 py-2 text-left text-green font-semibold">
+              Action
             </th>
           </tr>
         </thead>
         <tbody className="text-gray-600 text-sm font-light">
           {filteredData.map((item) => (
             <tr
-              key={item.id}
+              key={item.employee_id}
               className="border-b border-gray-400 hover:bg-gray-100"
             >
-              <td className="px-4 py-2">{item.id}</td>
+              <td className="px-4 py-2 font-bold">{item.employee_id}</td>
               <td className="px-4 py-2">{item.name}</td>
-              <td className="px-4 py-2">{item.role}</td>
-              <td className="px-4 py-2">{item.worked}</td>
-              <td className="px-4 py-2">{item.absent}</td>
-              <td className="px-4 py-2">{item.salary}</td>
-              <td className="px-4 py-2">{item.status}</td>
+              <td className="px-4 py-2 text-center">{item.worked_days}</td>
+              <td className="px-4 py-2 text-center">{item.basic_salary}</td>
+              <td className="px-4 py-2 text-center">
+                {item.additional_payment}
+              </td>
+              <td className="px-4 py-2 text-center">{item.total_salary}</td>
+              <td className="px-4 py-2 text-center">{item.extra_amount}</td>
+              <td className="px-4 py-2 text-center">{item.epf}</td>
+              <td className="px-4 py-2">
+                <TextInput
+                  id="festival_loan"
+                  name="festival_loan"
+                  type="number"
+                  required
+                  value={item.festival_loan || ""}
+                  onChange={(e) => handleInputChange(e, item.employee_id)}
+                />
+              </td>
+              <td className="px-4 py-2">
+                <TextInput
+                  id="cash_advance"
+                  name="cash_advance"
+                  type="number"
+                  required
+                  value={item.cash_advance || ""}
+                  onChange={(e) => handleInputChange(e, item.employee_id)}
+                />
+              </td>
+              <td className="px-4 py-2 text-center">{item.total_deductions}</td>
+              <td className="px-4 py-2 text-center font-extrabold">
+                {item.net_salary}
+              </td>
+              <td className="px-4 py-2">
+                <button
+                  onClick={() => calculateSalary(item.employee_id)}
+                  className="bg-light-green text-white px-4 py-2 rounded"
+                >
+                  Calculate
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
