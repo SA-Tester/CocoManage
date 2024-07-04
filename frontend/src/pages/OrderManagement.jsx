@@ -1,12 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Pagination } from "flowbite-react";
 import customerIcon from '../assets/customer-icons.png';
 import orderIcon from '../assets/order-icon.png';
 import revenueIcon from '../assets/revenue-icon.jpg';
 import searchIcon from '../assets/search-icon.png';
+import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
 
 const OrderManagement = () => {
     const [toggle, setToggle] = useState(1)
+    const [unitPrice, setUnitPrice] = useState(1);
+    const [plantCount, setPlantCount] = useState(1);
+
+    function get_coconut_plant_count() {
+        axios
+            .get("http://localhost:8000/api/get_coconut_plant_count/")
+            .then((response) => {
+                setPlantCount(response.data["Quantity"]);
+                setUnitPrice(response.data["UnitPrice"]);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    useEffect(() => {
+        get_coconut_plant_count();
+    }, []);
+
+    const handleChangePlantCount = (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        axios
+            .post("http://localhost:8000/api/update_coconut_plants_count/", formData)
+            .then(() => {
+                toast.success("Successfully Updated!");
+                get_coconut_plant_count();
+                event.target.reset();
+            })
+            .catch((error) => {
+                toast.error("Error updating");
+                console.log(error);
+            });
+    }
+
+    const handleChangeUnitPrice = (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        axios
+            .post("http://localhost:8000/api/update_unit_price/", formData)
+            .then(() => {
+                toast.success("Successfully Updated!");
+                get_coconut_plant_count();
+                event.target.reset();
+            })
+            .catch((error) => {
+                toast.error("Error updating");
+                console.log(error);
+            });
+    }
 
     function updateToggle(id) {
         setToggle(id)
@@ -17,28 +73,47 @@ const OrderManagement = () => {
     const onPageChange = (page) => setCurrentPage(page);
 
     return (
-        <div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full  max-h-fit lg:h-full">
-            <div className='flex flex-col gap-6 lg:w-1/4 items-center'>
-                <div className="flex flex-col items-center bg-white rounded-lg w-full p-4">
+        <div className="flex flex-col justify-between bg-green lg:flex-col p-8 text-white lg:items-center gap-8 absolute left-0 w-full  max-h-fit">
+            <ToastContainer />
+            <div className='flex flex-col lg:flex-row gap-6 items-center justify-around w-full mt-5'>
+                <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-2/12 p-4">
                     <img src={customerIcon} alt="" className="w-8" />
                     <h3 className="font-semibold text-black text-lg">Customers</h3>
-                    <h1 className="font-bold text-green-400 text-3xl">25</h1>
+                    <h1 className="font-bold text-green-400 text-2xl">25</h1>
                 </div>
-                <div className="flex flex-col items-center bg-white rounded-lg w-full p-4">
+                <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-2/12 p-4">
                     <img src={orderIcon} alt="" className="w-8" />
                     <h3 className="font-semibold text-black text-lg">Orders</h3>
-                    <h1 className="font-bold text-green-400 text-3xl">30</h1>
+                    <h1 className="font-bold text-green-400 text-2xl">30</h1>
                 </div>
-                <div className="flex flex-col items-center bg-white rounded-lg w-full p-4">
+                <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-2/12 p-4">
                     <img src={revenueIcon} alt="" className="w-8" />
                     <h3 className="font-semibold text-black text-lg">Monthly Revenue</h3>
-                    <h1 className="font-bold text-green-400 text-3xl">Rs. 12,000.00</h1>
+                    <h1 className="font-bold text-green-400 text-2xl">Rs. 12,000.00</h1>
+                </div>
+                <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-3/12 p-4">
+                    <h3 className="font-semibold text-black text-lg">Remaining Coconut Plants</h3>
+                    <form onSubmit={handleChangePlantCount}>
+                        <div className="grid grid-cols-3 gap-4 my-2">
+                            <input type="text" name="plantCount" placeholder={plantCount} className="border col-span-2 border-gray-400 rounded-md focus:ring-green-500 focus:border-green-500 w-full text-gray-500 text-xl placeholder:text-xl placeholder:font-semibold" required />
+                            <button type="submit" className='col-span-1 bg-green-500 text-white font-semibold w-full rounded-md p-2'>Save</button>
+                        </div>
+                    </form>
+                </div>
+                <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-3/12 p-4">
+                    <h3 className="font-semibold text-black text-lg">Unit Price</h3>
+                    <form onSubmit={handleChangeUnitPrice}>
+                        <div className="grid grid-cols-3 gap-4 my-2">
+                            <input type="text" name="unitPrice" id="" placeholder={`Rs. ${unitPrice}.00`} className="border col-span-2 border-gray-400 rounded-md focus:ring-green-500 focus:border-green-500 w-full text-gray-500 text-xl placeholder:text-xl placeholder:font-semibold" required />
+                            <button type="submit" className='col-span-1 bg-green-500 text-white font-semibold w-full rounded-md p-2'>Save</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div className='flex flex-col gap-6 lg:w-3/4 items-start'>
+            <div className='flex flex-col gap-6 w-full items-start'>
                 <h1 className="font-bold text-white text-4xl">Order History</h1>
-                <div className="flex flex-col lg:flex-row items-center gap-12">
-                    <form className='w-80 relative'>
+                <div className="flex flex-col lg:flex-row items-center gap-12 justify-between w-full">
+                    <form className=' w-full lg:w-1/4'>
                         <div className="relative">
                             <input type="search" placeholder='Search' className='w-full p-3 rounded-xl bg-white text-grey-300' />
                             <button className="absolute right-1 top-1/2 -translate-y-1/2 p-4 rounded-full">
@@ -46,7 +121,7 @@ const OrderManagement = () => {
                             </button>
                         </div>
                     </form>
-                    <div className="relative w-[600px] mx-auto h-12 grid grid-cols-4 items-center rounded-xl overflow-hidden bg-white">
+                    <div className="w-full lg:w-3/4 mx-auto h-12 grid grid-cols-4 items-center rounded-xl overflow-hidden bg-white">
                         <button className={toggle === 1 ? "relative block h-12 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
                             All Orders
                         </button>
@@ -70,6 +145,7 @@ const OrderManagement = () => {
                                 <Table.HeadCell>Customer</Table.HeadCell>
                                 <Table.HeadCell>Quantity</Table.HeadCell>
                                 <Table.HeadCell>Tel</Table.HeadCell>
+                                <Table.HeadCell>Email</Table.HeadCell>
                                 <Table.HeadCell>Status</Table.HeadCell>
                             </Table.Head>
                             <Table.Body className="pt-3 pb-3 bg-white text-black">
@@ -79,6 +155,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Sanjana Ishini</Table.Cell>
                                     <Table.Cell>15</Table.Cell>
                                     <Table.Cell>0711111111</Table.Cell>
+                                    <Table.Cell>sanjana@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-green-400 p-1">Completed</Table.Cell>
                                 </Table.Row>
                                 <Table.Row>
@@ -87,6 +164,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Shachini Thakshila</Table.Cell>
                                     <Table.Cell>20</Table.Cell>
                                     <Table.Cell>0711245111</Table.Cell>
+                                    <Table.Cell>shachinni@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
                                 </Table.Row>
                                 <Table.Row>
@@ -95,6 +173,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Sewmini Rathnayake</Table.Cell>
                                     <Table.Cell>10</Table.Cell>
                                     <Table.Cell>0711114121</Table.Cell>
+                                    <Table.Cell>sewmini@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
                                 </Table.Row>
                                 <Table.Row>
@@ -103,6 +182,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Kasunika Rathnayake</Table.Cell>
                                     <Table.Cell>05</Table.Cell>
                                     <Table.Cell>0718981111</Table.Cell>
+                                    <Table.Cell>kasunika@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-red-400 p-1">Canceled</Table.Cell>
                                 </Table.Row>
                             </Table.Body>
@@ -116,6 +196,7 @@ const OrderManagement = () => {
                                 <Table.HeadCell>Customer</Table.HeadCell>
                                 <Table.HeadCell>Quantity</Table.HeadCell>
                                 <Table.HeadCell>Tel</Table.HeadCell>
+                                <Table.HeadCell>Email</Table.HeadCell>
                                 <Table.HeadCell>Status</Table.HeadCell>
                             </Table.Head>
                             <Table.Body className="pt-3 pb-3 bg-white text-black">
@@ -125,6 +206,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Sanjana Ishini</Table.Cell>
                                     <Table.Cell>15</Table.Cell>
                                     <Table.Cell>0711111111</Table.Cell>
+                                    <Table.Cell>sanjana@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-green-400 p-1">Completed</Table.Cell>
                                 </Table.Row>
                             </Table.Body>
@@ -138,6 +220,7 @@ const OrderManagement = () => {
                                 <Table.HeadCell>Customer</Table.HeadCell>
                                 <Table.HeadCell>Quantity</Table.HeadCell>
                                 <Table.HeadCell>Tel</Table.HeadCell>
+                                <Table.HeadCell>Email</Table.HeadCell>
                                 <Table.HeadCell>Status</Table.HeadCell>
                             </Table.Head>
                             <Table.Body className="pt-3 pb-3 bg-white text-black">
@@ -147,6 +230,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Shachini Thakshila</Table.Cell>
                                     <Table.Cell>20</Table.Cell>
                                     <Table.Cell>0711245111</Table.Cell>
+                                    <Table.Cell>shachini@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
                                 </Table.Row>
                                 <Table.Row>
@@ -155,6 +239,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Sewmini Rathnayake</Table.Cell>
                                     <Table.Cell>10</Table.Cell>
                                     <Table.Cell>0711114121</Table.Cell>
+                                    <Table.Cell>sewmini@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
                                 </Table.Row>
                             </Table.Body>
@@ -168,6 +253,7 @@ const OrderManagement = () => {
                                 <Table.HeadCell>Customer</Table.HeadCell>
                                 <Table.HeadCell>Quantity</Table.HeadCell>
                                 <Table.HeadCell>Tel</Table.HeadCell>
+                                <Table.HeadCell>Email</Table.HeadCell>
                                 <Table.HeadCell>Status</Table.HeadCell>
                             </Table.Head>
                             <Table.Body className="pt-3 pb-3 bg-white text-black">
@@ -177,6 +263,7 @@ const OrderManagement = () => {
                                     <Table.Cell>Kasunika Rathnayake</Table.Cell>
                                     <Table.Cell>05</Table.Cell>
                                     <Table.Cell>0718981111</Table.Cell>
+                                    <Table.Cell>kasunika@gmail.com</Table.Cell>
                                     <Table.Cell className="bg-red-400 p-1">Canceled</Table.Cell>
                                 </Table.Row>
                             </Table.Body>
