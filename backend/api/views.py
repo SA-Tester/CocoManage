@@ -10,6 +10,7 @@ from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
 from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
+from.classes.User import User
 import os
 import time
 
@@ -174,3 +175,28 @@ class UpdateUnitPriceView(APIView):
         if result == 1:
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+
+#view related to view profile details
+class UserProfileView(APIView):
+    parser_classes = [JSONParser]
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+        user = User(database_obj)
+        user_data = user.get_user(user_id)
+        if user_data:
+            return Response(user_data, status=status.HTTP_200_OK)
+        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+#view related to change the password
+class ChangeUserPasswordView(APIView):
+    parser_classes = [JSONParser]
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        user = User(database_obj)
+        if user.change_password(user_id, old_password, new_password):
+            return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+        return Response({"message": "Old password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)

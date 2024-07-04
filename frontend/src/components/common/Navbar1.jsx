@@ -44,7 +44,7 @@ const Navbar1 = () => {
 						Payroll
 					</a>
 					<div className="flex items-center space-x-2">
-						<a href="/signin">
+						<a href="/client_account">
 							<Avatar
 								placeholderInitials="RR"
 								rounded
