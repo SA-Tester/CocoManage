@@ -70,6 +70,8 @@ const Cart = () => {
         axios
             .post("http://localhost:8000/api/save_order/", formData)
             .then(() => {
+                event.target.reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 setOpenModal(true);
             })
             .catch((error) => {
