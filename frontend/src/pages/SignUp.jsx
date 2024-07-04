@@ -1,22 +1,21 @@
 import React, { lazy } from "react";
-const Footer = lazy(() => import("../components/common/Footer"));
 import img1 from "../assets/image1.jpg";
 import { Label, TextInput, Button } from "flowbite-react";
 
 const SignUp = () => {
   return (
     <React.Fragment>
-      <div className="bg-white py-8">
-        <section className="py-12 grid grid-cols-12 overflow-hidden">
+      <div className="bg-white">
+        <section className=" grid grid-cols-12 overflow-hidden">
           {/*Sign up section*/}
-          <div className="col-span-12 px-24 py-10 rounded-md bg-white  shadow-md md:col-span-6 lg:col-span-6">
+          <div className="mt-6 col-span-12 px-24 py-10 rounded-md bg-white  shadow-md md:col-span-6 lg:col-span-6">
             <h1 className="text-xl text-center font-bold text-green md:text-2xl xl:text-3xl">
               Welcome to CoCoManage
             </h1>
-            <p className="text-lg mt-4 text-center text-gray-700">
+            <p className="text-md mt-3 text-center text-gray-700">
               Already have an account?
               <span>
-                <a href="/login" className="text-green-600 underline ml-1">
+                <a href="/login" className="text-light-green underline ml-1">
                   Login here
                 </a>
               </span>
@@ -24,7 +23,7 @@ const SignUp = () => {
 
             {/*Registration from*/}
             <form className="flex items-center justify-center">
-              <div className="w-full pt-4 ">
+              <div className="w-full pt-5 ">
                 {/*full name*/}
                 <div className="mb-6">
                   <div className="mb-2 block">
@@ -95,7 +94,7 @@ const SignUp = () => {
                   />
                 </div>
                 {/*button*/}
-                <section className="mt-8 flex items-start justify-end">
+                <section className="mt-9 flex items-start justify-end">
                   <Button
                     size={"xs"}
                     className="w-full rounded-lg bg-green py-1 uppercase text-white hover:!bg-light-green"
@@ -109,17 +108,10 @@ const SignUp = () => {
 
           {/*image section*/}
           <div className="col-span-12 md:col-span-6  lg:col-span-6">
-            <img
-              src={img1}
-              alt="Coconut Trees"
-              className="w-full h-auto rounded-lg"
-            />
+            <img src={img1} alt="Coconut Trees" className="w-full h-auto" />
           </div>
         </section>
       </div>
-
-      {/* Footer */}
-      <Footer />
     </React.Fragment>
   );
 };
