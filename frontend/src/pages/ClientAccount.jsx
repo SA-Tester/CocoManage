@@ -1,4 +1,4 @@
-import React, { lazy, useEffect } from "react";
+import React, { lazy, useState } from "react";
 
 const Navbar = lazy(() => import("../components/common/Navbar2"));
 const Footer = lazy(() => import("../components/common/Footer"));

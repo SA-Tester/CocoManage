@@ -58,7 +58,7 @@ class Attendance():
                                          align=True, 
                                          enforce_detection=True)
                 
-                # print(file, result["verified"])
+                # print(file, result["verified"], result["distance"])
                 if result["distance"] < dissimilarity_index and result["verified"] == True:
                     dissimilarity_index = result["distance"]
                     identified_emp = file.split(".")[0]
