@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from "react";
 import cartIcon from '../assets/cart-icon.png';
 import coconutPlant from '../assets/coconut-plant.jpg';
+import mark from '../assets/conform.jpg';
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { ToastContainer, toast } from "react-toastify";
@@ -92,18 +93,16 @@ const Cart = () => {
                 </div>
             ) : (
                 <div className="flex flex-col container my-5 mx-3 justify-center gap-8 lg:flex-row align-middle">
-                    <Modal className="bg-opacity-70" show={openModal} size="md" onClose={() => setAmount(0)} popup>
+                    <Modal className="bg-opacity-70 items-center align-middle lg:pt-40" show={openModal} size="md" onClose={() => setAmount(0)} popup>
                         <Modal.Header />
                         <Modal.Body>
                             <div className="text-center">
-                                <h3 className="mb-5 text-lg font-semibold text-gray-800">
+                                <img src={mark} alt="icon" className="w-24 mx-auto" />
+                                <h3 className="mb-5 text-xl font-semibold text-gray-800">
                                     Order Save Successfully!
                                 </h3>
-                                <h4 className="mb-5 text-md font-normal text-gray-600">
-                                    Your order will be ready within 2-3 days. You can pick up your order at Moorock Estate, Thalgaspitiya, Ambakote, Mawathagama.
-                                </h4>
                                 <div className="flex justify-center gap-4">
-                                    <Button color="success" onClick={() => setAmount(0)}>
+                                    <Button color="success" className="mb-4" onClick={() => setAmount(0)}>
                                         {"Okay"}
                                     </Button>
                                 </div>
@@ -147,7 +146,7 @@ const Cart = () => {
                                 <input type="text" name="lastname" placeholder="Last name" className="border border-gray-400 py-2 px-2 rounded-md focus:ring-green-500 focus:border-green-500" required />
                             </div>
                             <div className="mt-5">
-                                <input type="text" name="email" placeholder="Email" className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500" required />
+                                <input type="email" name="email" placeholder="Email" className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500" required />
                             </div>
                             <div className="mt-5">
                                 <input type="text" name="phone" placeholder="Phone" className="border border-gray-400 py-2 px-2 w-full rounded-md focus:ring-green-500 focus:border-green-500" required />
@@ -177,11 +176,25 @@ const Cart = () => {
                                 </div>
                             </div>
                             <div className={`border border-green-500 bg-green-100 p-4 mb-5 rounded-md ${content == 0 ? "hidden" : ""}`}>
-                                <h4 className="text-gray-800 mb-1">Bank Details</h4>
-                                <p className="text-gray-500">Bank Name: Peoples' Bank</p>
-                                <p className="text-gray-500">Account Name: Moorock Estate</p>
-                                <p className="text-gray-500">Account Number: 1234567890</p>
-                                <p className="text-gray-500">Branch: Thalgaspitiya</p>
+                                <h4 className="text-gray-800 mb-1 font-semibold">Bank Details</h4>
+                                <table>
+                                    <tr className="text-gray-500">
+                                        <td className="font-semibold">Bank Name</td>
+                                        <td><b>:</b> Peoples' Bank</td>
+                                    </tr>
+                                    <tr className="text-gray-500">
+                                        <td className="font-semibold">Account Name</td>
+                                        <td><b>:</b> Moorock Estate</td>
+                                    </tr>
+                                    <tr className="text-gray-500">
+                                        <td className="font-semibold">Account Number</td>
+                                        <td><b>:</b> 1234567890</td>
+                                    </tr>
+                                    <tr className="text-gray-500">
+                                        <td className="font-semibold">Branch</td>
+                                        <td><b>:</b> Thalgaspitiya</td>
+                                    </tr>
+                                </table>
                             </div>
                             <button type="submit" className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around'>Complete Order</button>
                         </form>

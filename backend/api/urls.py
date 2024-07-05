@@ -17,4 +17,5 @@ urlpatterns = [
     path('payroll_dashboard_data/', views.get_dashboard_data, name='payroll_dashboard_data'),
     path('update_coconut_plants_count/', views.UpdatePlantCountView.as_view(), name='update_coconut_plant_count'),
     path('update_unit_price/', views.UpdateUnitPriceView.as_view(), name='update_unit_price'),
+    path('send_email/', views.SaveOrderView.as_view(), name='send_email'),
 ]
