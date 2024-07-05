@@ -153,6 +153,9 @@ class SaveOrderView(APIView):
         result = self.coconut_plants.update_coconut_plant_count(database_obj, newMaximumQuantity)
         if result == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
+        result2 = self.order.send_email(database_obj, name, email, quantity, date, total)
+        if result2 == 1:
+            return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
     
 class InitialSalaryDetailsView(APIView):
