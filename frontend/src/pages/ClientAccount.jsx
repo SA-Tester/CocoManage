@@ -9,6 +9,7 @@ import axios from 'axios';
 
 const ClientAccount = () => {
     const [profile, setProfile] = useState({
+        user_id: "EMP0001",
         name: "A.M.S.I Attanayake",
         email: "sanjana@gmail.com",
         contactNo: "785264132",
@@ -27,7 +28,7 @@ const ClientAccount = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`/api/view_user_profile?user_id=${profile.user_id}`);
+                const response = await axios.get(`/view_user_profile?user_id=${profile.user_id}`);
                 if (response.status === 200) {
                     const data = response.data;
                     setProfile({
@@ -63,16 +64,6 @@ const ClientAccount = () => {
         });
     };
 
-    const updateProfile = () => {
-        axios.post("/api/update_profile/", profile)
-            .then(response => {
-                alert(response.data.message);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    };
-
     const togglePasswordChange = () => {
         setShowPasswordChange(!showPasswordChange);
     };
@@ -83,7 +74,7 @@ const ClientAccount = () => {
             return;
         }
 
-        axios.post("/api/change_user_password/", {
+        axios.post("/change_user_password/", {
             user_id: profile.user_id,
             old_password: passwords.old_password,
             new_password: passwords.new_password

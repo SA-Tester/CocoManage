@@ -14,6 +14,6 @@ urlpatterns = [
     path('update_coconut_plant_count/', views.SaveOrderView.as_view(), name='update_coconut_plant_count'),
     path('update_coconut_plants_count/', views.UpdatePlantCountView.as_view(), name='update_coconut_plant_count'),
     path('update_unit_price/', views.UpdateUnitPriceView.as_view(), name='update_unit_price'),
-    path('api/view_user_profile', UserProfileView.as_view(), name='view_user_profile'),
-    path('api/change_user_password', ChangeUserPasswordView.as_view(), name='change_user_password'),
+    path('view_user_profile/', UserProfileView.as_view(), name='view_user_profile'),
+    path('change_user_password/', ChangeUserPasswordView.as_view(), name='change_user_password'),
 ]
