@@ -175,7 +175,10 @@ class UpdateUnitPriceView(APIView):
         result = self.coconut_plants.update_unit_price(database_obj, unitPrice)
         if result == 1:
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)class InitialSalaryDetailsView(APIView):
+        return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+
+
+class InitialSalaryDetailsView(APIView):
     def get(self, request, *args, **kwargs):
         employees = database_obj.child("Employee").get().val()
         salary_details_list = []
@@ -228,6 +231,7 @@ def get_dashboard_data(request):
         }
 
         return Response(dashboard_data, status=status.HTTP_200_OK)
+
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
