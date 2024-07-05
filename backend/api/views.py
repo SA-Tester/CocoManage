@@ -147,14 +147,14 @@ class SaveOrderView(APIView):
         total = request.data.get("total")
         newMaximumQuantity = request.data.get("newMaximumQuantity")
 
-        state = self.order.save_order(database_obj, name, phone, email, quantity, date, total)
-        if state == 1:
+        order_id = self.order.save_order(database_obj, name, phone, email, quantity, date, total)
+        if order_id == 0:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         result = self.coconut_plants.update_coconut_plant_count(database_obj, newMaximumQuantity)
         if result == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
-        result2 = self.order.send_email(database_obj, name, email, quantity, date, total)
-        if result2 == 1:
+        state = self.order.send_email(database_obj, order_id, name, email, quantity, date, total)
+        if state == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
     
