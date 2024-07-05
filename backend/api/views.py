@@ -10,8 +10,10 @@ from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
 from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
+from .classes.Payroll import Payroll
 import os
 import time
+import datetime
 
 # Initialize the firebase database object
 database_obj = init_db()
@@ -152,7 +154,66 @@ class SaveOrderView(APIView):
         if result == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
+    
+class InitialSalaryDetailsView(APIView):
+    def get(self, request, *args, **kwargs):
+        employees = database_obj.child("Employee").get().val()
+        salary_details_list = []
 
+        for employee_id, employee_details in employees.items():
+            payroll = Payroll(employee_id)
+            salary_details = payroll.calculate_initial_salary()
+            salary_details_list.append(salary_details)
+
+        return Response(salary_details_list, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def calculate_salary(request):
+    try:
+        employee_id = request.data.get('employee_id')
+        cash_advance = float(request.data.get('cash_advance', 0))
+        festival_loan = float(request.data.get('festival_loan', 0))
+        payroll = Payroll(employee_id, cash_advance=cash_advance, festival_loan=festival_loan)
+        salary_details = payroll.calculate_salary()
+        return Response(salary_details, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+def get_dashboard_data(request):
+    try:
+        current_date = datetime.datetime.now()
+        year = str(current_date.year)
+        month = current_date.strftime("%B")
+
+        employees = database_obj.child("Employee").get().val()
+        total_employees = len(employees) if employees else 0
+
+        payroll_data = database_obj.child("Payroll").child(year).child(month).get().val()
+        total_salary_paid = 0
+
+        if payroll_data:
+            for employee_id, salary_details in payroll_data.items():
+                net_salary = salary_details.get("net_salary", 0)
+                if net_salary:
+                    total_salary_paid += net_salary
+
+
+        dashboard_data = {
+            "current_month": month,
+            "current_year": year,
+            "total_employees": total_employees,
+            "total_salary_paid": total_salary_paid
+        }
+
+        return Response(dashboard_data, status=status.HTTP_200_OK)
+
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+      
 class UpdatePlantCountView(APIView):
     coconut_plants = CoconutPlants()
 
@@ -164,6 +225,7 @@ class UpdatePlantCountView(APIView):
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
 
+      
 class UpdateUnitPriceView(APIView):
     coconut_plants = CoconutPlants()
 

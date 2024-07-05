@@ -12,6 +12,9 @@ urlpatterns = [
     path('get_coconut_plant_count/', views.GetCoconutPlantCountView.as_view(), name='get_coconut_plant_count'),
     path('save_order/', views.SaveOrderView.as_view(), name='save_order'),
     path('update_coconut_plant_count/', views.SaveOrderView.as_view(), name='update_coconut_plant_count'),
+    path('employee_data/', views.InitialSalaryDetailsView.as_view(), name='employee_data'),
+    path('calculate_salary/', views.calculate_salary, name='calculate_salary'), 
+    path('payroll_dashboard_data/', views.get_dashboard_data, name='payroll_dashboard_data'),
     path('update_coconut_plants_count/', views.UpdatePlantCountView.as_view(), name='update_coconut_plant_count'),
     path('update_unit_price/', views.UpdateUnitPriceView.as_view(), name='update_unit_price'),
 ]

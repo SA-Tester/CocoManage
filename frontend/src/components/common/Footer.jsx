@@ -9,8 +9,13 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between mb-6">
           {/* Address and Logo */}
           <div className="flex flex-col md:items-start md:w-1/2">
-            <img src={logo} alt="logo" className="md:h-12 lg:h-16 mb-2" />
-            {/* Adjust logo size here */}
+            <img
+              src={logo}
+              alt="logo"
+              className="mb-2"
+              style={{ width: "180px", height: "auto" }}
+            />
+
             <p className="text-xl font-bold uppercase text-green mb-2">
               Moorock Estate
             </p>
