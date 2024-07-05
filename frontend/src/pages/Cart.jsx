@@ -12,18 +12,19 @@ const Cart = () => {
     console.log(location);
     const quantity = (location.state.quantity) === 0 ? (location.state.quantity) : ((location.state.quantity.amount) == null ? (location.state.quantity) : (location.state.quantity.amount));
     const [amount, setAmount] = useState(quantity);
-    const totalPrice = amount * 750;
+    const [unitPrice, setUnitPrice] = useState(1);
+    const totalPrice = amount * unitPrice;
     const [openModal, setOpenModal] = useState(false);
     const [content, setContent] = useState(0);
-
-    //set maximum quantity as the remaining coconut plant count 
     const [maximumQuantity, setMaximumQuantity] = useState(1);
 
+    //set maximum quantity as the remaining coconut plant count 
     function get_coconut_plant_count() {
         axios
             .get("http://localhost:8000/api/get_coconut_plant_count/")
             .then((response) => {
                 setMaximumQuantity(response.data["Quantity"]);
+                setUnitPrice(response.data["UnitPrice"]);
             })
             .catch((error) => {
                 console.log(error);
@@ -69,6 +70,8 @@ const Cart = () => {
         axios
             .post("http://localhost:8000/api/save_order/", formData)
             .then(() => {
+                event.target.reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 setOpenModal(true);
             })
             .catch((error) => {
@@ -93,9 +96,12 @@ const Cart = () => {
                         <Modal.Header />
                         <Modal.Body>
                             <div className="text-center">
-                                <h3 className="mb-5 text-lg font-normal text-gray-600">
-                                    Your Order Save Successfully.
+                                <h3 className="mb-5 text-lg font-semibold text-gray-800">
+                                    Order Save Successfully!
                                 </h3>
+                                <h4 className="mb-5 text-md font-normal text-gray-600">
+                                    Your order will be ready within 2-3 days. You can pick up your order at Moorock Estate, Thalgaspitiya, Ambakote, Mawathagama.
+                                </h4>
                                 <div className="flex justify-center gap-4">
                                     <Button color="success" onClick={() => setAmount(0)}>
                                         {"Okay"}
@@ -124,7 +130,7 @@ const Cart = () => {
                                 <h6 className="text-lg">Total price</h6>
                             </div>
                             <div className="text-gray-500 w-1/2 text-right">
-                                <h6 className="text-lg">Rs. 750.00</h6>
+                                <h6 className="text-lg">Rs. {unitPrice}.00</h6>
                                 <h6 className="text-lg">{amount}</h6>
                                 <hr className="p-1 w-full text-gray-500 m-1" />
                                 <h6 className="text-lg">Rs.{totalPrice}.00</h6>

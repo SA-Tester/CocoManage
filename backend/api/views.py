@@ -209,5 +209,30 @@ def get_dashboard_data(request):
 
         return Response(dashboard_data, status=status.HTTP_200_OK)
 
+
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+      
+class UpdatePlantCountView(APIView):
+    coconut_plants = CoconutPlants()
+
+    def post(self, request, *args, **kwargs):
+        plantCount = request.data.get("plantCount")
+
+        result = self.coconut_plants.update_coconut_plant_count(database_obj, plantCount)
+        if result == 1:
+            return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+
+      
+class UpdateUnitPriceView(APIView):
+    coconut_plants = CoconutPlants()
+
+    def post(self, request, *args, **kwargs):
+        unitPrice = request.data.get("unitPrice")
+
+        result = self.coconut_plants.update_unit_price(database_obj, unitPrice)
+        if result == 1:
+            return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
