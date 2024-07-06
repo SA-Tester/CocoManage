@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import logo from "../../assets/logo.png";
 import { Avatar } from "flowbite-react";
 
+// Navbar for Admin Side of the Application
 const Navbar1 = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
