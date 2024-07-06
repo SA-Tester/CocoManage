@@ -115,159 +115,235 @@ const OrderManagement = () => {
                 <div className="flex flex-col lg:flex-row items-center gap-12 justify-between w-full">
                     <form className=' w-full lg:w-1/4'>
                         <div className="relative">
-                            <input type="search" placeholder='Search' className='w-full p-3 rounded-xl bg-white text-grey-300' />
-                            <button className="absolute right-1 top-1/2 -translate-y-1/2 p-4 rounded-full">
+                            <input type="search" placeholder='Search' className='w-full p-2 rounded-xl bg-white text-gray-300 placeholder:pl-2' />
+                            <button className="absolute right-1 top-1/2 -translate-y-1/2 p-3 rounded-full">
                                 <img src={searchIcon} alt="" className="w-6 opacity-50" />
                             </button>
                         </div>
                     </form>
-                    <div className="w-full lg:w-3/4 mx-auto h-12 grid grid-cols-4 items-center rounded-xl overflow-hidden bg-white">
-                        <button className={toggle === 1 ? "relative block h-12 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
+                    <div className="w-full lg:w-2/4 h-10 grid grid-cols-4 items-center rounded-xl overflow-hidden bg-white text-sm">
+                        <button className={toggle === 1 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
                             All Orders
                         </button>
-                        <button className={toggle === 2 ? "relative block h-12 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(2)}>
+                        <button className={toggle === 2 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(2)}>
                             Completed
                         </button>
-                        <button className={toggle === 3 ? "relative block h-12 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(3)}>
+                        <button className={toggle === 3 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(3)}>
                             In progress
                         </button>
-                        <button className={toggle === 4 ? "relative block h-12 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(4)}>
-                            Canceled
+                        <button className={toggle === 4 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(4)}>
+                            Cancelled
                         </button>
                     </div>
                 </div>
-                <div className="w-full">
+                <div className="w-full overflow-x-auto rounded-lg shadow">
                     <div className={toggle === 1 ? "w-full" : "hidden"}>
-                        <Table className="text-center text-sm  rounded-xl">
-                            <Table.Head className="bg-white">
-                                <Table.HeadCell>OrderID</Table.HeadCell>
-                                <Table.HeadCell>Date</Table.HeadCell>
-                                <Table.HeadCell>Customer</Table.HeadCell>
-                                <Table.HeadCell>Quantity</Table.HeadCell>
-                                <Table.HeadCell>Tel</Table.HeadCell>
-                                <Table.HeadCell>Email</Table.HeadCell>
-                                <Table.HeadCell>Status</Table.HeadCell>
-                            </Table.Head>
-                            <Table.Body className="pt-3 pb-3 bg-white text-black">
-                                <Table.Row>
-                                    <Table.Cell>0001</Table.Cell>
-                                    <Table.Cell>05/05/2024</Table.Cell>
-                                    <Table.Cell>Sanjana Ishini</Table.Cell>
-                                    <Table.Cell>15</Table.Cell>
-                                    <Table.Cell>0711111111</Table.Cell>
-                                    <Table.Cell>sanjana@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-green-400 p-1">Completed</Table.Cell>
-                                </Table.Row>
-                                <Table.Row>
-                                    <Table.Cell>0002</Table.Cell>
-                                    <Table.Cell>07/05/2024</Table.Cell>
-                                    <Table.Cell>Shachini Thakshila</Table.Cell>
-                                    <Table.Cell>20</Table.Cell>
-                                    <Table.Cell>0711245111</Table.Cell>
-                                    <Table.Cell>shachinni@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
-                                </Table.Row>
-                                <Table.Row>
-                                    <Table.Cell>0003</Table.Cell>
-                                    <Table.Cell>08/05/2024</Table.Cell>
-                                    <Table.Cell>Sewmini Rathnayake</Table.Cell>
-                                    <Table.Cell>10</Table.Cell>
-                                    <Table.Cell>0711114121</Table.Cell>
-                                    <Table.Cell>sewmini@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
-                                </Table.Row>
-                                <Table.Row>
-                                    <Table.Cell>0004</Table.Cell>
-                                    <Table.Cell>09/05/2024</Table.Cell>
-                                    <Table.Cell>Kasunika Rathnayake</Table.Cell>
-                                    <Table.Cell>05</Table.Cell>
-                                    <Table.Cell>0718981111</Table.Cell>
-                                    <Table.Cell>kasunika@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-red-400 p-1">Canceled</Table.Cell>
-                                </Table.Row>
-                            </Table.Body>
-                        </Table>
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b-2 border-gray-200 text-gray-700">
+                                <tr>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Order ID</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Date</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Customer Name</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Quantity</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Total</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Telephone No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Email</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Status</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000001</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">05/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sanjana Ishini</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">15</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 5250.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711111111</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sanjana@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-green-800 bg-green-200 rounded-lg bg-opacity-50">Completed</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">2</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000002</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">07/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Shachini Thakshila</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">20</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 7000.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711245111</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">shachini@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">3</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000003</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">08/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sewmini Rathnayake</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">10</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 3500.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711114121</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sewmini@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">4</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000004</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">09/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Kasunika Rathnayake</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">5</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 1750.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0718981111</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">kasunika@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-red-800 bg-red-200 rounded-lg bg-opacity-50">Cancelled</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div className={toggle === 2 ? "w-full" : "hidden"}>
-                        <Table className="text-center text-sm  rounded-xl">
-                            <Table.Head className="bg-white">
-                                <Table.HeadCell>OrderID</Table.HeadCell>
-                                <Table.HeadCell>Date</Table.HeadCell>
-                                <Table.HeadCell>Customer</Table.HeadCell>
-                                <Table.HeadCell>Quantity</Table.HeadCell>
-                                <Table.HeadCell>Tel</Table.HeadCell>
-                                <Table.HeadCell>Email</Table.HeadCell>
-                                <Table.HeadCell>Status</Table.HeadCell>
-                            </Table.Head>
-                            <Table.Body className="pt-3 pb-3 bg-white text-black">
-                                <Table.Row>
-                                    <Table.Cell>0001</Table.Cell>
-                                    <Table.Cell>05/05/2024</Table.Cell>
-                                    <Table.Cell>Sanjana Ishini</Table.Cell>
-                                    <Table.Cell>15</Table.Cell>
-                                    <Table.Cell>0711111111</Table.Cell>
-                                    <Table.Cell>sanjana@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-green-400 p-1">Completed</Table.Cell>
-                                </Table.Row>
-                            </Table.Body>
-                        </Table>
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b-2 border-gray-200 text-gray-700">
+                                <tr>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Order ID</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Date</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Customer Name</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Quantity</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Total</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Telephone No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Email</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Status</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000001</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">05/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sanjana Ishini</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">15</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 5250.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711111111</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sanjana@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-green-800 bg-green-200 rounded-lg bg-opacity-50">Completed</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div className={toggle === 3 ? "w-full" : "hidden"}>
-                        <Table className="text-center text-sm  rounded-xl">
-                            <Table.Head className="bg-white">
-                                <Table.HeadCell>OrderID</Table.HeadCell>
-                                <Table.HeadCell>Date</Table.HeadCell>
-                                <Table.HeadCell>Customer</Table.HeadCell>
-                                <Table.HeadCell>Quantity</Table.HeadCell>
-                                <Table.HeadCell>Tel</Table.HeadCell>
-                                <Table.HeadCell>Email</Table.HeadCell>
-                                <Table.HeadCell>Status</Table.HeadCell>
-                            </Table.Head>
-                            <Table.Body className="pt-3 pb-3 bg-white text-black">
-                                <Table.Row>
-                                    <Table.Cell>0002</Table.Cell>
-                                    <Table.Cell>07/05/2024</Table.Cell>
-                                    <Table.Cell>Shachini Thakshila</Table.Cell>
-                                    <Table.Cell>20</Table.Cell>
-                                    <Table.Cell>0711245111</Table.Cell>
-                                    <Table.Cell>shachini@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
-                                </Table.Row>
-                                <Table.Row>
-                                    <Table.Cell>0003</Table.Cell>
-                                    <Table.Cell>08/05/2024</Table.Cell>
-                                    <Table.Cell>Sewmini Rathnayake</Table.Cell>
-                                    <Table.Cell>10</Table.Cell>
-                                    <Table.Cell>0711114121</Table.Cell>
-                                    <Table.Cell>sewmini@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-yellow-400 p-1">In Progress</Table.Cell>
-                                </Table.Row>
-                            </Table.Body>
-                        </Table>
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b-2 border-gray-200 text-gray-700">
+                                <tr>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Order ID</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Date</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Customer Name</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Quantity</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Total</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Telephone No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Email</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Status</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">2</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000002</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">07/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Shachini Thakshila</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">20</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 7000.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711245111</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">shachini@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">3</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000003</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">08/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sewmini Rathnayake</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">10</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 3500.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711114121</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sewmini@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div className={toggle === 4 ? "block w-full" : "hidden"}>
-                        <Table className="text-center text-sm  rounded-xl">
-                            <Table.Head className="bg-white">
-                                <Table.HeadCell>OrderID</Table.HeadCell>
-                                <Table.HeadCell>Date</Table.HeadCell>
-                                <Table.HeadCell>Customer</Table.HeadCell>
-                                <Table.HeadCell>Quantity</Table.HeadCell>
-                                <Table.HeadCell>Tel</Table.HeadCell>
-                                <Table.HeadCell>Email</Table.HeadCell>
-                                <Table.HeadCell>Status</Table.HeadCell>
-                            </Table.Head>
-                            <Table.Body className="pt-3 pb-3 bg-white text-black">
-                                <Table.Row>
-                                    <Table.Cell>0004</Table.Cell>
-                                    <Table.Cell>09/05/2024</Table.Cell>
-                                    <Table.Cell>Kasunika Rathnayake</Table.Cell>
-                                    <Table.Cell>05</Table.Cell>
-                                    <Table.Cell>0718981111</Table.Cell>
-                                    <Table.Cell>kasunika@gmail.com</Table.Cell>
-                                    <Table.Cell className="bg-red-400 p-1">Canceled</Table.Cell>
-                                </Table.Row>
-                            </Table.Body>
-                        </Table>
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b-2 border-gray-200 text-gray-700">
+                                <tr>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Order ID</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Date</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Customer Name</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Quantity</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Total</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Telephone No.</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Email</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Status</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="bg-white hover:bg-gray-100">
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">4</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000004</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">09/05/2024</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Kasunika Rathnayake</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">5</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 1750.00</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0718981111</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">kasunika@gmail.com</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-red-800 bg-red-200 rounded-lg bg-opacity-50">Cancelled</span>
+                                    </td>
+                                    <td>
+                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div className="flex overflow-x-auto sm:justify-center mx-auto">
