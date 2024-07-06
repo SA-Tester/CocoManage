@@ -12,6 +12,7 @@ from .classes.SensorData import SensorData
 from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
 from .classes.Payroll import Payroll
+from .classes.Employee import Employee
 import datetime
 
 # Initialize the firebase database object
@@ -108,7 +109,7 @@ class GetNutCountView(APIView):
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
     
-# Views related to retrieving API Weather Data
+# Views related to retrieving API Weather Data in Admin Dashboard
 class GetWeatherView(APIView):
     weather = Weather()
 
@@ -120,7 +121,7 @@ class GetWeatherView(APIView):
             print(e)
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-# Views related to retrieving Todays Sensors Data
+# Views related to retrieving Todays Sensors Data for Admin Dashboard
 class GetTodaysSensorsView(APIView):
     sensor_data = SensorData()
 
@@ -132,54 +133,45 @@ class GetTodaysSensorsView(APIView):
             print(e)
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-# Views related to retrieving Rainfall Data
-class GetRainfallDataView(APIView):
+# Views related to retrieving Historical Sensors Data for Admin Dashboard
+class GetHistoricalSensorDataView(APIView):
     sensor_data = SensorData()
 
     def get(self, request, *args, **kwargs):
         try:
             rainfall_data = self.sensor_data.get_rainfall_data(database_obj)
-            return Response(rainfall_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-# View related to retrieving Humidity Data
-class GetHumidityDataView(APIView):
-    sensor_data = SensorData()
-
-    def get(self, request, *args, **kwargs):
-        try:
             humidity_data = self.sensor_data.get_humidity_data(database_obj)
-            return Response(humidity_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-# View related to retrieving Soil Moisture Data
-class GetSoilMoistureDataView(APIView):
-    sensor_data = SensorData()
-
-    def get(self, request, *args, **kwargs):
-        try:
             soil_moisture_data = self.sensor_data.get_soil_moisture_data(database_obj)
-            return Response(soil_moisture_data, status=status.HTTP_200_OK)
+            temperature_data = self.sensor_data.get_temperature_data(database_obj)
+
+            sensor_data = {"Rainfall": rainfall_data, "Humidity": humidity_data, "Soil Moisture": soil_moisture_data, "Temperature": temperature_data}
+            return Response(sensor_data, status=status.HTTP_200_OK)
+        
         except Exception as e:
             print(e)
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-# View related to retrieving Temperature Data
-class GetTemperatureDataView(APIView):
-    sensor_data = SensorData()
+class GetAdditionalAdminDataView(APIView):      
+    order = Order()
+    employee = Employee()
 
     def get(self, request, *args, **kwargs):
-        try:
-            temperature_data = self.sensor_data.get_temperature_data(database_obj)
-            return Response(temperature_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                
+        self.order.init_order_info(database_obj)
+        total_orders = self.order.get_total_orders()
+        first_order_date = self.order.get_first_order_date()
+        last_order_date = self.order.get_last_order_date()
+        
+        total_employees = self.employee.get_total_employees(database_obj)
+        today_employees = 0
+
+        data = {"total_orders": total_orders, 
+                "first_order_date": first_order_date, 
+                "last_order_date": last_order_date, 
+                "total_employees": total_employees, 
+                "today_employees": today_employees}
+        
+        return Response(data, status=status.HTTP_200_OK)       
+       
 # Views related to retrieving Coconut Plant Count
 class GetCoconutPlantCountView(APIView):
     coconut_plants = CoconutPlants()
