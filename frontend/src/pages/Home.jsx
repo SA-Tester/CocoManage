@@ -26,7 +26,7 @@ const home = () => {
 	return (
 		<React.Fragment>
 			{/* Hero Section */}
-			<div className="flex w-full flex-col sm:pt-3 md:pt-4 lg:pt-8">
+			<div className="flex w-full flex-col sm:pt-3 md:pt-4 lg:pt-7">
 				<section className="grid grid-cols-12 bg-green">
 					{/* Content Section */}
 					<div className="p-6 lg:mt-20 lg:pt-20 col-span-12 md:col-span-6 lg:col-span-7">

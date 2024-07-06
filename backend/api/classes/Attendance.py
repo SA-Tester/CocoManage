@@ -101,5 +101,5 @@ class Attendance():
                 if today_time != None:
                     att_dict[i] = {"emp_no": emp_no, "emp_name": emp_name, "today_time": today_time, "tot_att_per_month": tot_att_per_month}
                     i += 1
-
+                    
         return att_dict

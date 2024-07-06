@@ -8,11 +8,10 @@ from .db import init_db
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
+from .classes.SensorData import SensorData
 from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
 from .classes.Payroll import Payroll
-import os
-import time
 import datetime
 
 # Initialize the firebase database object
@@ -46,7 +45,6 @@ class VerifyEmployeeView(APIView):
             return Response({"emp_no": emp_no}, status=status.HTTP_201_CREATED)
         return Response({"emp_no": emp_no}, status=status.HTTP_401_UNAUTHORIZED)
 
-
 # View related to Getting Employee Attendance
 class GetAttendanceView(APIView): 
     # Initialize the Attendance class
@@ -55,7 +53,6 @@ class GetAttendanceView(APIView):
     def get(self, request, *args, **kwargs):
         att_dict = self.attendance.get_attendance_per_day(database_obj)
         return Response({"data": att_dict}, status=status.HTTP_200_OK)
-    
 
 # View related to searching Nut Harvest in Admin Dashboard
 class SearchPickView(APIView):
@@ -123,6 +120,67 @@ class GetWeatherView(APIView):
             print(e)
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+# Views related to retrieving Todays Sensors Data
+class GetTodaysSensorsView(APIView):
+    sensor_data = SensorData()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            sensor_data = self.sensor_data.get_todays_sensor_data(database_obj)
+            return Response(sensor_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# Views related to retrieving Rainfall Data
+class GetRainfallDataView(APIView):
+    sensor_data = SensorData()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            rainfall_data = self.sensor_data.get_rainfall_data(database_obj)
+            return Response(rainfall_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# View related to retrieving Humidity Data
+class GetHumidityDataView(APIView):
+    sensor_data = SensorData()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            humidity_data = self.sensor_data.get_humidity_data(database_obj)
+            return Response(humidity_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# View related to retrieving Soil Moisture Data
+class GetSoilMoistureDataView(APIView):
+    sensor_data = SensorData()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            soil_moisture_data = self.sensor_data.get_soil_moisture_data(database_obj)
+            return Response(soil_moisture_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# View related to retrieving Temperature Data
+class GetTemperatureDataView(APIView):
+    sensor_data = SensorData()
+
+    def get(self, request, *args, **kwargs):
+        try:
+            temperature_data = self.sensor_data.get_temperature_data(database_obj)
+            return Response(temperature_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                
+# Views related to retrieving Coconut Plant Count
 class GetCoconutPlantCountView(APIView):
     coconut_plants = CoconutPlants()
 
@@ -132,6 +190,7 @@ class GetCoconutPlantCountView(APIView):
             return Response(result, status=status.HTTP_404_NOT_FOUND)
         return Response(result, status=status.HTTP_200_OK)
 
+# Views related to saving an order
 class SaveOrderView(APIView):
     order = Order()
     coconut_plants = CoconutPlants()
@@ -147,14 +206,18 @@ class SaveOrderView(APIView):
         total = request.data.get("total")
         newMaximumQuantity = request.data.get("newMaximumQuantity")
 
-        state = self.order.save_order(database_obj, name, phone, email, quantity, date, total)
-        if state == 1:
+        order_id = self.order.save_order(database_obj, name, phone, email, quantity, date, total)
+        if order_id == 0:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         result = self.coconut_plants.update_coconut_plant_count(database_obj, newMaximumQuantity)
         if result == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
+        state = self.order.send_email(database_obj, order_id, name, email, quantity, date, total)
+        if state == 1:
+            return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
     
+# Views related to updating coconut plant count    
 class UpdatePlantCountView(APIView):
     coconut_plants = CoconutPlants()
 
@@ -166,6 +229,7 @@ class UpdatePlantCountView(APIView):
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
 
+# Views related to updating unit price    
 class UpdateUnitPriceView(APIView):
     coconut_plants = CoconutPlants()
 
@@ -177,7 +241,7 @@ class UpdateUnitPriceView(APIView):
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
 
-
+# Views related to retrieving salary details of employees
 class InitialSalaryDetailsView(APIView):
     def get(self, request, *args, **kwargs):
         employees = database_obj.child("Employee").get().val()
@@ -190,7 +254,7 @@ class InitialSalaryDetailsView(APIView):
 
         return Response(salary_details_list, status=status.HTTP_200_OK)
 
-
+# Views related to calculating salary of an employee
 @api_view(['POST'])
 def calculate_salary(request):
     try:
@@ -202,7 +266,8 @@ def calculate_salary(request):
         return Response(salary_details, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+# Views related to retrieving dashboard data  of salary
 @api_view(['GET'])
 def get_dashboard_data(request):
     try:
