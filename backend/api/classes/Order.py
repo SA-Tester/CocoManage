@@ -1,6 +1,9 @@
 import smtplib
 
 class Order():
+    total_orders = 0
+    first_order_date = ""
+    last_order_date = ""
 
     def save_order(self, database_obj, name, phone, email, quantity, date, total):
         try:
@@ -73,3 +76,36 @@ class Order():
         except Exception as e:
             print(e)
             return 1
+        
+
+    def init_order_info(self, database_obj):
+        dates = []
+        total_orders = 0
+
+        try:
+            order_table = database_obj.child("Order").get()
+            
+            for year in order_table.each():
+                month = database_obj.child("Order").child(year.key()).get()
+                
+                for order in month.each():
+                    for item in order.val():
+                        if item != None and item["date"] != None:
+                            total_orders += 1
+                            dates.append(item["date"])
+
+            self.total_orders = total_orders             
+            self.first_order_date = min(dates)
+            self.last_order_date = max(dates)
+        
+        except Exception as e:
+            print(e)
+
+    def get_total_orders(self):
+        return self.total_orders
+
+    def get_first_order_date(self):
+        return self.first_order_date
+
+    def get_last_order_date(self):
+        return self.last_order_date
