@@ -15,7 +15,7 @@ const SignUp = () => {
 						<p className="text-md mt-3 text-center text-gray-700">
 							Already have an account?
 							<span>
-								<a href="/login" className="text-light-green underline ml-1">
+								<a href="/signin" className="text-light-green underline ml-1">
 									Login here
 								</a>
 							</span>

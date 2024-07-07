@@ -1,6 +1,9 @@
 import smtplib
 
 class Order():
+    total_orders = 0
+    first_order_date = ""
+    last_order_date = ""
 
     def save_order(self, database_obj, name, phone, email, quantity, date, total):
         try:
@@ -59,7 +62,7 @@ class Order():
 
         name = name.split(" ")[0].strip()
         subject = "Order Confirmation"
-        message = f"Dear {name},\n\nWe are pleased to confirm that we have successfully received your order. Here are the details of your purchase:\n\nOrderID: O00{order_id}\nOrder Date: {date}\nQuantity: {quantity}\nTotal Amount: Rs. {total}.00\n\nYour order will be processed within 2-3 days. You can pick up your order at our estate.\n\nAddress : MOOROCK ESTATE, Thalgaspitiya, Ambakote, Mawathagama, Sri Lanka.\n\nFor your convenience, you can choose one of the following payment methods:\n1. You can pay for your order when you come to pick it up at estate.\n2. You can deposit the payment into our bank account. Please use the following bank details:\n\nBank Name: People's Bank\nAccount Name: Moorock Estate\nAccount Number: 1234567890\nBranch: Thalgaspitiya\n\nIf you choose to pay by bank deposit, please bring the deposit receipt when you come to pick up your order.\n\nIf you have any questions or need further assistance, please do not hesitate to contact us at moorockestate@gmail.com or call us at 071-2345678.\n\nThank you for your order!\n\n\nBest regards,\nAdmin\nCocomanage"
+        message = f"Dear {name},\n\nWe are pleased to confirm that we have successfully received your order. Here are the details of your purchase:\n\nOrderID: 00000{order_id}\nOrder Date: {date}\nQuantity: {quantity}\nTotal Amount: Rs. {total}.00\n\nYour order will be processed within 2-3 days. You can pick up your order at our estate.\n\nAddress : MOOROCK ESTATE, Thalgaspitiya, Ambakote, Mawathagama, Sri Lanka.\n\nFor your convenience, you can choose one of the following payment methods:\n1. You can pay for your order when you come to pick it up at estate.\n2. You can deposit the payment into our bank account. Please use the following bank details:\n\nBank Name: People's Bank\nAccount Name: Moorock Estate\nAccount Number: 1234567890\nBranch: Thalgaspitiya\n\nIf you choose to pay by bank deposit, please bring the deposit receipt when you come to pick up your order.\n\nIf you have any questions or need further assistance, please do not hesitate to contact us at moorockestate@gmail.com or call us at 071-2345678.\n\nThank you for your order!\n\n\nBest regards,\nAdmin\nCocomanage"
 
         text = f"Subject: {subject}\n\n{message}"
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -73,3 +76,36 @@ class Order():
         except Exception as e:
             print(e)
             return 1
+        
+
+    def init_order_info(self, database_obj):
+        dates = []
+        total_orders = 0
+
+        try:
+            order_table = database_obj.child("Order").get()
+            
+            for year in order_table.each():
+                month = database_obj.child("Order").child(year.key()).get()
+                
+                for order in month.each():
+                    for item in order.val():
+                        if item != None and item["date"] != None:
+                            total_orders += 1
+                            dates.append(item["date"])
+
+            self.total_orders = total_orders             
+            self.first_order_date = min(dates)
+            self.last_order_date = max(dates)
+        
+        except Exception as e:
+            print(e)
+
+    def get_total_orders(self):
+        return self.total_orders
+
+    def get_first_order_date(self):
+        return self.first_order_date
+
+    def get_last_order_date(self):
+        return self.last_order_date

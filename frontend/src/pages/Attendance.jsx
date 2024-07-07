@@ -108,7 +108,7 @@ const Attendance = () => {
 
 	return (
 		// Main container for the attendance page
-		<div className="flex flex-col md:flex-row left-0 w-full h-screen text-white absolute bg-green pl-5 pr-5">
+		<div className="flex flex-col md:flex-row left-0 w-full h-screen text-white absolute bg-green pl-5 pr-5 pt-5">
 			{/* Rendering the Toast Container for Notifications */}
 			<ToastContainer />
 

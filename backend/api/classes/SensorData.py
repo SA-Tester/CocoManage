@@ -15,7 +15,7 @@ class SensorData():
     def get_todays_rainfall(self, database_obj, year, month, day):
         try:
             cursor1 = database_obj.child("SensorData").child("Rainfall").child(year).child(month)
-            today_rainfall = cursor1.child(int(day)).get().val()
+            today_rainfall = cursor1.child(day).get().val()
             return today_rainfall
         
         except Exception as e:
@@ -25,7 +25,7 @@ class SensorData():
     def get_todays_temperature(self, database_obj, year, month, day):
         try:
             cursor1 = database_obj.child("SensorData").child("Temperature").child(year).child(month)
-            today_temperature = cursor1.child(int(day)).get().val()
+            today_temperature = cursor1.child(day).get().val()
             return today_temperature
         
         except Exception as e:
@@ -35,7 +35,7 @@ class SensorData():
     def get_todays_humidity(self, database_obj, year, month, day):
         try:
             cursor1 = database_obj.child("SensorData").child("Humidity").child(year).child(month)
-            today_humidity = cursor1.child(int(day)).get().val()
+            today_humidity = cursor1.child(day).get().val()
             return today_humidity
         
         except Exception as e:
@@ -45,7 +45,7 @@ class SensorData():
     def get_todays_soil_moisture(self, database_obj, year, month, day):
         try:
             cursor1 = database_obj.child("SensorData").child("SoilMoisture").child(year).child(month)
-            today_soil_moisture = cursor1.child(int(day)).get().val()
+            today_soil_moisture = cursor1.child(day).get().val()
             return today_soil_moisture
         
         except Exception as e:
@@ -74,6 +74,8 @@ class SensorData():
                     months.append(temp_item)
                     rainfall.append(statistics.mean(month[1].values()))
 
+            months.reverse()
+            rainfall.reverse()
             return (months, rainfall)
         
         except Exception as e:
@@ -93,6 +95,8 @@ class SensorData():
                     months.append(temp_item)
                     humidity.append(statistics.mean(month[1].values()))
 
+            months.reverse()
+            humidity.reverse()
             return (months, humidity)
         
         except Exception as e:
@@ -111,6 +115,8 @@ class SensorData():
                     months.append(temp_item)
                     soil_moisture.append(statistics.mean(month[1].values()))
 
+            months.reverse()
+            soil_moisture.reverse()
             return (months, soil_moisture)
         
         except Exception as e:
@@ -129,6 +135,8 @@ class SensorData():
                     months.append(temp_item)
                     temperature.append(statistics.mean(month[1].values()))
 
+            months.reverse()
+            temperature.reverse()
             return (months, temperature)
         
         except Exception as e:

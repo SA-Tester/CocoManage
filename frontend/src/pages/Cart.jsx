@@ -5,7 +5,7 @@ import mark from '../assets/conform.jpg';
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { ToastContainer, toast } from "react-toastify";
-import { Button, Modal } from "flowbite-react";
+import { Button, Modal, Spinner } from "flowbite-react";
 
 const Cart = () => {
     //get selected quantity value from order page
@@ -16,6 +16,7 @@ const Cart = () => {
     const [unitPrice, setUnitPrice] = useState(1);
     const totalPrice = amount * unitPrice;
     const [openModal, setOpenModal] = useState(false);
+    const [openWaitingModal, setOpenWaitingModal] = useState(false);
     const [content, setContent] = useState(0);
     const [maximumQuantity, setMaximumQuantity] = useState(1);
 
@@ -62,7 +63,7 @@ const Cart = () => {
         const year = today.getFullYear();
         const date = today.getDate();
         const orderDate = `${date}/${month}/${year}`;
-        const newMaximumQuantity = maximumQuantity-amount;
+        const newMaximumQuantity = maximumQuantity - amount;
         formData.set("quantity", amount);
         formData.set("total", totalPrice);
         formData.set("date", orderDate);
@@ -71,11 +72,13 @@ const Cart = () => {
         axios
             .post("http://localhost:8000/api/save_order/", formData)
             .then(() => {
+                setOpenWaitingModal(false);
                 event.target.reset();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setOpenModal(true);
             })
             .catch((error) => {
+                setOpenWaitingModal(false);
                 toast.error("Error Saving Order");
                 console.log(error);
             });
@@ -109,15 +112,23 @@ const Cart = () => {
                             </div>
                         </Modal.Body>
                     </Modal>
+                    <Modal className="bg-opacity-70 items-center align-middle lg:pt-56" show={openWaitingModal} size="sm" onClose={() => setAmount(0)} popup>
+                        <Modal.Body className="mx-auto">
+                            <div className="flex flex-row gap-5">
+                                <Spinner color="success" aria-label="Success spinner example" size="lg" />
+                                <h3 className="text-lg text-gray-500">Please Wait</h3>
+                            </div>
+                        </Modal.Body>
+                    </Modal>
                     <div className="bg-white rounded-xl text-black px-12 py-6 w-full lg:w-1/2">
                         <h4 className="text-3xl font-semibold text-black-600">My Cart</h4>
                         <div className="flex flex-col lg:flex-row items-center justify-around mt-8">
                             <img src={coconutPlant} alt="icon" className="w-12 h-12 rounded-full mx-2" />
                             <h6 className="mx-2 text-gray-500  mt-3 lg:mt-0">{"Coconut Plant"}</h6>
-                            <div className='flex flex-row items-center mx-2 mt-3 lg:mt-0'>
-                                <button className='bg-green-500 py-1 px-4 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => Math.max(prev - 1, 1))}>-</button>
-                                <span className='py-4 px-6 rounded-lg text-gray-500'>{amount}</span>
-                                <button className='bg-green-500 py-1 px-3 rounded-lg text-white text-3xl' onClick={() => setAmount((prev) => Math.min(prev + 1, maximumQuantity))}>+</button>
+                            <div className='flex flex-row items-center mx-2 mt-3 lg:mt-0 bg-gray-200 rounded-lg h-11'>
+                                <button className='bg-green-500 py-1 px-4 rounded-l-lg text-white text-3xl h-full' onClick={() => setAmount((prev) => Math.max(prev - 1, 1))}>-</button>
+                                <span className='w-14 text-center bg-gray-200 rounded-lg text-gray-500 font-semibold'>{amount}</span>
+                                <button className='bg-green-500 py-1 px-4 rounded-r-lg text-white text-2xl h-full' onClick={() => setAmount((prev) => Math.min(prev + 1, maximumQuantity))}>+</button>
                             </div>
                             <button className='bg-white border-2 mt-3 lg:mt-0 border-red-500 text-red-500 font-semibold p-2 rounded-xl' onClick={() => setAmount(0)}>Remove</button>
                         </div>
@@ -196,7 +207,7 @@ const Cart = () => {
                                     </tr>
                                 </table>
                             </div>
-                            <button type="submit" className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around'>Complete Order</button>
+                            <button type="submit" className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around' onClick={() => setOpenWaitingModal(true)}>Complete Order</button>
                         </form>
 
                     </div>

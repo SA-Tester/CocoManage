@@ -4,6 +4,7 @@ import { TextInput, Modal } from "flowbite-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
+
 const Table = ({ fetchDashboardData }) => {
   const [employeeData, setEmployeeData] = useState([]);
   const [searchItem, setSearchItem] = useState("");
