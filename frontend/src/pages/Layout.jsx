@@ -37,7 +37,9 @@ const Layout = ({ children }) => {
 	return (
 		<React.Fragment>
 			{renderNavbar()}
+			<div className="pt-10">
 			{children}
+			</div>
 			{renderFooter()}
 		</React.Fragment>
 	);

@@ -332,7 +332,7 @@ const AdminDashboard = () => {
 	};
 
 	return (
-		<div className="flex flex-col w-full p-5 bg-green mt-5">
+		<div className="flex flex-col w-full p-5 bg-green mt-10">
 			<ToastContainer />
 
 			{/* Start of Sensor Data, Order and Attendance Count Display */}

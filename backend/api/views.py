@@ -254,7 +254,7 @@ class InitialSalaryDetailsView(APIView):
             salary_details_list.append(salary_details)
 
         return Response(salary_details_list, status=status.HTTP_200_OK)
-
+    
 # Views related to calculating salary of an employee
 @api_view(['POST'])
 def calculate_salary(request):
@@ -278,10 +278,10 @@ def get_dashboard_data(request):
     
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+    
 # View related to view profile details
 class UserProfileView(APIView):
-    user = User()
+    user = User(database_obj)
 
     def get(self, request, *args, **kwargs):
         user_id = request.query_params.get('user_id')
@@ -293,7 +293,7 @@ class UserProfileView(APIView):
 
 # View related to password change
 class ChangeUserPasswordView(APIView):
-    user = User()
+    user = User(database_obj)
 
     def post(self, request, *args, **kwargs):
         user_id = request.data.get('user_id')
