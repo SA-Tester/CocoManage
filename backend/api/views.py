@@ -10,7 +10,7 @@ from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
 from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
-from.classes.User import User
+from .classes.User import User
 import os
 import time
 
