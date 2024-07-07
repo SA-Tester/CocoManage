@@ -3,6 +3,7 @@ A comprehensive estate management system for Moorcock Estate
 
 <h4>To install Node packages run: </h4><p>npm install</p>
 <h4>To install Python packages run (navigate to backend folder): </h4><p>pip install -r requirements.txt</p> 
+<h5>pipreqs .</h5>
 <!--ol>
   <li>pip install djangorestframework</li>
   <li>pip install django-cors-headers</li>
