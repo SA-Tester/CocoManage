@@ -44,9 +44,13 @@ const AdminDashboard = () => {
 	const [sensorHumidityDates, setSensorHumidityDates] = useState([]);
 	const [sensorHumidityReadings, setSensorHumidityReadings] = useState([]);
 	const [sensorTemperatureDates, setSensorTemperatureDates] = useState([]);
-	const [sensorTemperatureReadings, setSensorTemperatureReadings] = useState([]);
+	const [sensorTemperatureReadings, setSensorTemperatureReadings] = useState(
+		[]
+	);
 	const [sensorSoilMoistureDates, setSensorSoilMoistureDates] = useState([]);
-	const [sensorSoilMoistureReadings, setSensorSoilMoistureReadings] = useState([]);
+	const [sensorSoilMoistureReadings, setSensorSoilMoistureReadings] = useState(
+		[]
+	);
 
 	// State variables to store additional dashboard data
 	const [orderCount, setOrderCount] = useState(0);
@@ -62,7 +66,22 @@ const AdminDashboard = () => {
 		getTodaysSensorData();
 		getHistoricSensorData();
 		getAdminDashboardData();
-	}, [4]);
+	}, [3]);
+
+	// Using functions to update sensor information and dashboard values every 1 minute
+	useEffect(() => {
+		console.log("Initializing Interval");
+		const interval = setInterval(() => {
+			getTodaysSensorData();
+			getHistoricSensorData();
+			getAdminDashboardData();
+		}, 60000);
+
+		return () => {
+			console.log("Clearing Interval");
+			clearInterval(interval);
+		};
+	}, []);
 
 	// Function to get the nut count for the graph
 	function get_nut_count() {
@@ -171,26 +190,16 @@ const AdminDashboard = () => {
 						: response.data["Temperature"]
 				);
 				setHumidity(
-					response.data["Humidity"] == null ? 0 : response.data["Temperature"]
+					response.data["Humidity"] == null ? 0 : response.data["Humidity"]
+				);
+				setSoilMoisture(
+					response.data["Soil Moisture"] == null
+						? 0
+						: response.data["Soil Moisture"]
 				);
 				setRainfall(
-					response.data["Rainfall"] == null ? 0 : response.data["Temperature"]
+					response.data["Rainfall"] == null ? 0 : response.data["Rainfall"]
 				);
-
-				if (
-					response.data["Soil Moisture"] != null &&
-					response.data["Soil Moisture"] === 1
-				) {
-					setSoilMoisture("Wet");
-				} else if (
-					response.data["Soil Moisture"] != null &&
-					response.data["Soil Moisture"] === 0
-				) {
-					setSoilMoisture("Dry");
-				} else {
-					setSoilMoisture("--");
-				}
-
 				console.log(response.data);
 			})
 			.catch((error) => {
@@ -231,8 +240,7 @@ const AdminDashboard = () => {
 			.catch((error) => {
 				console.log(error);
 			});
-	
-	}
+	};
 
 	// Function to handle form submission of the nut harvest
 	const handleSubmit = (event) => {
@@ -358,7 +366,7 @@ const AdminDashboard = () => {
 						<div className="bg-white rounded-lg p-5">
 							<h1>Relative Humidity</h1>
 							<div className="text-center">
-								<h3 className="text-5xl pt-3 text-blue">{humidity} %</h3>
+								<h3 className="text-5xl pt-3 text-blue">{humidity}%</h3>
 								<div>
 									<LineChart
 										xAxis={[
@@ -426,7 +434,9 @@ const AdminDashboard = () => {
 						<div className="bg-white rounded-lg p-5">
 							<h1>Staff Attendance</h1>
 							<div className="text-center">
-								<h3 className="text-5xl text-blue py-5">{tdoayAttendanceCount}/ {totalEmployees}</h3>
+								<h3 className="text-5xl text-blue py-5">
+									{tdoayAttendanceCount}/ {totalEmployees}
+								</h3>
 								<h6 className="italic text-xs">
 									Last Recorded Attendance:
 									<br /> 5th June 2024 7:33 a.m.

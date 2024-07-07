@@ -103,3 +103,12 @@ class Attendance():
                     i += 1
                     
         return att_dict
+    
+
+    # Function to get today attendance count
+    def get_today_attendance():
+        pass
+
+    # Function to get last recorded attendance date and time
+    def get_last_recorded_attendance():
+        pass

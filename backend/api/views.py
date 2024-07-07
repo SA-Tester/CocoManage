@@ -160,9 +160,10 @@ class GetAdditionalAdminDataView(APIView):
         total_orders = self.order.get_total_orders()
         first_order_date = self.order.get_first_order_date()
         last_order_date = self.order.get_last_order_date()
-        
+
         total_employees = self.employee.get_total_employees(database_obj)
         today_employees = 0
+        last_recorded_attendance = "23/07/2024"
 
         data = {"total_orders": total_orders, 
                 "first_order_date": first_order_date, 
