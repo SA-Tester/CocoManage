@@ -244,7 +244,7 @@ class UpdateUnitPriceView(APIView):
 # Views related to retrieving salary details of employees
 class InitialSalaryDetailsView(APIView):
     def get(self, request, *args, **kwargs):
-        employees = database_obj.child("Employee").get().val()
+        employees = Payroll.get_all_employee_details(database_obj)                 
         salary_details_list = []
 
         for employee_id, employee_details in employees.items():
@@ -271,32 +271,8 @@ def calculate_salary(request):
 @api_view(['GET'])
 def get_dashboard_data(request):
     try:
-        current_date = datetime.datetime.now()
-        year = str(current_date.year)
-        month = current_date.strftime("%B")
-
-        employees = database_obj.child("Employee").get().val()
-        total_employees = len(employees) if employees else 0
-
-        payroll_data = database_obj.child("Payroll").child(year).child(month).get().val()
-        total_salary_paid = 0
-
-        if payroll_data:
-            for employee_id, salary_details in payroll_data.items():
-                net_salary = salary_details.get("net_salary", 0)
-                if net_salary:
-                    total_salary_paid += net_salary
-
-
-        dashboard_data = {
-            "current_month": month,
-            "current_year": year,
-            "total_employees": total_employees,
-            "total_salary_paid": total_salary_paid
-        }
-
-        return Response(dashboard_data, status=status.HTTP_200_OK)
-
-
+       dashboard_data = Payroll.get_dashboard_data(database_obj)
+       return Response(dashboard_data, status=status.HTTP_200_OK)
+    
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

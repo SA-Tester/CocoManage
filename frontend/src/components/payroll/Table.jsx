@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { TextInput } from "flowbite-react";
+import { TextInput, Modal } from "flowbite-react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const Table = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [searchItem, setSearchItem] = useState("");
+  const [modalData, setModalData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -31,7 +35,7 @@ const Table = () => {
     );
   };
 
-  const calculateSalary = async (id) => {
+  const calculateSalary = async (id, generateReport = false) => {
     const employee = employeeData.find((item) => item.employee_id === id);
     try {
       const response = await axios.post(
@@ -44,14 +48,82 @@ const Table = () => {
       );
       console.log(response.data);
       const updatedEmployee = response.data;
+
       setEmployeeData((prevData) =>
         prevData.map((item) =>
           item.employee_id === id ? { ...item, ...updatedEmployee } : item
         )
       );
+
+      //for modal and report
+      const displayData = [
+        { label: "Employee ID", value: updatedEmployee.employee_id },
+        { label: "Employee Name", value: updatedEmployee.name },
+        { label: "Worked Days", value: updatedEmployee.worked_days },
+        { label: "Basic Salary", value: `Rs. ${updatedEmployee.basic_salary}` },
+        {
+          label: "Additional Payment",
+          value: `Rs. ${updatedEmployee.additional_payment}`,
+        },
+        { label: "Total Salary", value: `Rs. ${updatedEmployee.total_salary}` },
+        { label: "Extra Amount", value: `Rs. ${updatedEmployee.extra_amount}` },
+        { label: "E.P.F.", value: `Rs. ${updatedEmployee.epf}` },
+        { label: "Cash Advance", value: `Rs. ${updatedEmployee.cash_advance}` },
+        {
+          label: "Festival Loan",
+          value: `Rs. ${updatedEmployee.festival_loan}`,
+        },
+        {
+          label: "Total Deductions",
+          value: `Rs. ${updatedEmployee.total_deductions}`,
+        },
+        { label: "Net Salary", value: `Rs. ${updatedEmployee.net_salary}` },
+      ];
+
+      //modal
+      if (!generateReport) {
+        setModalData(displayData);
+        setIsModalOpen(true);
+      } else {
+        //report
+        generateSalaryReport(displayData, updatedEmployee.name);
+      }
     } catch (error) {
       console.error("Error calculating salary:", error);
     }
+  };
+
+  const generateSalaryReport = (displayData, employee_name) => {
+    const doc = new jsPDF();
+
+    // Title
+    const title = `Salary Report for ${employee_name}`;
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const textWidth = doc.getTextWidth(title);
+    const xOffset = (pageWidth - textWidth) / 2;
+    doc.text(title, xOffset, 20);
+
+    const tableBody = displayData.map((item) => [item.label, item.value]);
+
+    doc.autoTable({
+      startY: 40,
+      head: [["Field", "Value"]],
+      body: tableBody,
+      theme: "grid",
+    });
+
+    const margin = 10;
+    doc.setLineWidth(0.5);
+    doc.rect(
+      margin,
+      margin,
+      doc.internal.pageSize.getWidth() - margin * 2,
+      doc.internal.pageSize.getHeight() - margin * 2
+    );
+
+    doc.save(`salary_report_${employee_name}.pdf`);
   };
 
   //filter based on employee id
@@ -85,33 +157,12 @@ const Table = () => {
               Worked Days
             </th>
             <th className="px-4 py-2 text-left text-green font-semibold">
-              Basic Salary
-            </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
-              Additional Payment
-            </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
-              Total Salary
-            </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
-              Extra Amount
-            </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
-              E.P.F
-            </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
               Festival Loans
             </th>
             <th className="px-4 py-2 text-left text-green font-semibold">
               Cash Advances
             </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
-              Total Deductions
-            </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
-              Net Salary
-            </th>
-            <th className="px-4 py-2 text-left text-green font-semibold">
+            <th className="px-4 py-2 text-green font-semibold text-center">
               Action
             </th>
           </tr>
@@ -125,13 +176,6 @@ const Table = () => {
               <td className="px-4 py-2 font-bold">{item.employee_id}</td>
               <td className="px-4 py-2">{item.name}</td>
               <td className="px-4 py-2 text-center">{item.worked_days}</td>
-              <td className="px-4 py-2 text-center">{item.basic_salary}</td>
-              <td className="px-4 py-2 text-center">
-                {item.additional_payment}
-              </td>
-              <td className="px-4 py-2 text-center">{item.total_salary}</td>
-              <td className="px-4 py-2 text-center">{item.extra_amount}</td>
-              <td className="px-4 py-2 text-center">{item.epf}</td>
               <td className="px-4 py-2">
                 <TextInput
                   id="festival_loan"
@@ -152,22 +196,54 @@ const Table = () => {
                   onChange={(e) => handleInputChange(e, item.employee_id)}
                 />
               </td>
-              <td className="px-4 py-2 text-center">{item.total_deductions}</td>
-              <td className="px-4 py-2 text-center font-extrabold">
-                {item.net_salary}
-              </td>
-              <td className="px-4 py-2">
+              <td className="px-4 py-2 float justify-center">
                 <button
                   onClick={() => calculateSalary(item.employee_id)}
-                  className="bg-light-green text-white px-4 py-2 rounded"
+                  className="bg-light-green text-white px-4 py-2 ml-10 rounded transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 hover:!bg-green duration-300 ..."
                 >
                   Calculate
+                </button>
+                <button
+                  onClick={() => calculateSalary(item.employee_id, true)}
+                  className="bg-light-green text-white px-4 py-2 rounded ml-4 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 hover:!bg-green duration-300 ..."
+                >
+                  Report
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {modalData && (
+        <Modal
+          show={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          size="md"
+        >
+          <Modal.Header>
+            Salary Details for{" "}
+            {modalData.find((item) => item.label === "Employee Name").value}
+          </Modal.Header>
+          <Modal.Body>
+            <div className="space-y-6">
+              {modalData.map(({ label, value }) => (
+                <div key={label} className="flex justify-between">
+                  <span className="font-semibold">{label}:</span>
+                  <span>{value}</span>
+                </div>
+              ))}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              className="bg-green text-white px-4 py-2 rounded"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </div>
   );
 };
