@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import logo from "../../assets/logo.png";
 import { Avatar } from "flowbite-react";
 
+// Navbar for Customer (User) Side of the Application
 const Navbar3 = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -31,22 +32,6 @@ const Navbar3 = () => {
 					>
 						Contact Us
 					</a>
-                    <div className="hidden md:flex space-x-4">
-					<a
-						href="/signin"
-						className="bg-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
-					>
-						Sign In
-					</a>
-				</div>
-                <div className="hidden md:flex space-x-4">
-					<a
-						href="/signup"
-						className="bg-green text-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
-					>
-						Sign Up
-					</a>
-				</div>
 				</div>
 				<div className="md:hidden">
 					<button
@@ -89,18 +74,6 @@ const Navbar3 = () => {
 						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
 					>
 						Contact Us
-					</a>
-					<a
-						href="/signin"
-						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
-					>
-						Sign In
-					</a>
-                    <a
-						href="/signup"
-						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
-					>
-						Sign Up
 					</a>
 				</div>
 			)}

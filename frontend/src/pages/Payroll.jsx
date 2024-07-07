@@ -1,18 +1,35 @@
-import React, { lazy } from "react";
+import React, { lazy, useState, useEffect } from "react";
 import { Card } from "flowbite-react";
-const Navbar = lazy(() => import("../components/common/Navbar2"));
-const Footer = lazy(() => import("../components/common/Footer"));
+import axios from "axios";
 const Table = lazy(() => import("../components/payroll/Table"));
 
 const Payroll = () => {
+	const [dashboardData, setDashboardData] = useState({
+		current_month: "",
+		current_year: "",
+		total_employees: 0,
+		total_salary_paid: 0,
+	});
+
+	useEffect(() => {
+		const fetchDashboardData = async () => {
+			try {
+				const response = await axios.get(
+					"http://127.0.0.1:8000/api/payroll_dashboard_data/"
+				);
+				setDashboardData(response.data);
+			} catch (error) {
+				console.error("Error fetching dashboard data:", error);
+			}
+		};
+
+		fetchDashboardData();
+	}, []);
+
 	return (
 		<React.Fragment>
-			{/* Navbar */}
-			{/* <div style={{ position: "relative", zIndex: 10 }}>
-        <Navbar />
-      </div> */}
 			{/*Main Title*/}
-			<section className="bg-green mt-10 p-8">
+			<section className="bg-green mt-3 md:mt-3 lg:mt-7 p-8">
 				<h1 className="text-xl font-bold text-paleCream md:text-2xl xl:text-3xl text-left">
 					Payroll Management Dashboard
 				</h1>
@@ -22,39 +39,45 @@ const Payroll = () => {
 			<div className="bg-green pt-6 pb-12">
 				<section className="px-8 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-8">
 					{/*Month*/}
-					<div className="col-span-1 md:col-span-4 lg:col-span-3">
+					<div className="col-span-1 md:col-span-4 lg:col-span-4">
 						<Card className="h-full max-w-sm mx-auto rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
 							<div className="p-6 text-center">
 								<h3 className="text-xl font-semibold text-green">Month</h3>
 								<h1 className="text-2xl md:text-3xl xl:text-4xl font-bold text-light-green py-4">
-									May
+									{dashboardData.current_month}
 								</h1>
-								<p className="text-base text-black">2024</p>
+								<p className="text-base text-black">
+									{dashboardData.current_year}
+								</p>
 							</div>
 						</Card>
 					</div>
-					{/*Total Employrr*/}
-					<div className="col-span-1 md:col-span-4 lg:col-span-3">
+					{/*Total Employees*/}
+					<div className="col-span-1 md:col-span-4 lg:col-span-4">
 						<Card className="h-full max-w-sm mx-auto rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
 							<div className="p-6 text-center">
 								<h3 className="text-xl font-semibold text-green">
-									Total Employee
+									Total Employees
 								</h3>
 								<h1 className="text-2xl md:text-3xl xl:text-4xl font-bold text-light-green py-4">
-									200
+									{dashboardData.total_employees}
 								</h1>
 								<p className="text-base text-black">Employees</p>
 							</div>
 						</Card>
 					</div>
-					{/*Payroll Analysis Graph*/}
-					<div className="col-span-1 md:col-span-12 lg:col-span-6">
-						<Card className="h-full max-w-full mx-auto rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+
+					{/*Total salary paid*/}
+					<div className="col-span-1 md:col-span-4 lg:col-span-4">
+						<Card className="h-full max-w-sm mx-auto rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
 							<div className="p-6 text-center">
 								<h3 className="text-xl font-semibold text-green">
-									Monthly Payroll Analysis
+									Total Salary Paid
 								</h3>
-								{/* You can add your graph here */}
+								<h1 className="text-2xl md:text-3xl xl:text-4xl font-bold text-light-green py-4">
+									{dashboardData.total_salary_paid}
+								</h1>
+								<p className="text-base text-black">Rs.</p>
 							</div>
 						</Card>
 					</div>
@@ -67,9 +90,6 @@ const Payroll = () => {
 					<Table />
 				</div>
 			</div>
-
-			{/* Footer */}
-			<Footer />
 		</React.Fragment>
 	);
 };

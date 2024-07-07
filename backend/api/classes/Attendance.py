@@ -10,6 +10,8 @@ class Attendance():
     current_month = None
     current_day = None
     current_time = None
+    today_attendance_count = 0
+    last_recorded_attendance = None
     main_dir = 'media'
     registry_dir = 'registry'
 
@@ -58,7 +60,7 @@ class Attendance():
                                          align=True, 
                                          enforce_detection=True)
                 
-                # print(file, result["verified"])
+                # print(file, result["verified"], result["distance"])
                 if result["distance"] < dissimilarity_index and result["verified"] == True:
                     dissimilarity_index = result["distance"]
                     identified_emp = file.split(".")[0]
@@ -101,5 +103,28 @@ class Attendance():
                 if today_time != None:
                     att_dict[i] = {"emp_no": emp_no, "emp_name": emp_name, "today_time": today_time, "tot_att_per_month": tot_att_per_month}
                     i += 1
-
+                    
         return att_dict
+    
+
+    # Function to get today attendance count
+    def get_today_attendance(self, database_obj):
+        # Initialize the current date and time
+        self.init_date_time()
+
+        att_table = database_obj.child("Attendance").child(self.current_year).child(self.current_month).get()
+        present_count = 0
+        last_updated_datetime = None
+        
+        if att_table.each() != None:
+            for att in att_table.each():
+                today_time = att.val().get(str(self.current_day))
+
+                if today_time != None:
+                    present_count += 1
+                    last_updated_datetime = f'{self.current_year}-{self.current_month}-{self.current_day} {today_time}'
+                    
+        self.today_attendance_count = present_count
+        self.last_recorded_attendance = last_updated_datetime
+
+        return (self.today_attendance_count, self.last_recorded_attendance)

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import logo from "../../assets/logo.png";
 import { Avatar } from "flowbite-react";
 
+// Navbar for Admin Side of the Application
 const Navbar1 = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -108,10 +109,10 @@ const Navbar1 = () => {
 						Payroll
 					</a>
 					<a
-						href="/signin"
+						href="/client_account"
 						className="block py-2 px-4 text-black rounded-lg hover:bg-grey transition duration-300 ease-in-out"
 					>
-						Sign In
+						Settings
 					</a>
 				</div>
 			)}

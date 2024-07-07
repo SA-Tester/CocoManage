@@ -1,11 +1,6 @@
 import React, { useState, lazy, useEffect } from 'react';
-
-const Navbar = lazy(() => import("../components/common/Navbar1"));
-const Footer = lazy(() => import("../components/common/Footer"));
-
-import customerIcon from '../assets/customer-icons.png';
-
 import axios from 'axios';
+import customerIcon from '../assets/customer-icons.png';
 
 const ClientAccount = () => {
     const [profile, setProfile] = useState({
@@ -89,8 +84,9 @@ const ClientAccount = () => {
 
     return (
         <React.Fragment>
-            <div className="flex flex-col min-h-screen">
-                <Navbar />
+            <div className="flex flex-col min-h-screen pt-20">
+                {/* Navbar */}
+
                 {/* Main Content */}
                 <div className="flex flex-col lg:flex-row justify-center items-start bg-gray-200 p-8 text-black gap-8 flex-grow" style={{ marginTop: '25px' }}>
                     <div className='flex flex-col gap-6 w-full lg:w-1/4'>
@@ -175,9 +171,6 @@ const ClientAccount = () => {
                         </div>
                     )}
                 </div>
-
-                {/* Footer */}
-                <Footer />
             </div>
         </React.Fragment>
     );

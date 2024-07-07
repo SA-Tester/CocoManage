@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import Navbar1 from "../components/common/Navbar1";
 import Navbar2 from "../components/common/Navbar2";
 import Navbar3 from "../components/common/Navbar3";
+import Footer from "../components/common/Footer";
 
 const Layout = ({ children }) => {
 	const location = useLocation();
@@ -16,17 +17,29 @@ const Layout = ({ children }) => {
 		if (location.pathname === "/attendance") {
 			return <Navbar2 />;
 		}
-		if (location.pathname === "/" || location.pathname === "/order" || location.pathname === "/contact_us") {
+		if (
+			location.pathname === "/" ||
+			location.pathname === "/order" ||
+			location.pathname === "/contact_us" ||
+			location.pathname === "/cart"
+		) {
 			return <Navbar3 />;
 		}
 		return <Navbar1 />;
 	};
+	const renderFooter = () => {
+		if (isSignInOrSignUp) {
+			return null;
+		}
+		return <Footer />;
+	};
 
 	return (
-		<div>
+		<React.Fragment>
 			{renderNavbar()}
-			<div className={isSignInOrSignUp ? "" : "pt-12"}>{children}</div>
-		</div>
+			{children}
+			{renderFooter()}
+		</React.Fragment>
 	);
 };
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import logo from "../../assets/logo.png";
 
+// Navbar for Attendance Component of Application
 const Navbar2 = () => {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -17,6 +18,12 @@ const Navbar2 = () => {
 						className="bg-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
 					>
 						Sign In
+					</a>
+					<a
+						href="/signup"
+						className="bg-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
+					>
+						Sign Up
 					</a>
 				</div>
 				<div className="md:hidden">
@@ -48,6 +55,12 @@ const Navbar2 = () => {
 						className="block bg-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
 					>
 						Sign In
+					</a>
+					<a
+						href="/signup"
+						className="block bg-white py-2 px-4 rounded-md border border-black hover:bg-gray-300 transition duration-300 ease-in-out"
+					>
+						Sign Up
 					</a>
 				</div>
 			)}

@@ -1,5 +1,6 @@
 import React, { lazy, useEffect } from "react";
 import { Button } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
 const Navbar = lazy(() => import("../components/common/Navbar2"));
 const Footer = lazy(() => import("../components/common/Footer"));
 import img1 from "../assets/image1.jpg";
@@ -9,6 +10,12 @@ import "aos/dist/aos.css";
 import AOS from "aos";
 
 const home = () => {
+	const navigate = useNavigate();
+
+	const handleOrderClick = () => {
+		navigate("/order");
+	};
+
 	useEffect(() => {
 		AOS.init({
 			duration: 2500,
@@ -18,16 +25,8 @@ const home = () => {
 
 	return (
 		<React.Fragment>
-			{/* Navbar */}
-			{/* <div style={{ position: "relative", zIndex: 10 }}>
-				<Navbar />
-			</div> */}
-			<div>
-				<div></div>
-			</div>
-
 			{/* Hero Section */}
-			<div className="flex w-full flex-col sm:pt-10 md:pt-6 lg:pt-10">
+			<div className="flex w-full flex-col sm:pt-3 md:pt-4 lg:pt-7">
 				<section className="grid grid-cols-12 bg-green">
 					{/* Content Section */}
 					<div className="p-6 lg:mt-20 lg:pt-20 col-span-12 md:col-span-6 lg:col-span-7">
@@ -45,8 +44,9 @@ const home = () => {
 							size={"xs"}
 							className="md:w-full mt-7 rounded-lg bg-white font-bold border-green uppercase  text-green transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 hover:!bg-paleCream duration-300 ...  flex items-center"
 							style={{ height: "40px", width: "100px" }}
+							onClick={handleOrderClick}
 						>
-							Sign Up
+							Order Now
 						</Button>
 					</div>
 					{/* Image Section */}
@@ -137,9 +137,6 @@ const home = () => {
 					</div>
 				</section>
 			</div>
-
-			{/* Footer */}
-			<Footer />
 		</React.Fragment>
 	);
 };

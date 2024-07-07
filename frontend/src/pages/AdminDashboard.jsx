@@ -32,11 +32,57 @@ const AdminDashboard = () => {
 	const [todaysWeatherCode, setTodaysWeatherCode] = useState("");
 	const [todaysTemperature, setTodaysTemperature] = useState(0);
 
+	// State variables to store sensor readings for current date
+	const [temperature, setTemperature] = useState(0);
+	const [humidity, setHumidity] = useState(0);
+	const [soilMoisture, setSoilMoisture] = useState("--");
+	const [rainfall, setRainfall] = useState(0);
+
+	// State variables to store histroic sensor readings for graph
+	const [sensorRainfallDates, setSensorRainfallDates] = useState([]);
+	const [sensorRainfallReadings, setSensorRainfallReadings] = useState([]);
+	const [sensorHumidityDates, setSensorHumidityDates] = useState([]);
+	const [sensorHumidityReadings, setSensorHumidityReadings] = useState([]);
+	const [sensorTemperatureDates, setSensorTemperatureDates] = useState([]);
+	const [sensorTemperatureReadings, setSensorTemperatureReadings] = useState(
+		[]
+	);
+	const [sensorSoilMoistureDates, setSensorSoilMoistureDates] = useState([]);
+	const [sensorSoilMoistureReadings, setSensorSoilMoistureReadings] = useState(
+		[]
+	);
+
+	// State variables to store additional dashboard data
+	const [orderCount, setOrderCount] = useState(0);
+	const [firstOrderDate, setFirstOrderDate] = useState("");
+	const [lastOrderDate, setLastOrderDate] = useState("");
+	const [tdoayAttendanceCount, setTodayAttendanceCount] = useState(0);
+	const [totalEmployees, setTotalEmployees] = useState(0);
+	const [lastUpdatedAttendace, setLastUpdatedAttendance] = useState("");
+
 	// Using functions to display information on load
 	useEffect(() => {
 		get_nut_count();
 		get_weather();
-	}, [2]);
+		getTodaysSensorData();
+		getHistoricSensorData();
+		getAdminDashboardData();
+	}, [3]);
+
+	// Using functions to update sensor information and dashboard values every 1 minute
+	useEffect(() => {
+		console.log("Initializing Interval");
+		const interval = setInterval(() => {
+			getTodaysSensorData();
+			getHistoricSensorData();
+			getAdminDashboardData();
+		}, 10000);
+
+		return () => {
+			console.log("Clearing Interval");
+			clearInterval(interval);
+		};
+	}, []);
 
 	// Function to get the nut count for the graph
 	function get_nut_count() {
@@ -134,6 +180,70 @@ const AdminDashboard = () => {
 		}
 	}
 
+	// Function to get Today's Sensor Data
+	const getTodaysSensorData = () => {
+		axios
+			.get("http://localhost:8000/api/get_todays_sensors/")
+			.then((response) => {
+				setTemperature(
+					response.data["Temperature"] == null
+						? 0
+						: response.data["Temperature"]
+				);
+				setHumidity(
+					response.data["Humidity"] == null ? 0 : response.data["Humidity"]
+				);
+				setSoilMoisture(
+					response.data["Soil Moisture"] == null
+						? 0
+						: response.data["Soil Moisture"]
+				);
+				setRainfall(
+					response.data["Rainfall"] == null ? 0 : response.data["Rainfall"]
+				);
+				console.log(response.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	// Function to get historic rainfall sensor readings
+	const getHistoricSensorData = () => {
+		axios
+			.get("http://localhost:8000/api/get_historical_sensors/")
+			.then((response) => {
+				setSensorRainfallDates(response.data["Rainfall"][0]);
+				setSensorRainfallReadings(response.data["Rainfall"][1]);
+				setSensorHumidityDates(response.data["Humidity"][0]);
+				setSensorHumidityReadings(response.data["Humidity"][1]);
+				setSensorTemperatureDates(response.data["Temperature"][0]);
+				setSensorTemperatureReadings(response.data["Temperature"][1]);
+				setSensorSoilMoistureDates(response.data["Soil Moisture"][0]);
+				setSensorSoilMoistureReadings(response.data["Soil Moisture"][1]);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	// Function to get other admin dashboard data (Orders and Employees)
+	const getAdminDashboardData = () => {
+		axios
+			.get("http://localhost:8000/api/get_other_admin_data/")
+			.then((response) => {
+				setOrderCount(response.data["total_orders"]);
+				setFirstOrderDate(response.data["first_order_date"]);
+				setLastOrderDate(response.data["last_order_date"]);
+				setTodayAttendanceCount(response.data["today_employees"]);
+				setTotalEmployees(response.data["total_employees"]);
+				setLastUpdatedAttendance(response.data["last_recorded_attendance"]);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
 	// Function to handle form submission of the nut harvest
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -209,6 +319,7 @@ const AdminDashboard = () => {
 				axios
 					.post("http://localhost:8000/api/delete_pick/", formData)
 					.then((response) => {
+						get_nut_count();
 						toast.success("Pick Deleted Successfully");
 						console.log(response.data);
 					})
@@ -225,21 +336,31 @@ const AdminDashboard = () => {
 			<ToastContainer />
 
 			{/* Start of Sensor Data, Order and Attendance Count Display */}
-			<div className="flex flex-col md:flex-row mb-5">
-				<div className="flex-auto w-full md:w-1/2 p-4">
+			<div className="flex flex-col md:flex-col mb-5">
+				<div className="flex-auto w-full md:w-full p-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-black font-bold">
 						<div className="bg-white rounded-lg p-5">
 							<h1>Temperature</h1>
 							<div className="text-center">
 								<h3 className="text-5xl pt-3 text-blue">
-									35<sup>o</sup>C
+									{temperature}
+									<sup>o</sup>C
 								</h3>
 								<div>
 									<LineChart
-										xAxis={[{ data: [1, 2, 3, 4, 5] }]}
-										series={[{ curve: "linear", data: [2, 5.5, 1, 3.5, 0.5] }]}
+										xAxis={[
+											{
+												scaleType: "point",
+												data: sensorTemperatureDates,
+												format: (value) => value,
+												tickNumber: sensorTemperatureDates.length,
+											},
+										]}
+										series={[
+											{ curve: "linear", data: sensorTemperatureReadings },
+										]}
 										height={150}
-										margin={{ left: 30, right: 10, top: 10, bottom: 20 }}
+										margin={{ left: 40, right: 40, top: 10, bottom: 20 }}
 										grid={{ vertical: true, horizontal: true }}
 									/>
 								</div>
@@ -248,13 +369,20 @@ const AdminDashboard = () => {
 						<div className="bg-white rounded-lg p-5">
 							<h1>Relative Humidity</h1>
 							<div className="text-center">
-								<h3 className="text-5xl pt-3 text-blue">35 %</h3>
+								<h3 className="text-5xl pt-3 text-blue">{humidity}%</h3>
 								<div>
 									<LineChart
-										xAxis={[{ data: [1, 2, 3, 4, 5] }]}
-										series={[{ curve: "linear", data: [2, 8.5, 1.5, 5, 3.2] }]}
+										xAxis={[
+											{
+												scaleType: "point",
+												data: sensorHumidityDates,
+												format: (value) => value,
+												tickNumber: sensorHumidityDates.length,
+											},
+										]}
+										series={[{ curve: "linear", data: sensorHumidityReadings }]}
 										height={150}
-										margin={{ left: 30, right: 10, top: 10, bottom: 20 }}
+										margin={{ left: 40, right: 40, top: 10, bottom: 20 }}
 										grid={{ vertical: true, horizontal: true }}
 									/>
 								</div>
@@ -263,13 +391,22 @@ const AdminDashboard = () => {
 						<div className="bg-white rounded-lg p-5">
 							<h1>Soil Moisture</h1>
 							<div className="text-center">
-								<h3 className="text-5xl pt-3 text-blue">35 %</h3>
+								<h3 className="text-5xl pt-3 text-blue">{soilMoisture}</h3>
 								<div>
 									<LineChart
-										xAxis={[{ data: [1, 2, 3, 4, 5] }]}
-										series={[{ curve: "linear", data: [2, 2, 2.5, 1.5, 3] }]}
+										xAxis={[
+											{
+												scaleType: "point",
+												data: sensorSoilMoistureDates,
+												format: (value) => value,
+												tickNumber: sensorSoilMoistureDates.length,
+											},
+										]}
+										series={[
+											{ curve: "linear", data: sensorSoilMoistureReadings },
+										]}
 										height={150}
-										margin={{ left: 30, right: 10, top: 10, bottom: 20 }}
+										margin={{ left: 40, right: 40, top: 10, bottom: 20 }}
 										grid={{ vertical: true, horizontal: true }}
 									/>
 								</div>
@@ -278,13 +415,20 @@ const AdminDashboard = () => {
 						<div className="bg-white rounded-lg p-5">
 							<h1>Rainfall</h1>
 							<div className="text-center">
-								<h3 className="text-5xl pt-3 text-blue">35 mm</h3>
+								<h3 className="text-5xl pt-3 text-blue">{rainfall} mm</h3>
 								<div>
 									<LineChart
-										xAxis={[{ data: [1, 2, 3, 4, 5] }]}
-										series={[{ curve: "linear", data: [2, 4, 2, 6, 2] }]}
+										xAxis={[
+											{
+												scaleType: "point",
+												data: sensorRainfallDates,
+												format: (value) => value,
+												tickNumber: sensorRainfallDates.length,
+											},
+										]}
+										series={[{ curve: "linear", data: sensorRainfallReadings }]}
 										height={150}
-										margin={{ left: 30, right: 10, top: 10, bottom: 20 }}
+										margin={{ left: 40, right: 40, top: 10, bottom: 20 }}
 										grid={{ vertical: true, horizontal: true }}
 									/>
 								</div>
@@ -293,26 +437,28 @@ const AdminDashboard = () => {
 						<div className="bg-white rounded-lg p-5">
 							<h1>Staff Attendance</h1>
 							<div className="text-center">
-								<h3 className="text-5xl text-blue py-5">29/ 60</h3>
+								<h3 className="text-5xl text-blue py-5">
+									{tdoayAttendanceCount}/ {totalEmployees}
+								</h3>
 								<h6 className="italic text-xs">
 									Last Recorded Attendance:
-									<br /> 5th June 2024 7:33 a.m.
+									<br /> {lastUpdatedAttendace}
 								</h6>
 							</div>
 						</div>
 						<div className="bg-white rounded-lg p-5">
 							<h1>Order Summary</h1>
 							<div className="text-center">
-								<h3 className="text-5xl pt-5 text-blue">128</h3>
+								<h3 className="text-5xl pt-5 text-blue">{orderCount}</h3>
 								<h3 className="text-lg text-blue">Orders Completed</h3>
 								<div className="flex justify-between text-xs italic mt-2">
 									<h6>
 										First Order:
-										<br /> 12th May 2024
+										<br /> {firstOrderDate}
 									</h6>
 									<h6>
 										Last Order:
-										<br /> 30th May 2024
+										<br /> {lastOrderDate}
 									</h6>
 								</div>
 							</div>
@@ -322,7 +468,7 @@ const AdminDashboard = () => {
 				{/* Start of Sensor Data, Order and Attendance Count Display */}
 
 				{/* Start of Nut Harvest Form and Graph */}
-				<div className="flex-auto w-full md:w-1/2 p-4 rounded-lg shadow-sm">
+				<div className="flex-auto w-full md:w-full p-4 rounded-lg shadow-sm">
 					<div className="grid grid-cols-1 gap-8 font-bold bg-white rounded-lg p-5">
 						<form
 							className="border-2 rounded-lg border-black p-5"
@@ -379,7 +525,7 @@ const AdminDashboard = () => {
 										onChange={(e) => setNutCount(e.target.value)}
 									/>
 								</div>
-								<div className="flex flex-col justify-center w-full">
+								{/* <div className="flex flex-col justify-center w-full">
 									<div className="mb-2 block">
 										<Label htmlFor="formAction" value="Action" />
 									</div>
@@ -395,12 +541,33 @@ const AdminDashboard = () => {
 										<option value="add_update">Add/Update</option>
 										<option value="delete">Delete</option>
 									</Select>
-								</div>
+								</div> */}
 							</div>
 
-							<div className="flex justify-center text-center pt-5">
-								<Button type="submit" color="success">
+							<div className="grid grid-cols-3 gap-3 justify-center text-center pt-5">
+								{/* <Button type="submit" color="success">
 									Submit
+								</Button> */}
+								<Button
+									type="submit"
+									color="blue"
+									onClick={() => setFormAction("search")}
+								>
+									Search
+								</Button>
+								<Button
+									type="submit"
+									color="success"
+									onClick={() => setFormAction("add_update")}
+								>
+									Add/ Update
+								</Button>
+								<Button
+									type="submit"
+									color="failure"
+									onClick={() => setFormAction("delete")}
+								>
+									Delete
 								</Button>
 							</div>
 						</form>
