@@ -115,23 +115,23 @@ const OrderManagement = () => {
                 <div className="flex flex-col lg:flex-row items-center gap-12 justify-between w-full">
                     <form className=' w-full lg:w-1/4'>
                         <div className="relative">
-                            <input type="search" placeholder='Search' className='w-full p-2 rounded-xl bg-white text-gray-300 placeholder:pl-2' />
+                            <input type="search" placeholder='Search' className='w-full p-2 rounded-lg bg-white text-gray-300 placeholder:pl-2' />
                             <button className="absolute right-1 top-1/2 -translate-y-1/2 p-3 rounded-full">
                                 <img src={searchIcon} alt="" className="w-6 opacity-50" />
                             </button>
                         </div>
                     </form>
-                    <div className="w-full lg:w-2/4 h-10 grid grid-cols-4 items-center rounded-xl overflow-hidden bg-white text-sm">
-                        <button className={toggle === 1 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
+                    <div className="w-full lg:w-2/4 h-10 grid grid-cols-4 items-center rounded-lg overflow-hidden bg-white text-sm">
+                        <button className={toggle === 1 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
                             All Orders
                         </button>
-                        <button className={toggle === 2 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(2)}>
+                        <button className={toggle === 2 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(2)}>
                             Completed
                         </button>
-                        <button className={toggle === 3 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(3)}>
+                        <button className={toggle === 3 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(3)}>
                             In progress
                         </button>
-                        <button className={toggle === 4 ? "relative block h-10 rounded-xl text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(4)}>
+                        <button className={toggle === 4 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(4)}>
                             Cancelled
                         </button>
                     </div>
@@ -275,7 +275,7 @@ const OrderManagement = () => {
                             </thead>
                             <tbody>
                                 <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">2</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000002</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">07/05/2024</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Shachini Thakshila</td>
@@ -291,7 +291,7 @@ const OrderManagement = () => {
                                     </td>
                                 </tr>
                                 <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">3</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">2</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000003</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">08/05/2024</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sewmini Rathnayake</td>
@@ -327,7 +327,7 @@ const OrderManagement = () => {
                             </thead>
                             <tbody>
                                 <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">4</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000004</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">09/05/2024</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Kasunika Rathnayake</td>
