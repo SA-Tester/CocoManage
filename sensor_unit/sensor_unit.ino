@@ -7,8 +7,8 @@
 // Network Configuration
 #define FIREBASE_HOST "https://cocomanage-516c5-default-rtdb.firebaseio.com"      
 #define FIREBASE_AUTH "AIzaSyDh3E_WGJWBxcEsYGWQvHSAyFJMk5uJ7Y0"            
-#define WIFI_SSID "Dialog 4G 202"         
-#define WIFI_PASSWORD "3FdB6bFD"
+#define WIFI_SSID "WIFI SSID"         
+#define WIFI_PASSWORD "WIFI PASSWORD"
 
 // Rainfall
 #define rainfallA A0
