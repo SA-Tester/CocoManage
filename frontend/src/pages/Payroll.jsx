@@ -11,20 +11,20 @@ const Payroll = () => {
 		total_salary_paid: 0,
 	});
 
-	useEffect(() => {
-		const fetchDashboardData = async () => {
-			try {
-				const response = await axios.get(
-					"http://127.0.0.1:8000/api/payroll_dashboard_data/"
-				);
-				setDashboardData(response.data);
-			} catch (error) {
-				console.error("Error fetching dashboard data:", error);
-			}
-		};
+  const fetchDashboardData = async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/payroll_dashboard_data/"
+      );
+      setDashboardData(response.data);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
 
-		fetchDashboardData();
-	}, []);
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
 	return (
 		<React.Fragment>
@@ -84,14 +84,14 @@ const Payroll = () => {
 				</section>
 			</div>
 
-			{/*Payroll Calculation*/}
-			<div className="bg-green p-4 pb-24">
-				<div className="bg-white rounded-lg p-4 py-10">
-					<Table />
-				</div>
-			</div>
-		</React.Fragment>
-	);
+      {/*Payroll Calculation*/}
+      <div className="bg-green p-4 pb-24">
+        <div className="bg-white rounded-lg p-4 py-10">
+          <Table fetchDashboardData={fetchDashboardData} />
+        </div>
+      </div>
+    </React.Fragment>
+  );
 };
 
 export default Payroll;
