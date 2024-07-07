@@ -11,8 +11,11 @@ from .classes.Weather import Weather
 from .classes.SensorData import SensorData
 from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
+from .classes.User import User
 from .classes.Payroll import Payroll
 from .classes.Employee import Employee
+import os
+import time
 import datetime
 
 # Initialize the firebase database object
@@ -206,9 +209,11 @@ class SaveOrderView(APIView):
         if order_id == 0:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         result = self.coconut_plants.update_coconut_plant_count(database_obj, newMaximumQuantity)
+        
         if result == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         state = self.order.send_email(database_obj, order_id, name, email, quantity, date, total)
+        
         if state == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
@@ -260,6 +265,7 @@ def calculate_salary(request):
         payroll = Payroll(employee_id, cash_advance=cash_advance, festival_loan=festival_loan)
         salary_details = payroll.calculate_salary()
         return Response(salary_details, status=status.HTTP_200_OK)
+      
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -272,3 +278,29 @@ def get_dashboard_data(request):
     
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# View related to view profile details
+class UserProfileView(APIView):
+    user = User()
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+        user = User(database_obj)
+        user_data = user.get_user(user_id)
+        if user_data.get("Error") is None:
+            return Response(user_data, status=status.HTTP_200_OK)
+        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)
+
+# View related to password change
+class ChangeUserPasswordView(APIView):
+    user = User()
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        user = User(database_obj)
+        result = user.change_password(user_id, old_password, new_password)
+        if result.get("Error") is None:
+            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
+        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
