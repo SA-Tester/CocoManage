@@ -154,6 +154,7 @@ class GetHistoricalSensorDataView(APIView):
 class GetAdditionalAdminDataView(APIView):      
     order = Order()
     employee = Employee()
+    attendance = Attendance()
 
     def get(self, request, *args, **kwargs):
         self.order.init_order_info(database_obj)
@@ -162,14 +163,16 @@ class GetAdditionalAdminDataView(APIView):
         last_order_date = self.order.get_last_order_date()
 
         total_employees = self.employee.get_total_employees(database_obj)
-        today_employees = 0
-        last_recorded_attendance = "23/07/2024"
+        today_attendance = self.attendance.get_today_attendance(database_obj)
+        today_employees = today_attendance[0]
+        last_recorded_attendance = today_attendance[1]
 
         data = {"total_orders": total_orders, 
                 "first_order_date": first_order_date, 
                 "last_order_date": last_order_date, 
                 "total_employees": total_employees, 
-                "today_employees": today_employees}
+                "today_employees": today_employees,
+                "last_recorded_attendance": last_recorded_attendance}
         
         return Response(data, status=status.HTTP_200_OK)       
        

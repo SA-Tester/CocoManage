@@ -58,6 +58,7 @@ const AdminDashboard = () => {
 	const [lastOrderDate, setLastOrderDate] = useState("");
 	const [tdoayAttendanceCount, setTodayAttendanceCount] = useState(0);
 	const [totalEmployees, setTotalEmployees] = useState(0);
+	const [lastUpdatedAttendace, setLastUpdatedAttendance] = useState("");
 
 	// Using functions to display information on load
 	useEffect(() => {
@@ -236,6 +237,7 @@ const AdminDashboard = () => {
 				setLastOrderDate(response.data["last_order_date"]);
 				setTodayAttendanceCount(response.data["today_employees"]);
 				setTotalEmployees(response.data["total_employees"]);
+				setLastUpdatedAttendance(response.data["last_recorded_attendance"]);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -439,7 +441,7 @@ const AdminDashboard = () => {
 								</h3>
 								<h6 className="italic text-xs">
 									Last Recorded Attendance:
-									<br /> 5th June 2024 7:33 a.m.
+									<br /> {lastUpdatedAttendace}
 								</h6>
 							</div>
 						</div>
