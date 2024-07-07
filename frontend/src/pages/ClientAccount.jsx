@@ -1,6 +1,4 @@
 import React, { lazy, useState } from "react";
-
-const Navbar = lazy(() => import("../components/common/Navbar2"));
 const Footer = lazy(() => import("../components/common/Footer"));
 
 import customerIcon from '../assets/customer-icons.png';
@@ -24,7 +22,7 @@ const ClientAccount = () => {
 
     return (
         <React.Fragment>
-            <div className="flex flex-col min-h-screen">
+            <div className="flex flex-col min-h-screen pt-20">
                 {/* Navbar */}
 
                 {/* Main Content */}
@@ -93,7 +91,7 @@ const ClientAccount = () => {
                 </div>
 
                 {/* Footer */}
-                <Footer />
+                {/* <Footer /> */}
             </div>
         </React.Fragment>
     );
