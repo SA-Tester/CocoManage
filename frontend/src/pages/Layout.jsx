@@ -20,7 +20,8 @@ const Layout = ({ children }) => {
 		if (
 			location.pathname === "/" ||
 			location.pathname === "/order" ||
-			location.pathname === "/contact_us"
+			location.pathname === "/contact_us" ||
+			location.pathname === "/cart"
 		) {
 			return <Navbar3 />;
 		}
@@ -34,11 +35,11 @@ const Layout = ({ children }) => {
 	};
 
 	return (
-		<div>
+		<React.Fragment>
 			{renderNavbar()}
-			<div className={isSignInOrSignUp ? "" : "pt-12"}>{children}</div>
+			{children}
 			{renderFooter()}
-		</div>
+		</React.Fragment>
 	);
 };
 
