@@ -4,7 +4,7 @@ import { TextInput, Modal } from "flowbite-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-const Table = () => {
+const Table = ({ fetchDashboardData }) => {
   const [employeeData, setEmployeeData] = useState([]);
   const [searchItem, setSearchItem] = useState("");
   const [modalData, setModalData] = useState(null);
@@ -54,6 +54,9 @@ const Table = () => {
           item.employee_id === id ? { ...item, ...updatedEmployee } : item
         )
       );
+
+      // Update dashboard total salary paid
+      fetchDashboardData();
 
       //for modal and report
       const displayData = [
