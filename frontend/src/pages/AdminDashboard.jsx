@@ -319,6 +319,7 @@ const AdminDashboard = () => {
 				axios
 					.post("http://localhost:8000/api/delete_pick/", formData)
 					.then((response) => {
+						get_nut_count();
 						toast.success("Pick Deleted Successfully");
 						console.log(response.data);
 					})
