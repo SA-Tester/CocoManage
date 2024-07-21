@@ -304,3 +304,18 @@ class ChangeUserPasswordView(APIView):
         if result.get("Error") is None:
             return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
         return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
+
+class GetDashboardDataOrderManagementView(APIView):
+    order = Order()
+
+    def get(self, request, *args, **kwargs):
+        self.order.init_order_info(database_obj)
+        total_orders = self.order.get_total_orders()
+        total_customers = self.order.get_total_customers()
+        total_revenue = self.order.get_current_month_revenue(database_obj)
+        print(total_revenue)
+        data = {"total_orders": total_orders,
+                "total_customers": total_customers,
+                "total_revenue": total_revenue}
+        
+        return Response(data, status=status.HTTP_200_OK)

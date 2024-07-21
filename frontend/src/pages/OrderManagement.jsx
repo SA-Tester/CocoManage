@@ -11,6 +11,10 @@ const OrderManagement = () => {
     const [toggle, setToggle] = useState(1)
     const [unitPrice, setUnitPrice] = useState(1);
     const [plantCount, setPlantCount] = useState(1);
+    const [totalOrder, setTotalOrder] = useState(0);
+    const [totalCustomers, setTotalCustomers] = useState(0);
+    const [totalRevenue, setTotalRevenue] = useState(0);
+    const totalRevenueData = totalRevenue.toLocaleString();
 
     function get_coconut_plant_count() {
         axios
@@ -24,8 +28,23 @@ const OrderManagement = () => {
             });
     }
 
+    const getDashboardData = () => {
+		axios
+			.get("http://localhost:8000/api/get_dashboard_data/")
+			.then((response) => {
+				setTotalOrder(response.data["total_orders"]);
+                setTotalCustomers(response.data["total_customers"]);
+                setTotalRevenue(response.data["total_revenue"]);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+    
     useEffect(() => {
         get_coconut_plant_count();
+        getDashboardData();
     }, []);
 
     const handleChangePlantCount = (event) => {
@@ -79,17 +98,17 @@ const OrderManagement = () => {
                 <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-2/12 p-4">
                     <img src={customerIcon} alt="" className="w-8" />
                     <h3 className="font-semibold text-black text-lg">Customers</h3>
-                    <h1 className="font-bold text-green-400 text-2xl">25</h1>
+                    <h1 className="font-bold text-green-400 text-2xl">{totalCustomers}</h1>
                 </div>
                 <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-2/12 p-4">
                     <img src={orderIcon} alt="" className="w-8" />
                     <h3 className="font-semibold text-black text-lg">Orders</h3>
-                    <h1 className="font-bold text-green-400 text-2xl">30</h1>
+                    <h1 className="font-bold text-green-400 text-2xl">{totalOrder}</h1>
                 </div>
                 <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-2/12 p-4">
                     <img src={revenueIcon} alt="" className="w-8" />
                     <h3 className="font-semibold text-black text-lg">Monthly Revenue</h3>
-                    <h1 className="font-bold text-green-400 text-2xl">Rs. 12,000.00</h1>
+                    <h1 className="font-bold text-green-400 text-2xl">Rs. {totalRevenueData}.00</h1>
                 </div>
                 <div className="flex flex-col items-center bg-white rounded-lg w-full lg:w-3/12 p-4">
                     <h3 className="font-semibold text-black text-lg">Remaining Coconut Plants</h3>

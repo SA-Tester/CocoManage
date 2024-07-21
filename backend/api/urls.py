@@ -15,11 +15,12 @@ urlpatterns = [
     path('get_coconut_plant_count/', views.GetCoconutPlantCountView.as_view(), name='get_other_admin_data'),
     path('save_order/', views.SaveOrderView.as_view(), name='save_order'),
     path('send_email/', views.SaveOrderView.as_view(), name='send_email'),
-    path('update_coconut_plants_count/', views.UpdatePlantCountView.as_view(), name='update_coconut_plant_count'),
+    path('update_coconut_plants_count/', views.UpdatePlantCountView.as_view(), name='update_coconut_plants_count'),
     path('update_unit_price/', views.UpdateUnitPriceView.as_view(), name='update_unit_price'),
     path('view_user_profile/', views.UserProfileView.as_view(), name='view_user_profile'),
     path('change_user_password/', views.ChangeUserPasswordView.as_view(), name='change_user_password'),
     path('employee_data/', views.InitialSalaryDetailsView.as_view(), name='employee_data'),
     path('calculate_salary/', views.calculate_salary, name='calculate_salary'), 
     path('payroll_dashboard_data/', views.get_dashboard_data, name='payroll_dashboard_data'),
+    path('get_dashboard_data/', views.GetDashboardDataOrderManagementView.as_view(), name='get_dashboard_data'),
 ]
