@@ -1,4 +1,6 @@
 import smtplib
+import datetime
+import pytz
 
 class Order():
     total_orders = 0
@@ -80,7 +82,8 @@ class Order():
 
     def init_order_info(self, database_obj):
         dates = []
-        total_orders = 0
+        emails = []
+        total_orders = 0 
 
         try:
             order_table = database_obj.child("Order").get()
@@ -93,10 +96,13 @@ class Order():
                         if item != None and item["date"] != None:
                             total_orders += 1
                             dates.append(item["date"])
+                            if item["email"] not in emails:
+                                emails.append(item["email"])
 
             self.total_orders = total_orders             
             self.first_order_date = min(dates)
             self.last_order_date = max(dates)
+            self.total_customers = len(emails)
         
         except Exception as e:
             print(e)
@@ -109,3 +115,23 @@ class Order():
 
     def get_last_order_date(self):
         return self.last_order_date
+
+    def get_total_customers(self):
+        return self.total_customers
+
+    def get_current_month_revenue(self, database_obj):
+        current_date = datetime.datetime.now(pytz.timezone('Asia/Colombo'))
+        self.current_year = current_date.year
+        self.current_month = current_date.strftime("%m")
+        total_revenue = 0
+
+        try:
+            order_table = database_obj.child("Order").child(int(self.current_year)).child(int(self.current_month)).get()
+            
+            for item in order_table.val():
+                if item != None and item["status"] == 1:
+                    total_revenue += item["total"]
+                        
+            return total_revenue 
+        except Exception as e:
+            print(e)
