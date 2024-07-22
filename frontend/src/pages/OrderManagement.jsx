@@ -15,6 +15,8 @@ const OrderManagement = () => {
     const [totalCustomers, setTotalCustomers] = useState(0);
     const [totalRevenue, setTotalRevenue] = useState(0);
     const totalRevenueData = totalRevenue.toLocaleString();
+    const [orderData, setOrderData] = useState([]);
+    let i=1,j=1,k=1,n = 1;
 
     function get_coconut_plant_count() {
         axios
@@ -29,22 +31,37 @@ const OrderManagement = () => {
     }
 
     const getDashboardData = () => {
-		axios
-			.get("http://localhost:8000/api/get_dashboard_data/")
-			.then((response) => {
-				setTotalOrder(response.data["total_orders"]);
+        axios
+            .get("http://localhost:8000/api/get_dashboard_data/")
+            .then((response) => {
+                setTotalOrder(response.data["total_orders"]);
                 setTotalCustomers(response.data["total_customers"]);
                 setTotalRevenue(response.data["total_revenue"]);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
-    
+    function get_order_data() {
+        axios
+            .get("http://localhost:8000/api/get_order_data/")
+            .then((response) => {
+                setOrderData(response.data);
+            })
+            .catch((error) => {
+                console.error(
+                    "There was an error fetching the order data!",
+                    error
+                );
+            });
+    }
+
+
     useEffect(() => {
         get_coconut_plant_count();
         getDashboardData();
+        get_order_data();
     }, []);
 
     const handleChangePlantCount = (event) => {
@@ -173,70 +190,26 @@ const OrderManagement = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000001</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">05/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sanjana Ishini</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">15</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 5250.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711111111</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sanjana@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-green-800 bg-green-200 rounded-lg bg-opacity-50">Completed</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">2</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000002</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">07/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Shachini Thakshila</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">20</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 7000.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711245111</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">shachini@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">3</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000003</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">08/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sewmini Rathnayake</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">10</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 3500.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711114121</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sewmini@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">4</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000004</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">09/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Kasunika Rathnayake</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">5</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 1750.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0718981111</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">kasunika@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-red-800 bg-red-200 rounded-lg bg-opacity-50">Cancelled</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
+                                {Object.entries(orderData).map(([key, value]) =>
+                                    Object.entries(value).map(([subKey, subValue]) => (
+                                        <tr className="bg-white hover:bg-gray-100">
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{n++}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7,'0')}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.phone}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.email}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                                <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
+                                            </td>
+                                            <td>
+                                                <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -257,22 +230,26 @@ const OrderManagement = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000001</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">05/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sanjana Ishini</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">15</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 5250.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711111111</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sanjana@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-green-800 bg-green-200 rounded-lg bg-opacity-50">Completed</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
+                                {Object.entries(orderData).map(([key, value]) =>
+                                    Object.entries(value).map(([subKey, subValue]) => (subValue.status == 1 ?
+                                        <tr className="bg-white hover:bg-gray-100">
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{i++}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7,'0')}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.phone}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.email}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                                <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
+                                            </td>
+                                            <td>
+                                                <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                            </td>
+                                        </tr>
+                                        : ""))
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -293,38 +270,26 @@ const OrderManagement = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000002</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">07/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Shachini Thakshila</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">20</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 7000.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711245111</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">shachini@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">2</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000003</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">08/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Sewmini Rathnayake</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">10</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 3500.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0711114121</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">sewmini@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-yellow-800 bg-yellow-200 rounded-lg bg-opacity-50">In Progress</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
+                            {Object.entries(orderData).map(([key, value]) =>
+                                    Object.entries(value).map(([subKey, subValue]) => (subValue.status == 0 ?
+                                        <tr className="bg-white hover:bg-gray-100">
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{j++}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7,'0')}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.phone}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.email}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                                <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
+                                            </td>
+                                            <td>
+                                                <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                            </td>
+                                        </tr>
+                                        : ""))
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -345,22 +310,27 @@ const OrderManagement = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="bg-white hover:bg-gray-100">
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">1</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0000004</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">09/05/2024</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Kasunika Rathnayake</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">5</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. 1750.00</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">0718981111</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">kasunika@gmail.com</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                        <span className="p-2 text-xs font-medium uppercase tracking-wider text-red-800 bg-red-200 rounded-lg bg-opacity-50">Cancelled</span>
-                                    </td>
-                                    <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                    </td>
-                                </tr>
+                            {Object.entries(orderData).map(([key, value]) =>
+                                    Object.entries(value).map(([subKey, subValue]) => (
+                                        subValue.status == 2 ?
+                                        <tr className="bg-white hover:bg-gray-100">
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{k++}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">000000{subValue.order_id}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.phone}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.email}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                                <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
+                                            </td>
+                                            <td>
+                                                <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                            </td>
+                                        </tr>
+                                        : ""))
+                                )}
                             </tbody>
                         </table>
                     </div>

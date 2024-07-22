@@ -23,4 +23,5 @@ urlpatterns = [
     path('calculate_salary/', views.calculate_salary, name='calculate_salary'), 
     path('payroll_dashboard_data/', views.get_dashboard_data, name='payroll_dashboard_data'),
     path('get_dashboard_data/', views.GetDashboardDataOrderManagementView.as_view(), name='get_dashboard_data'),
+    path('get_order_data/', views.GetOrderView.as_view(), name='get_order_data'),
 ]

@@ -135,3 +135,29 @@ class Order():
             return total_revenue 
         except Exception as e:
             print(e)
+
+    def get_order_data(self, database_obj):
+        i = 1
+        id = 1
+        order_dict = {}
+        order_table = database_obj.child("Order").get()
+            
+        for year in order_table.each():
+            month = database_obj.child("Order").child(year.key()).get()
+            
+            for order in month.each():
+                for item in order.val():
+                    if item != None:
+                        order_id =id
+                        date = item["date"]
+                        email = item["email"]
+                        name = item["name"]
+                        phone = item["phone"]
+                        quantity = item["quantity"]
+                        status = item["status"]
+                        total = item["total"]
+                        order_dict[i] = {"order_id": order_id, "date": date, "email": email, "name": name, "phone": phone, "quantity": quantity, "status": status, "total": total}
+                        i += 1
+                        id += 1
+                    
+        return order_dict
