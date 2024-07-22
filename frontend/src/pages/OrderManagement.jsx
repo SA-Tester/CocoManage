@@ -16,7 +16,7 @@ const OrderManagement = () => {
     const [totalRevenue, setTotalRevenue] = useState(0);
     const totalRevenueData = totalRevenue.toLocaleString();
     const [orderData, setOrderData] = useState([]);
-    let i=1,j=1,k=1,n = 1;
+    let i = 1, j = 1, k = 1, n = 1;
 
     function get_coconut_plant_count() {
         axios
@@ -192,9 +192,9 @@ const OrderManagement = () => {
                             <tbody>
                                 {Object.entries(orderData).map(([key, value]) =>
                                     Object.entries(value).map(([subKey, subValue]) => (
-                                        <tr className="bg-white hover:bg-gray-100">
+                                        <tr key={subValue.order_id} className="bg-white hover:bg-gray-100">
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{n++}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7,'0')}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7, '0')}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
@@ -232,9 +232,9 @@ const OrderManagement = () => {
                             <tbody>
                                 {Object.entries(orderData).map(([key, value]) =>
                                     Object.entries(value).map(([subKey, subValue]) => (subValue.status == 1 ?
-                                        <tr className="bg-white hover:bg-gray-100">
+                                        <tr key={subValue.order_id} className="bg-white hover:bg-gray-100">
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{i++}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7,'0')}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7, '0')}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
@@ -270,11 +270,11 @@ const OrderManagement = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                            {Object.entries(orderData).map(([key, value]) =>
+                                {Object.entries(orderData).map(([key, value]) =>
                                     Object.entries(value).map(([subKey, subValue]) => (subValue.status == 0 ?
-                                        <tr className="bg-white hover:bg-gray-100">
+                                        <tr key={subValue.order_id} className="bg-white hover:bg-gray-100">
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{j++}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7,'0')}</td>
+                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7, '0')}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
                                             <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
@@ -310,26 +310,26 @@ const OrderManagement = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                            {Object.entries(orderData).map(([key, value]) =>
+                                {Object.entries(orderData).map(([key, value]) =>
                                     Object.entries(value).map(([subKey, subValue]) => (
                                         subValue.status == 2 ?
-                                        <tr className="bg-white hover:bg-gray-100">
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{k++}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">000000{subValue.order_id}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.phone}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.email}</td>
-                                            <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
-                                                <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
-                                            </td>
-                                            <td>
-                                                <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
-                                            </td>
-                                        </tr>
-                                        : ""))
+                                            <tr key={subValue.order_id} className="bg-white hover:bg-gray-100">
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{k++}</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">000000{subValue.order_id}</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.phone}</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.email}</td>
+                                                <td className="p-3 text-sm text-gray-700 whitespace-nowrap">
+                                                    <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
+                                                </td>
+                                                <td>
+                                                    <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md">Edit</button>
+                                                </td>
+                                            </tr>
+                                            : ""))
                                 )}
                             </tbody>
                         </table>
