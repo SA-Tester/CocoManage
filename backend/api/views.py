@@ -313,9 +313,15 @@ class GetDashboardDataOrderManagementView(APIView):
         total_orders = self.order.get_total_orders()
         total_customers = self.order.get_total_customers()
         total_revenue = self.order.get_current_month_revenue(database_obj)
-        print(total_revenue)
         data = {"total_orders": total_orders,
                 "total_customers": total_customers,
                 "total_revenue": total_revenue}
         
         return Response(data, status=status.HTTP_200_OK)
+
+class GetOrderView(APIView): 
+    order = Order()
+
+    def get(self, request, *args, **kwargs):
+        order_dict = self.order.get_order_data(database_obj)
+        return Response({"data": order_dict}, status=status.HTTP_200_OK)
