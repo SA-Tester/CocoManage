@@ -14,9 +14,6 @@ from .classes.Order import Order
 from .classes.User import User
 from .classes.Payroll import Payroll
 from .classes.Employee import Employee
-import os
-import time
-import datetime
 
 # Initialize the firebase database object
 database_obj = init_db()
@@ -156,7 +153,7 @@ class GetHistoricalSensorDataView(APIView):
 
 class GetAdditionalAdminDataView(APIView):      
     order = Order()
-    employee = Employee()
+    employee = Employee("", "", "", "", "", "", "", "", "")
     attendance = Attendance()
 
     def get(self, request, *args, **kwargs):
@@ -230,7 +227,7 @@ class UpdatePlantCountView(APIView):
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
 
-# Views related to updating unit price    
+# Views related to updating unit price of a coconut plant
 class UpdateUnitPriceView(APIView):
     coconut_plants = CoconutPlants()
 
@@ -278,7 +275,39 @@ def get_dashboard_data(request):
     
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetDashboardDataOrderManagementView(APIView):
+    order = Order()
+
+    def get(self, request, *args, **kwargs):
+        self.order.init_order_info(database_obj)
+        total_orders = self.order.get_total_orders()
+        total_customers = self.order.get_total_customers()
+        total_revenue = self.order.get_current_month_revenue(database_obj)
+        data = {"total_orders": total_orders,
+                "total_customers": total_customers,
+                "total_revenue": total_revenue}
+        
+        return Response(data, status=status.HTTP_200_OK)
+
+class GetOrderView(APIView): 
+    order = Order()
+
+    def get(self, request, *args, **kwargs):
+        order_dict = self.order.get_order_data(database_obj)
+        return Response({"data": order_dict}, status=status.HTTP_200_OK)
     
+
+# View related to View All Employees
+class GetAllEmployeesView(APIView):
+    employee = Employee("", "", "", "", "", "", "", "", "")
+
+    def get(self, request, *args, **kwargs):
+        employees = self.employee.get_all_employees(database_obj)
+        return Response(employees, status=status.HTTP_200_OK)
+    
+
 # View related to view profile details
 class UserProfileView(APIView):
     user = User(database_obj)
@@ -304,24 +333,3 @@ class ChangeUserPasswordView(APIView):
         if result.get("Error") is None:
             return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
         return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
-
-class GetDashboardDataOrderManagementView(APIView):
-    order = Order()
-
-    def get(self, request, *args, **kwargs):
-        self.order.init_order_info(database_obj)
-        total_orders = self.order.get_total_orders()
-        total_customers = self.order.get_total_customers()
-        total_revenue = self.order.get_current_month_revenue(database_obj)
-        data = {"total_orders": total_orders,
-                "total_customers": total_customers,
-                "total_revenue": total_revenue}
-        
-        return Response(data, status=status.HTTP_200_OK)
-
-class GetOrderView(APIView): 
-    order = Order()
-
-    def get(self, request, *args, **kwargs):
-        order_dict = self.order.get_order_data(database_obj)
-        return Response({"data": order_dict}, status=status.HTTP_200_OK)
