@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import searchIcon from "../assets/search-icon.png";
 import {
 	Table,
 	Pagination,
@@ -9,91 +12,120 @@ import {
 	FileInput,
 	Select,
 } from "flowbite-react";
-import searchIcon from "../assets/search-icon.png";
 
 const StaffDirectory = () => {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [staff, setStaff] = useState([
-		{
-			id: 1,
-			name: "John Doe",
-			position: "Manager",
-			email: "john.doe@example.com",
-			phone: "0711111111",
-			gender: "Male",
-			image: "",
-		},
-		{
-			id: 2,
-			name: "Jane Smith",
-			position: "Assistant",
-			email: "jane.smith@example.com",
-			phone: "0711222222",
-			gender: "Female",
-			image: "",
-		},
-		{
-			id: 3,
-			name: "Alice Johnson",
-			position: "Clerk",
-			email: "alice.johnson@example.com",
-			phone: "0711333333",
-			gender: "Female",
-			image: "",
-		},
-	]);
-
+	const [staff, setStaff] = useState([]); // Initialize as an empty array
 	const [currentPage, setCurrentPage] = useState(1);
 	const [staffPerPage] = useState(10);
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [showEditModal, setShowEditModal] = useState(false);
+	const [currentStaff, setCurrentStaff] = useState({});
 	const [newStaff, setNewStaff] = useState({
+		name_with_initials: "",
 		name: "",
-		position: "",
+		nic: "",
+		position: "Manager",
 		email: "",
 		phone: "",
-		gender: "",
-		image: "",
+		gender: "M",
+		photo: "",
 	});
-	const [currentStaff, setCurrentStaff] = useState({});
 
-	const handleSearch = (e) => {
-		setSearchTerm(e.target.value);
+	useEffect(() => {
+		getStaff();
+	}, []);
+
+	// Function to get all the staff members for table
+	const getStaff = () => {
+		axios
+			.get("http://localhost:8000/api/get_all_employees/")
+			.then((response) => {
+				const staffData = Object.values(response.data); // Convert the object to an array
+				setStaff(staffData);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	// Function to add new staff member
+	const handleSubmitNew = () => {
+		const formData = new FormData();
+		formData.append("name_with_initials", newStaff.name_with_initials);
+		formData.append("name", newStaff.name);
+		formData.append("nic", newStaff.nic);
+		formData.append("position", newStaff.position);
+		formData.append("email", newStaff.email);
+		formData.append("phone", newStaff.phone);
+		formData.append("gender", newStaff.gender);
+		formData.append("photo", newStaff.photo);
+
+		const confirmAdd = window.confirm(
+			"Are you sure you want to add new employee?"
+		);
+
+		if (confirmAdd) {
+			axios
+				.post("http://localhost:8000/api/add_new_employee/", formData)
+				.then((response) => {
+					console.log(response)
+					toast.success(response.data.message);
+
+					setNewStaff({
+						emp_id: "",
+						photo: "",
+						name_with_initials: "",
+						name: "",
+						nic: "",
+						position: "",
+						email: "",
+						phone: "",
+						gender: "",
+					});
+
+					getStaff();
+					setShowAddModal(false);
+				})
+				.catch((error) => {
+					toast.error(
+						"Failed to add new employee. Check your data and newtwork connection."
+					);
+					console.log(error);
+				});
+		}
 	};
 
 	const handleAddStaff = () => {
 		setShowAddModal(true);
 	};
 
+	const handleSearch = (e) => {
+		setSearchTerm(e.target.value);
+	};
+
 	const handleEditStaff = (staff) => {
 		setCurrentStaff(staff);
-		setNewStaff({ ...staff, image: staff.image });
 		setShowEditModal(true);
 	};
 
-	const handleSubmitNew = () => {
-		const newId = staff.length ? staff[staff.length - 1].id + 1 : 1;
-		setStaff([...staff, { ...newStaff, id: newId, image: newStaff.image }]);
-		setShowAddModal(false);
-		setNewStaff({ name: "", position: "", email: "", phone: "", gender: "", image: "" });
-	};
-
 	const handleSubmitEdit = () => {
-		const updatedStaff = staff.map((member) =>
-			member.id === currentStaff.id ? currentStaff : member
+		const updatedStaff = staff.map((employee) =>
+			employee.emp_id === currentStaff.emp_id ? currentStaff : employee
 		);
 		setStaff(updatedStaff);
 		setShowEditModal(false);
 	};
 
 	const filteredStaff = staff.filter(
-		(member) =>
-			member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			member.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			member.phone.includes(searchTerm)
+		(employee) =>
+			employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			employee.phone.includes(searchTerm)
 	);
 
+	const onPageChange = (page) => setCurrentPage(page);
 	const indexOfLastStaff = currentPage * staffPerPage;
 	const indexOfFirstStaff = indexOfLastStaff - staffPerPage;
 	const currentStaffPage = filteredStaff.slice(
@@ -101,12 +133,13 @@ const StaffDirectory = () => {
 		indexOfLastStaff
 	);
 
-	const onPageChange = (page) => setCurrentPage(page);
-
 	return (
-		<div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full h-full">
+		<div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full">
+			{/* Rendering the Toast Container for Notifications */}
+			<ToastContainer />
+
 			<div className="flex flex-col gap-6 w-full lg:w-3/4 items-start mx-auto">
-				<h1 className="font-bold text-white text-4xl">Staff Directory</h1>
+				<h1 className="font-bold text-white text-4xl pt-8">Staff Directory</h1>
 				<div className="flex flex-row items-center gap-12">
 					<form className="w-80 relative">
 						<div className="relative">
@@ -135,7 +168,11 @@ const StaffDirectory = () => {
 				<div className="w-full mt-6">
 					<Table className="text-center text-sm rounded-xl">
 						<Table.Head className="bg-white">
-							<Table.HeadCell>Name</Table.HeadCell>
+							<Table.HeadCell>Photo</Table.HeadCell>
+							<Table.HeadCell>Employee ID</Table.HeadCell>
+							<Table.HeadCell>Name with Initials</Table.HeadCell>
+							<Table.HeadCell>Full Name</Table.HeadCell>
+							<Table.HeadCell>NIC</Table.HeadCell>
 							<Table.HeadCell>Position</Table.HeadCell>
 							<Table.HeadCell>Email</Table.HeadCell>
 							<Table.HeadCell>Phone</Table.HeadCell>
@@ -143,40 +180,46 @@ const StaffDirectory = () => {
 							<Table.HeadCell>Action</Table.HeadCell>
 						</Table.Head>
 						<Table.Body className="pt-3 pb-3 bg-white text-black">
-							{currentStaffPage.map((member) => (
-								<Table.Row key={member.id}>
-									<Table.Cell>{member.name}</Table.Cell>
-									<Table.Cell>{member.position}</Table.Cell>
-									<Table.Cell>{member.email}</Table.Cell>
-									<Table.Cell>{member.phone}</Table.Cell>
-									<Table.Cell>{member.gender}</Table.Cell>
+							{currentStaffPage.map((employee) => (
+								<Table.Row key={employee.emp_id}>
 									<Table.Cell>
-										<button
-											onClick={() => handleEditStaff(member)}
-											className="flex items-center bg-yellow-500 text-white p-2 rounded-lg"
-										>
-											Edit
-										</button>
+										<img src={employee.photo} alt="" className="w-auto h-24" />
+									</Table.Cell>
+									<Table.Cell>{employee.emp_id}</Table.Cell>
+									<Table.Cell>{employee.name_with_initials}</Table.Cell>
+									<Table.Cell>{employee.name}</Table.Cell>
+									<Table.Cell>{employee.nic}</Table.Cell>
+									<Table.Cell>{employee.position}</Table.Cell>
+									<Table.Cell>{employee.email}</Table.Cell>
+									<Table.Cell>{employee.phone}</Table.Cell>
+									<Table.Cell>{employee.gender}</Table.Cell>
+									<Table.Cell>
+										<div className="flex items-center">
+											<button
+												onClick={() => handleEditStaff(employee)}
+												className="bg-green-500 text-white p-2 rounded-lg"
+											>
+												Edit
+											</button>
+											<button
+												onClick={() => handleEditStaff(employee)}
+												className="bg-red-500 text-white p-2 rounded-lg"
+											>
+												Delete
+											</button>
+										</div>
 									</Table.Cell>
 								</Table.Row>
 							))}
 						</Table.Body>
 					</Table>
 				</div>
-				<div className="flex overflow-x-auto sm:justify-center mx-auto mt-4">
-					<Pagination
-						currentPage={currentPage}
-						totalPages={Math.ceil(filteredStaff.length / staffPerPage)}
-						onPageChange={onPageChange}
-						showIcons
-					/>
-				</div>
 			</div>
 
 			{/* Modal for adding new staff */}
 			<Modal
 				show={showAddModal}
-				size="md"
+				size="4xl"
 				popup
 				onClose={() => setShowAddModal(false)}
 			>
@@ -186,93 +229,144 @@ const StaffDirectory = () => {
 						<h3 className="text-xl font-medium text-gray-900">
 							Add New Staff Member
 						</h3>
-						<div>
-							<Label htmlFor="name" value="Name" />
-							<TextInput
-								id="name"
-								type="text"
-								value={newStaff.name}
-								onChange={(e) =>
-									setNewStaff({ ...newStaff, name: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="position" value="Position" />
-							<TextInput
-								id="position"
-								type="text"
-								value={newStaff.position}
-								onChange={(e) =>
-									setNewStaff({ ...newStaff, position: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="email" value="Email" />
-							<TextInput
-								id="email"
-								type="email"
-								value={newStaff.email}
-								onChange={(e) =>
-									setNewStaff({ ...newStaff, email: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="phone" value="Phone" />
-							<TextInput
-								id="phone"
-								type="tel"
-								value={newStaff.phone}
-								onChange={(e) =>
-									setNewStaff({ ...newStaff, phone: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="gender" value="Gender" />
-							<Select
-								id="gender"
-								value={newStaff.gender}
-								onChange={(e) =>
-									setNewStaff({ ...newStaff, gender: e.target.value })
-								}
-								required
+						<form
+							onSubmit={handleSubmitNew}
+							className="space-y-6"
+							encType="multipart/form-data"
+						>
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+								<div>
+									<Label
+										htmlFor="name_with_initials"
+										value="Name with Initials"
+									/>
+									<TextInput
+										id="name_with_initials"
+										name="name_with_initials"
+										type="text"
+										value={newStaff.name_with_initials}
+										onChange={(e) =>
+											setNewStaff({
+												...newStaff,
+												name_with_initials: e.target.value,
+											})
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="name" value="Full Name" />
+									<TextInput
+										id="name"
+										name="full_name"
+										type="text"
+										value={newStaff.name}
+										onChange={(e) =>
+											setNewStaff({ ...newStaff, name: e.target.value })
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="nic" value="National Identity Card Number" />
+									<TextInput
+										id="nic"
+										name="nic"
+										type="text"
+										value={newStaff.nic}
+										onChange={(e) =>
+											setNewStaff({ ...newStaff, nic: e.target.value })
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="position" value="Position" />
+									<Select
+										id="position"
+										name="position"
+										value={newStaff.position}
+										onChange={(e) =>
+											setNewStaff({ ...newStaff, position: e.target.value })
+										}
+										required
+									>
+										<option value="Manager">Manager</option>
+										<option value="Assistant Manager">Assistant Manager</option>
+										<option value="Labourer">Labourer</option>
+									</Select>
+								</div>
+								<div>
+									<Label htmlFor="email" value="Email" />
+									<TextInput
+										id="email"
+										name="email"
+										type="email"
+										value={newStaff.email}
+										onChange={(e) =>
+											setNewStaff({ ...newStaff, email: e.target.value })
+										}
+									/>
+								</div>
+								<div>
+									<Label htmlFor="phone" value="Phone" />
+									<TextInput
+										id="phone"
+										name="phone"
+										type="tel"
+										value={newStaff.phone}
+										onChange={(e) =>
+											setNewStaff({ ...newStaff, phone: e.target.value })
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="gender" value="Gender" />
+									<Select
+										id="gender"
+										name="gender"
+										value={newStaff.gender}
+										onChange={(e) =>
+											setNewStaff({ ...newStaff, gender: e.target.value })
+										}
+										required
+									>
+										<option value="M">Male</option>
+										<option value="F">Female</option>
+									</Select>
+								</div>
+								<div>
+									<Label htmlFor="photo" value="Photo" />
+									<FileInput
+										id="photo"
+										name="photo"
+										onChange={(e) =>
+											setNewStaff({ ...newStaff, photo: e.target.files[0] })
+										}
+										required
+									/>
+								</div>
+							</div>
+							<Button
+								type="submit"
+								color="green"
+								// onClick={() => handleSubmitNew()}
 							>
-								<option value="" disabled>Select Gender</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Other">Other</option>
-							</Select>
-						</div>
-						<div>
-							<Label htmlFor="image" value="Image" />
-							<FileInput
-								id="image-input"
-								name="image"
-								value={newStaff.image}
-								onChange={(e) =>
-									setNewStaff({ ...newStaff, image: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div className="flex justify-end">
-							<Button onClick={handleSubmitNew}>Add Staff Member</Button>
-						</div>
+								Add Employee
+							</Button>
+							<Button color="gray" onClick={() => setShowAddModal(false)}>
+								Cancel
+							</Button>
+						</form>
 					</div>
 				</Modal.Body>
 			</Modal>
 
-			{/* Modal for editing existing staff */}
+			{/* Modal for editing staff */}
 			<Modal
 				show={showEditModal}
-				size="md"
+				size="4xl"
 				popup
 				onClose={() => setShowEditModal(false)}
 			>
@@ -283,9 +377,9 @@ const StaffDirectory = () => {
 							Edit Staff Member
 						</h3>
 						<div>
-							<Label htmlFor="edit-name" value="Name" />
+							<Label htmlFor="name" value="Name" />
 							<TextInput
-								id="edit-name"
+								id="name"
 								type="text"
 								value={currentStaff.name}
 								onChange={(e) =>
@@ -295,9 +389,9 @@ const StaffDirectory = () => {
 							/>
 						</div>
 						<div>
-							<Label htmlFor="edit-position" value="Position" />
+							<Label htmlFor="position" value="Position" />
 							<TextInput
-								id="edit-position"
+								id="position"
 								type="text"
 								value={currentStaff.position}
 								onChange={(e) =>
@@ -307,9 +401,9 @@ const StaffDirectory = () => {
 							/>
 						</div>
 						<div>
-							<Label htmlFor="edit-email" value="Email" />
+							<Label htmlFor="email" value="Email" />
 							<TextInput
-								id="edit-email"
+								id="email"
 								type="email"
 								value={currentStaff.email}
 								onChange={(e) =>
@@ -319,9 +413,9 @@ const StaffDirectory = () => {
 							/>
 						</div>
 						<div>
-							<Label htmlFor="edit-phone" value="Phone" />
+							<Label htmlFor="phone" value="Phone" />
 							<TextInput
-								id="edit-phone"
+								id="phone"
 								type="tel"
 								value={currentStaff.phone}
 								onChange={(e) =>
@@ -331,35 +425,34 @@ const StaffDirectory = () => {
 							/>
 						</div>
 						<div>
-							<Label htmlFor="edit-gender" value="Gender" />
+							<Label htmlFor="gender" value="Gender" />
 							<Select
-								id="edit-gender"
+								id="gender"
 								value={currentStaff.gender}
 								onChange={(e) =>
 									setCurrentStaff({ ...currentStaff, gender: e.target.value })
 								}
 								required
 							>
-								<option value="" disabled>Select Gender</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Other">Other</option>
+								<option value="male">Male</option>
+								<option value="female">Female</option>
+								<option value="other">Other</option>
 							</Select>
 						</div>
 						<div>
-							<Label htmlFor="edit-image" value="Image" />
+							<Label htmlFor="photo" value="Photo" />
 							<FileInput
-								id="image-input"
-								name="image"
-								value={newStaff.image}
+								id="photo"
 								onChange={(e) =>
-									setNewStaff({ ...newStaff, image: e.target.value })
+									setCurrentStaff({
+										...currentStaff,
+										photo: e.target.files[0],
+									})
 								}
+								required
 							/>
 						</div>
-						<div className="flex justify-end">
-							<Button onClick={handleSubmitEdit}>Save Changes</Button>
-						</div>
+						<Button onClick={handleSubmitEdit}>Save</Button>
 					</div>
 				</Modal.Body>
 			</Modal>
