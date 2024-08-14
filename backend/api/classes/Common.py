@@ -13,14 +13,19 @@ class Common:
             if(len(nic) == 12 and len(phone) == 10 and phone.isdigit()):
                 if (email != ""):
                     if(self.validate_email(email)):
+                        print("Email OK")
                         return True
                     else:
+                        print("Email Invalid")
                         return False
                 else:
+                    print("Email Empty. No Issue")
                     return True
             else: 
+                print("NIC or Phone Number Error")
                 return False
         else:    
+            print("Empty Fields")
             return False
     
     # Validate Email
