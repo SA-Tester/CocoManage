@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import searchIcon from "../assets/search-icon.png";
 import {
 	Table,
 	Pagination,
@@ -10,71 +12,101 @@ import {
 	FileInput,
 	Select,
 } from "flowbite-react";
-import searchIcon from "../assets/search-icon.png";
 
 const StaffDirectory = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [staff, setStaff] = useState([]); // Initialize as an empty array
-
-	useEffect(() => {
-		getStaff();
-	}, []);
-
-	const getStaff = () => {
-		axios
-			.get("http://localhost:8000/api/get_all_employees/")
-			.then((response) => {
-				const staffData = Object.values(response.data); // Convert the object to an array
-				setStaff(staffData);
-				console.log(staffData);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
 	const [currentPage, setCurrentPage] = useState(1);
 	const [staffPerPage] = useState(10);
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [showEditModal, setShowEditModal] = useState(false);
 	const [currentStaff, setCurrentStaff] = useState({});
 	const [newStaff, setNewStaff] = useState({
-		photo: "",
 		name_with_initials: "",
 		name: "",
 		nic: "",
-		position: "",
+		position: "Manager",
 		email: "",
 		phone: "",
-		gender: "",
+		gender: "M",
+		photo: "",
 	});
 
-	const handleSearch = (e) => {
-		setSearchTerm(e.target.value);
+	useEffect(() => {
+		getStaff();
+	}, []);
+
+	// Function to get all the staff members for table
+	const getStaff = () => {
+		axios
+			.get("http://localhost:8000/api/get_all_employees/")
+			.then((response) => {
+				const staffData = Object.values(response.data); // Convert the object to an array
+				setStaff(staffData);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	// Function to add new staff member
+	const handleSubmitNew = () => {
+		const formData = new FormData();
+		formData.append("name_with_initials", newStaff.name_with_initials);
+		formData.append("name", newStaff.name);
+		formData.append("nic", newStaff.nic);
+		formData.append("position", newStaff.position);
+		formData.append("email", newStaff.email);
+		formData.append("phone", newStaff.phone);
+		formData.append("gender", newStaff.gender);
+		formData.append("photo", newStaff.photo);
+
+		const confirmAdd = window.confirm(
+			"Are you sure you want to add new employee?"
+		);
+
+		if (confirmAdd) {
+			axios
+				.post("http://localhost:8000/api/add_new_employee/", formData)
+				.then((response) => {
+					console.log(response)
+					toast.success(response.data.message);
+
+					setNewStaff({
+						emp_id: "",
+						photo: "",
+						name_with_initials: "",
+						name: "",
+						nic: "",
+						position: "",
+						email: "",
+						phone: "",
+						gender: "",
+					});
+
+					getStaff();
+					setShowAddModal(false);
+				})
+				.catch((error) => {
+					toast.error(
+						"Failed to add new employee. Check your data and newtwork connection."
+					);
+					console.log(error);
+				});
+		}
 	};
 
 	const handleAddStaff = () => {
 		setShowAddModal(true);
 	};
 
+	const handleSearch = (e) => {
+		setSearchTerm(e.target.value);
+	};
+
 	const handleEditStaff = (staff) => {
 		setCurrentStaff(staff);
 		setShowEditModal(true);
-	};
-
-	const handleSubmitNew = () => {
-		setShowAddModal(false);
-		setNewStaff({
-			emp_id: "",
-			photo: "",
-			name_with_initials: "",
-			name: "",
-			nic: "",
-			position: "",
-			email: "",
-			phone: "",
-			gender: "",
-		});
 	};
 
 	const handleSubmitEdit = () => {
@@ -93,6 +125,7 @@ const StaffDirectory = () => {
 			employee.phone.includes(searchTerm)
 	);
 
+	const onPageChange = (page) => setCurrentPage(page);
 	const indexOfLastStaff = currentPage * staffPerPage;
 	const indexOfFirstStaff = indexOfLastStaff - staffPerPage;
 	const currentStaffPage = filteredStaff.slice(
@@ -100,12 +133,13 @@ const StaffDirectory = () => {
 		indexOfLastStaff
 	);
 
-	const onPageChange = (page) => setCurrentPage(page);
-
 	return (
-		<div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full h-full">
+		<div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full">
+			{/* Rendering the Toast Container for Notifications */}
+			<ToastContainer />
+
 			<div className="flex flex-col gap-6 w-full lg:w-3/4 items-start mx-auto">
-				<h1 className="font-bold text-white text-4xl">Staff Directory</h1>
+				<h1 className="font-bold text-white text-4xl pt-8">Staff Directory</h1>
 				<div className="flex flex-row items-center gap-12">
 					<form className="w-80 relative">
 						<div className="relative">
@@ -149,7 +183,7 @@ const StaffDirectory = () => {
 							{currentStaffPage.map((employee) => (
 								<Table.Row key={employee.emp_id}>
 									<Table.Cell>
-										<img src={employee.photo} alt="" className="w-48 h-20" />
+										<img src={employee.photo} alt="" className="w-auto h-24" />
 									</Table.Cell>
 									<Table.Cell>{employee.emp_id}</Table.Cell>
 									<Table.Cell>{employee.name_with_initials}</Table.Cell>
@@ -195,7 +229,11 @@ const StaffDirectory = () => {
 						<h3 className="text-xl font-medium text-gray-900">
 							Add New Staff Member
 						</h3>
-						<form onSubmit={handleSubmitNew} className="space-y-6">
+						<form
+							onSubmit={handleSubmitNew}
+							className="space-y-6"
+							encType="multipart/form-data"
+						>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
 								<div>
 									<Label
@@ -204,6 +242,7 @@ const StaffDirectory = () => {
 									/>
 									<TextInput
 										id="name_with_initials"
+										name="name_with_initials"
 										type="text"
 										value={newStaff.name_with_initials}
 										onChange={(e) =>
@@ -219,6 +258,7 @@ const StaffDirectory = () => {
 									<Label htmlFor="name" value="Full Name" />
 									<TextInput
 										id="name"
+										name="full_name"
 										type="text"
 										value={newStaff.name}
 										onChange={(e) =>
@@ -231,6 +271,7 @@ const StaffDirectory = () => {
 									<Label htmlFor="nic" value="National Identity Card Number" />
 									<TextInput
 										id="nic"
+										name="nic"
 										type="text"
 										value={newStaff.nic}
 										onChange={(e) =>
@@ -243,21 +284,23 @@ const StaffDirectory = () => {
 									<Label htmlFor="position" value="Position" />
 									<Select
 										id="position"
+										name="position"
 										value={newStaff.position}
 										onChange={(e) =>
 											setNewStaff({ ...newStaff, position: e.target.value })
 										}
 										required
 									>
-										<option value="manager">Manager</option>
-										<option value="asst. manager">Assistant Manager</option>
-										<option value="labourer">Labourer</option>
+										<option value="Manager">Manager</option>
+										<option value="Assistant Manager">Assistant Manager</option>
+										<option value="Labourer">Labourer</option>
 									</Select>
 								</div>
 								<div>
 									<Label htmlFor="email" value="Email" />
 									<TextInput
 										id="email"
+										name="email"
 										type="email"
 										value={newStaff.email}
 										onChange={(e) =>
@@ -269,6 +312,7 @@ const StaffDirectory = () => {
 									<Label htmlFor="phone" value="Phone" />
 									<TextInput
 										id="phone"
+										name="phone"
 										type="tel"
 										value={newStaff.phone}
 										onChange={(e) =>
@@ -281,20 +325,22 @@ const StaffDirectory = () => {
 									<Label htmlFor="gender" value="Gender" />
 									<Select
 										id="gender"
+										name="gender"
 										value={newStaff.gender}
 										onChange={(e) =>
 											setNewStaff({ ...newStaff, gender: e.target.value })
 										}
 										required
 									>
-										<option value="male">Male</option>
-										<option value="female">Female</option>
+										<option value="M">Male</option>
+										<option value="F">Female</option>
 									</Select>
 								</div>
 								<div>
 									<Label htmlFor="photo" value="Photo" />
 									<FileInput
 										id="photo"
+										name="photo"
 										onChange={(e) =>
 											setNewStaff({ ...newStaff, photo: e.target.files[0] })
 										}
@@ -302,23 +348,19 @@ const StaffDirectory = () => {
 									/>
 								</div>
 							</div>
-							{/* Submit Button */}
-							{/* <div className="flex justify-start">
-								<Button color="green" onClick={() => setShowAddModal(false)}>
-									Add Employee
-								</Button>
-							</div> */}
+							<Button
+								type="submit"
+								color="green"
+								// onClick={() => handleSubmitNew()}
+							>
+								Add Employee
+							</Button>
+							<Button color="gray" onClick={() => setShowAddModal(false)}>
+								Cancel
+							</Button>
 						</form>
 					</div>
 				</Modal.Body>
-				<Modal.Footer>
-					<Button color="green" onClick={() => setShowAddModal(false)}>
-						Add Employee
-					</Button>
-					<Button color="gray" onClick={() => setShowAddModal(false)}>
-						Cancel
-					</Button>
-				</Modal.Footer>
 			</Modal>
 
 			{/* Modal for editing staff */}

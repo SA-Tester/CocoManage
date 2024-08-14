@@ -23,6 +23,7 @@ urlpatterns = [
     path('get_dashboard_data/', views.GetDashboardDataOrderManagementView.as_view(), name='get_dashboard_data'),
     path('get_order_data/', views.GetOrderView.as_view(), name='get_order_data'),
     path('get_all_employees/', views.GetAllEmployeesView.as_view(), name='get_all_employees'),
+    path('add_new_employee/', views.AddEmployeeView.as_view(), name='add_new_employee'),
     path('view_user_profile/', views.UserProfileView.as_view(), name='view_user_profile'),
     path('change_user_password/', views.ChangeUserPasswordView.as_view(), name='change_user_password'),
 ]

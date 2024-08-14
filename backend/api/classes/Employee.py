@@ -8,11 +8,12 @@ class Employee():
     full_name = ""
     nic = ""
     position = ""
-    email = ""
+    email = "-"
     phone = ""
     gender = ""
     photo = ""
     total_employees = 0
+    registry_dir = 'registry'
 
     # Employee Class Constructor
     def __init__(self, emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo):
@@ -51,7 +52,6 @@ class Employee():
         except Exception as e:
             print(e)
 
-
     # Get all Employees
     def get_all_employees(self, database_obj):
         try:
@@ -70,21 +70,26 @@ class Employee():
             print(e)
             return False
 
-
     # Add an Employee
     def add_employee(self, database_obj):
         try:
-            database_obj.child("Employee").child(self.emp_id).set({
-                "emp_id": self.get_next_emp_id(database_obj),
-                "name_with_initials": self.name_with_initials,
-                "name": self.full_name,
-                "nic": self.nic,
-                "position": self.position,
-                "email": self.email,
-                "phone": self.phone,
-                "gender": self.gender
-            })
-            return True
+            self.emp_id = self.get_next_emp_id(database_obj)
+
+            isPhotoUploaded = self.save_employee_photo(self.photo, self.emp_id, self.registry_dir)
+            
+            if(isPhotoUploaded):
+                database_obj.child("Employee").child(self.emp_id).set({
+                    "emp_id": self.emp_id,
+                    "name_with_initials": self.name_with_initials,
+                    "name": self.full_name,
+                    "nic": self.nic,
+                    "position": self.position,
+                    "email": self.email,
+                    "phone": self.phone,
+                    "gender": self.gender,
+                    "photo": self.photo
+                })
+                return True
         
         except Exception as e:
             print(e)
@@ -116,17 +121,27 @@ class Employee():
         except Exception as e:
             print(e)
             return False
-        
-    
+          
     # Save Employee Photo to Registry
-    def save_employee_photo(self, request, main_dir, registry_dir):
-        file = request.FILES['photo']
-        file_path = os.path.join(registry_dir, file.name)
-        
-        try:
-            default_storage.save(file_path, ContentFile(file.read()))
-            return True
-        except Exception as e:
-            print(e)
+    def save_employee_photo(self, image_file, emp_id, registry_dir):
+        file_extension = os.path.splitext(image_file.name)[1]
+
+        if(file_extension.lower() not in ['.jpg', '.jpeg', '.png']):
             return False
         
+        else:
+            # Construct the new filename based on emp_id and extension
+            new_filename = f"{emp_id}{file_extension}"
+
+            # Create the full file path
+            file_path = os.path.join(registry_dir, new_filename)
+
+            try:
+                # Save the file to the specified path
+                default_storage.save(file_path, ContentFile(image_file.read()))
+                self.photo = new_filename
+                return True
+            
+            except Exception as e:
+                print(e)
+                return False
