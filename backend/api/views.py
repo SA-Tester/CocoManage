@@ -383,6 +383,23 @@ class UpdateEmployeeView(APIView):
             print("Exception: ", e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+# View related to Delete an Employee
+class DeleteEmployeeView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        try:
+            emp_id = request.data.get('emp_id')
+            employee = Employee(emp_id, "", "", "", "", "", "", "", "")
+            
+            isEmployeeDeleted = employee.delete_employee(database_obj)
+            if isEmployeeDeleted:
+                return Response({"message": "Employee deleted successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Failed to delete employee"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print("Exception in the View: ", e)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 # View related to view profile details
 class UserProfileView(APIView):
     user = User(database_obj)

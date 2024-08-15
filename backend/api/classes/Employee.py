@@ -30,18 +30,35 @@ class Employee():
     # Get the next Employee ID
     def get_next_emp_id(self, database_obj):
         current_no_of_employees = self.get_total_employees(database_obj)
+        existing_emp_ids = self.get_all_employee_ids(database_obj)
 
-        prefix = ""
-        if current_no_of_employees < 10:
-            prefix = "000"
-        elif current_no_of_employees < 100:
-            prefix = "00"
-        elif current_no_of_employees < 1000:
-            prefix = "0"
+        def generate_emp_id(number):
+            prefix = ""
+            if number < 10:
+                prefix = "000"
+            elif number < 100:
+                prefix = "00"
+            elif number < 1000:
+                prefix = "0"
+            return "EMP" + prefix + str(number)
 
-        next_emp_id = "EMP" + prefix + str(current_no_of_employees + 1)
+        next_emp_id_number = current_no_of_employees + 1
+        next_emp_id = generate_emp_id(next_emp_id_number)
+        
+        while next_emp_id in existing_emp_ids:
+            next_emp_id_number += 1
+            next_emp_id = generate_emp_id(next_emp_id_number)
+        
         return next_emp_id
     
+    def get_all_employee_ids(self, database_obj):
+        employees = self.get_all_employees(database_obj)
+        emp_ids = []
+        for employee in employees:
+            emp_ids.append(employee["emp_id"])
+
+        return emp_ids
+
     # Get the total number of Employees
     def get_total_employees(self, database_obj):
         try:
@@ -144,11 +161,12 @@ class Employee():
     # Delete an Employee
     def delete_employee(self, database_obj):
         try:
+            self.delete_employee_photo(database_obj, self.emp_id)
             database_obj.child("Employee").child(self.emp_id).remove()
             return True
         
         except Exception as e:
-            print(e)
+            print("Exception is in Employee Class: ", e)
             return False
           
     # Save Employee Photo to Registry

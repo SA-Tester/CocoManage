@@ -91,7 +91,7 @@ const StaffDirectory = () => {
 		formData.append("position", newStaff.position);
 		formData.append("email", newStaff.email);
 		formData.append("phone", newStaff.phone);
-		formData.append("gender", newStaff.gender);
+		formData.append("gender", newStaff.gender || "M");
 		formData.append("photo", newStaff.photo);
 
 		const confirmAdd = window.confirm(
@@ -133,7 +133,7 @@ const StaffDirectory = () => {
 	// Function to update staff member
 	const handleSubmitEdit = (e) => {
 		e.preventDefault(); // Prevent form submission from causing a page refresh
-		
+
 		const formData = new FormData();
 		formData.append("emp_id", currentStaff.emp_id);
 		formData.append("name_with_initials", currentStaff.name_with_initials);
@@ -147,7 +147,9 @@ const StaffDirectory = () => {
 
 		console.log(currentStaff);
 
-		const confirmUpdate = window.confirm("Are you sure you want to update this employee?");
+		const confirmUpdate = window.confirm(
+			"Are you sure you want to update this employee?"
+		);
 		if (confirmUpdate) {
 			axios
 				.post("http://localhost:8000/api/update_employee/", formData)
@@ -166,6 +168,30 @@ const StaffDirectory = () => {
 				});
 		}
 	};
+
+	// Function to delete staff member
+	const deleteEmployee = (emp_id) => {
+		const confirmDelete = window.confirm(
+			"Are you sure you want to delete this employee?"
+		);
+
+		if (confirmDelete) {
+			axios
+				.post("http://localhost:8000/api/delete_employee/", { "emp_id": emp_id })
+				.then((response) => {
+					console.log(response);
+					toast.success(response.data.message);
+
+					getStaff(); // Refresh staff list
+				})
+				.catch((error) => {
+					toast.error(
+						"Failed to delete employee. Check your data and network connection."
+					);
+					console.log(error);
+				});
+		}
+	}
 
 	const handleSearch = (e) => {
 		setSearchTerm(e.target.value);
@@ -201,8 +227,8 @@ const StaffDirectory = () => {
 								type="search"
 								placeholder="Search"
 								value={searchTerm}
-								onChange={handleSearch}
-								className="w-full p-3 rounded-xl bg-white text-grey-300"
+								// onChange={handleSearch}
+								className="w-full p-3 rounded-xl bg-white text-black"
 							/>
 							<button
 								type="button"
@@ -290,7 +316,10 @@ const StaffDirectory = () => {
 											>
 												Edit
 											</button>
-											<button className="bg-red-500 text-white p-2 rounded-lg">
+											<button
+												className="bg-red-500 text-white p-2 rounded-lg"
+												onClick={() => deleteEmployee(employee.emp_id)}
+											>
 												Delete
 											</button>
 										</div>
@@ -606,7 +635,10 @@ const StaffDirectory = () => {
 										id="photo"
 										name="photo"
 										onChange={(e) =>
-											setCurrentStaff({ ...currentStaff, photo: e.target.files[0] })
+											setCurrentStaff({
+												...currentStaff,
+												photo: e.target.files[0],
+											})
 										}
 									/>
 								</div>
