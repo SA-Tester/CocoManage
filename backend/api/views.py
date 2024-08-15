@@ -196,6 +196,9 @@ class SaveOrderView(APIView):
     coconut_plants = CoconutPlants()
 
     def post(self, request, *args, **kwargs):
+        fromEmail = os.getenv("officialEmail")
+        fromEmailPassword = os.getenv("officialEmailPassword")
+
         firstname = request.data.get("firstname")
         lastname = request.data.get("lastname")
         name = str(firstname)+ " " + str(lastname)
@@ -213,7 +216,7 @@ class SaveOrderView(APIView):
         
         if result == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
-        state = self.order.send_email(database_obj, order_id, name, email, quantity, date, total)
+        state = self.order.send_email(email, fromEmail, fromEmailPassword, order_id, name, quantity, date, total)
         
         if state == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)

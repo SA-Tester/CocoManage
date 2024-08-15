@@ -97,7 +97,7 @@ const Order = () => {
                     <button className={`text-green-600 font-semibold py-2 px-14 rounded-xl text-md h-12 ${amount === 0 ? "bg-gray-300" : "bg-white"}`} onClick={() => updateQuantity({ amount })}>Add to Cart</button>
                     <div onClick={goToCart} className='w-10 h-10 bg-white rounded-full flex justify-center items-center relative'>
                         <img src={cartIcon} alt="" className='w-6' />
-                        <span className={`absolute top-2/3 right-1/2 text-sm w-5 h-5 rounded-full flex justify-center items-center text-white ${quantity === 0 ? "bg-green-400" : "bg-red-500"}`}>{notification}</span>
+                        <span className={`absolute top-2/3 right-1/2 text-sm w-5 h-5 rounded-full flex justify-center items-center text-white ${quantity === "0" ? "bg-green-400" : "bg-red-500"}`}>{notification}</span>
                     </div>
                 </div>
             </div>

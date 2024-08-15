@@ -61,7 +61,7 @@ class Order():
             return 0
 
 
-    def send_email(self, database_obj, order_id, name, email, quantity, date, total):
+    def send_email(self, toEmail, fromEmail, fromEmailPassword, order_id, name, quantity, date, total):
 
         name = name.split(" ")[0].strip()
         subject = "Order Confirmation"
@@ -72,8 +72,8 @@ class Order():
 
         try:
             server.starttls()
-            server.login("moorockestate@gmail.com", "zrrdjnpbyrfdmguy")
-            server.sendmail("moorockestate@gmail.com", email, text)
+            server.login(fromEmail, fromEmailPassword)
+            server.sendmail(fromEmail, toEmail, text)
             server.quit()
             return 0
         except Exception as e:
