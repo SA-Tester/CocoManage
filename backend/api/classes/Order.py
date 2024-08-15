@@ -138,8 +138,7 @@ class Order():
 
     def get_order_data(self, database_obj):
         i = 1
-        id = 1
-        order_dict = {}
+        order_list = []
         order_table = database_obj.child("Order").get()
             
         for year in order_table.each():
@@ -147,8 +146,8 @@ class Order():
             
             for order in month.each():
                 for item in order.val():
-                    if item != None:
-                        order_id =id
+                    if item is not None:
+                        order_id = i
                         date = item["date"]
                         email = item["email"]
                         name = item["name"]
@@ -156,8 +155,19 @@ class Order():
                         quantity = item["quantity"]
                         status = item["status"]
                         total = item["total"]
-                        order_dict[i] = {"order_id": order_id, "date": date, "email": email, "name": name, "phone": phone, "quantity": quantity, "status": status, "total": total}
+                        
+                        # Append the order details to the list
+                        order_list.append({
+                            "order_id": order_id,
+                            "date": date,
+                            "email": email,
+                            "name": name,
+                            "phone": phone,
+                            "quantity": quantity,
+                            "status": status,
+                            "total": total
+                        })
+                        
                         i += 1
-                        id += 1
-                    
-        return order_dict
+                        
+        return order_list
