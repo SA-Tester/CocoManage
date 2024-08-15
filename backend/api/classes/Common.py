@@ -29,8 +29,16 @@ class Common:
             return False
     
     # Validate Email
-    def validate_email(email):
+    def validate_email(self, email):
         reg_str = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
         if re.match(reg_str, email):
+            return True
+        return False
+    
+    # Check if a URL
+    def is_url(self, url):
+        reg_str = r'^(http|https)://'
+        
+        if re.match(reg_str, url):
             return True
         return False
