@@ -121,7 +121,7 @@ const StaffDirectory = () => {
 						position: "",
 						email: "",
 						phone: "",
-						gender: "",
+						gender: "M",
 					});
 
 					getStaff(); // Refresh staff list
