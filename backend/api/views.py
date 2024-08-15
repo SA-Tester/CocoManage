@@ -456,3 +456,45 @@ class SendMessageView(APIView):
         except Exception as e:
             print(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class UpdateOrderStatusView(APIView):
+    order = Order()
+    coconut_plants = CoconutPlants()
+
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get("order_id")
+        date = request.data.get("date")
+        quantity = request.data.get("quantity")
+        old_status = request.data.get("old_status")
+        new_status = request.data.get("status")
+        coconut_plants = request.data.get("coconutPlantsCount")
+        print(old_status)
+        print(type(old_status))
+        print(new_status)
+        print(type(new_status))
+        if(old_status=="2" and (new_status=="0" or new_status=="1")):
+            if(coconut_plants >= quantity):
+                result = self.order.update_status(database_obj, order_id, date, new_status)
+                if result == 1:
+                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+                new_plants_count = int(coconut_plants) - int(quantity)
+                result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
+                if result2 == 1:
+                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Failed to save. Not enough coconut plants"}, status=status.HTTP_400_BAD_REQUEST)
+        elif((old_status=="0" or old_status=="1") and new_status=="2"):
+            result = self.order.update_status(database_obj, order_id, date, new_status)
+            if result == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            new_plants_count = int(coconut_plants) + int(quantity)
+            result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
+            if result2 == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            result = self.order.update_status(database_obj, order_id, date, new_status)
+            if result == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+

@@ -29,4 +29,5 @@ urlpatterns = [
     path('view_user_profile/', views.UserProfileView.as_view(), name='view_user_profile'),
     path('change_user_password/', views.ChangeUserPasswordView.as_view(), name='change_user_password'),
     path('send_message/', views.SendMessageView.as_view(), name='send_message'),
+    path('update_order_status/', views.UpdateOrderStatusView.as_view(), name='update_order_status'),
 ]

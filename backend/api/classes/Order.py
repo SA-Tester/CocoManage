@@ -209,3 +209,18 @@ class Order():
                             id += 1
                     
         return order_dict
+
+    def update_status(self, database_obj, order_id, date, new_status):
+        try:
+            current_year = date.split("/")[2].strip()
+            current_month = date.split("/")[1].strip()
+
+            order_table = database_obj.child("Order").child(current_year).child(current_month).child(order_id)
+
+            order_table.child("status").set(int(new_status))
+            
+            return 0
+            
+        except Exception as e:
+            print(e)
+            return 1   
