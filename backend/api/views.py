@@ -325,7 +325,9 @@ class AddEmployeeView(APIView):
             photo = request.FILES['photo']
 
             common = Common()
-            if (common.validate_employee_form_data(name_with_initials, full_name, nic, position, email, phone, gender)):
+            isValidated = common.validate_employee_form_data(name_with_initials, full_name, nic, position, email, phone, gender)
+
+            if (isValidated):
                 employee = Employee(emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo)
                 isEmployeeSaved = employee.add_employee(database_obj)
 
@@ -340,6 +342,64 @@ class AddEmployeeView(APIView):
         except Exception as e:
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+# View related to Updating an Employee
+class UpdateEmployeeView(APIView):   
+    def post(self, request, *args, **kwargs):
+        #emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo
+        try:
+            common = Common()
+            isNewPhotoPresent = False
+
+            emp_id = request.data.get('emp_id')
+            name_with_initials = request.data.get('name_with_initials')
+            full_name = request.data.get('name')
+            nic = request.data.get('nic')
+            position = request.data.get('position')
+            email = request.data.get('email')
+            phone = request.data.get('phone')
+            gender = request.data.get('gender')
+            photo = ""
+
+            if ('photo' in request.FILES and (common.is_url(request.FILES['photo'].name) == False)):
+                isNewPhotoPresent = True
+                photo = request.FILES['photo']
+
+            isValidated = common.validate_employee_form_data(name_with_initials, full_name, nic, position, email, phone, gender)
+            
+            if (isValidated):
+                employee = Employee(emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo)
+                isEmployeeSaved = employee.update_employee(database_obj, isNewPhotoPresent)
+
+                if isEmployeeSaved:
+                    return Response({"message": "Employee updated successfully"}, status=status.HTTP_201_CREATED)
+                else:
+                    print("Failed to update employee information")
+                    return Response({"message": "Failed to update employee information"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                print("Form Error")
+                return Response({"message": "Invalid form data"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print("Exception: ", e)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# View related to Delete an Employee
+class DeleteEmployeeView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        try:
+            emp_id = request.data.get('emp_id')
+            employee = Employee(emp_id, "", "", "", "", "", "", "", "")
+            
+            isEmployeeDeleted = employee.delete_employee(database_obj)
+            if isEmployeeDeleted:
+                return Response({"message": "Employee deleted successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Failed to delete employee"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print("Exception in the View: ", e)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 # View related to view profile details
 class UserProfileView(APIView):
     user = User(database_obj)

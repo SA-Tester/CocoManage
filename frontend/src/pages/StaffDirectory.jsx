@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import searchIcon from "../assets/search-icon.png";
@@ -14,13 +14,15 @@ import {
 } from "flowbite-react";
 
 const StaffDirectory = () => {
+	// Variables related to Searching and Pagination
 	const [searchTerm, setSearchTerm] = useState("");
-	const [staff, setStaff] = useState([]); // Initialize as an empty array
 	const [currentPage, setCurrentPage] = useState(1);
 	const [staffPerPage] = useState(10);
-	const [showAddModal, setShowAddModal] = useState(false);
-	const [showEditModal, setShowEditModal] = useState(false);
-	const [currentStaff, setCurrentStaff] = useState({});
+
+	// State to store all the staff members (Table)
+	const [staff, setStaff] = useState([]); // Initialize as an empty array
+
+	// Modals/ Variables related to Add an Employee
 	const [newStaff, setNewStaff] = useState({
 		name_with_initials: "",
 		name: "",
@@ -31,7 +33,36 @@ const StaffDirectory = () => {
 		gender: "M",
 		photo: "",
 	});
+	const [showAddModal, setShowAddModal] = useState(false);
 
+	const showAddEmployeeModal = () => {
+		setShowAddModal(true);
+	};
+
+	// Modals/ Variables related to Edit (Update) Employee
+	const [currentStaff, setCurrentStaff] = useState({});
+	const [showEditModal, setShowEditModal] = useState(false);
+
+	const showUpdateEmployeeModal = (staff) => {
+		setCurrentStaff(staff);
+		setShowEditModal(true);
+	};
+
+	//Modal to Display Image in the Table
+	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+	const [selectedImage, setSelectedImage] = useState(null);
+
+	const openImageModal = (imageUrl) => {
+		setSelectedImage(imageUrl);
+		setIsImageModalOpen(true);
+	};
+
+	const closeImageModal = () => {
+		setIsImageModalOpen(false);
+		setSelectedImage(null);
+	};
+
+	// Fetch all the staff members when the page loads
 	useEffect(() => {
 		getStaff();
 	}, []);
@@ -50,7 +81,9 @@ const StaffDirectory = () => {
 	};
 
 	// Function to add new staff member
-	const handleSubmitNew = () => {
+	const handleSubmitNew = (e) => {
+		e.preventDefault(); // Prevent form submission from causing a page refresh
+
 		const formData = new FormData();
 		formData.append("name_with_initials", newStaff.name_with_initials);
 		formData.append("name", newStaff.name);
@@ -58,20 +91,21 @@ const StaffDirectory = () => {
 		formData.append("position", newStaff.position);
 		formData.append("email", newStaff.email);
 		formData.append("phone", newStaff.phone);
-		formData.append("gender", newStaff.gender);
+		formData.append("gender", newStaff.gender || "M");
 		formData.append("photo", newStaff.photo);
 
 		const confirmAdd = window.confirm(
-			"Are you sure you want to add new employee?"
+			"Are you sure you want to add a new employee?"
 		);
 
 		if (confirmAdd) {
 			axios
 				.post("http://localhost:8000/api/add_new_employee/", formData)
 				.then((response) => {
-					console.log(response)
+					console.log(response);
 					toast.success(response.data.message);
 
+					// Reset form fields after successful submission
 					setNewStaff({
 						emp_id: "",
 						photo: "",
@@ -84,37 +118,83 @@ const StaffDirectory = () => {
 						gender: "",
 					});
 
-					getStaff();
-					setShowAddModal(false);
+					getStaff(); // Refresh staff list
+					setShowAddModal(false); // Close modal
 				})
 				.catch((error) => {
 					toast.error(
-						"Failed to add new employee. Check your data and newtwork connection."
+						"Failed to add new employee. Check your data and network connection."
 					);
 					console.log(error);
 				});
 		}
 	};
 
-	const handleAddStaff = () => {
-		setShowAddModal(true);
+	// Function to update staff member
+	const handleSubmitEdit = (e) => {
+		e.preventDefault(); // Prevent form submission from causing a page refresh
+
+		const formData = new FormData();
+		formData.append("emp_id", currentStaff.emp_id);
+		formData.append("name_with_initials", currentStaff.name_with_initials);
+		formData.append("name", currentStaff.name);
+		formData.append("nic", currentStaff.nic);
+		formData.append("position", currentStaff.position);
+		formData.append("email", currentStaff.email);
+		formData.append("phone", currentStaff.phone);
+		formData.append("gender", currentStaff.gender);
+		formData.append("photo", currentStaff.photo); // URL if not uploaded, blob if uploaded new image
+
+		console.log(currentStaff);
+
+		const confirmUpdate = window.confirm(
+			"Are you sure you want to update this employee?"
+		);
+		if (confirmUpdate) {
+			axios
+				.post("http://localhost:8000/api/update_employee/", formData)
+				.then((response) => {
+					console.log(response);
+					toast.success(response.data.message);
+
+					getStaff(); // Refresh staff list
+					setShowEditModal(false); // Close modal
+				})
+				.catch((error) => {
+					toast.error(
+						"Failed to update employee. Check your data and network connection."
+					);
+					console.log(error);
+				});
+		}
 	};
+
+	// Function to delete staff member
+	const deleteEmployee = (emp_id) => {
+		const confirmDelete = window.confirm(
+			"Are you sure you want to delete this employee?"
+		);
+
+		if (confirmDelete) {
+			axios
+				.post("http://localhost:8000/api/delete_employee/", { "emp_id": emp_id })
+				.then((response) => {
+					console.log(response);
+					toast.success(response.data.message);
+
+					getStaff(); // Refresh staff list
+				})
+				.catch((error) => {
+					toast.error(
+						"Failed to delete employee. Check your data and network connection."
+					);
+					console.log(error);
+				});
+		}
+	}
 
 	const handleSearch = (e) => {
 		setSearchTerm(e.target.value);
-	};
-
-	const handleEditStaff = (staff) => {
-		setCurrentStaff(staff);
-		setShowEditModal(true);
-	};
-
-	const handleSubmitEdit = () => {
-		const updatedStaff = staff.map((employee) =>
-			employee.emp_id === currentStaff.emp_id ? currentStaff : employee
-		);
-		setStaff(updatedStaff);
-		setShowEditModal(false);
 	};
 
 	const filteredStaff = staff.filter(
@@ -147,8 +227,8 @@ const StaffDirectory = () => {
 								type="search"
 								placeholder="Search"
 								value={searchTerm}
-								onChange={handleSearch}
-								className="w-full p-3 rounded-xl bg-white text-grey-300"
+								// onChange={handleSearch}
+								className="w-full p-3 rounded-xl bg-white text-black"
 							/>
 							<button
 								type="button"
@@ -159,7 +239,7 @@ const StaffDirectory = () => {
 						</div>
 					</form>
 					<button
-						onClick={handleAddStaff}
+						onClick={showAddEmployeeModal}
 						className="flex items-center bg-blue-500 text-white p-3 rounded-lg"
 					>
 						Add Staff Member
@@ -179,11 +259,46 @@ const StaffDirectory = () => {
 							<Table.HeadCell>Gender</Table.HeadCell>
 							<Table.HeadCell>Action</Table.HeadCell>
 						</Table.Head>
-						<Table.Body className="pt-3 pb-3 bg-white text-black">
+						<Table.Body className="bg-white text-black">
 							{currentStaffPage.map((employee) => (
-								<Table.Row key={employee.emp_id}>
+								<Table.Row
+									key={employee.emp_id}
+									className="bg-gray-50 hover:bg-gray-100"
+								>
 									<Table.Cell>
-										<img src={employee.photo} alt="" className="w-auto h-24" />
+										<div className="flex justify-center items-center">
+											<img
+												src={employee.photo}
+												className="cursor-pointer w-32 h-30 rounded-md"
+												onClick={() => openImageModal(employee.photo)}
+												alt="Employee"
+											/>
+										</div>
+
+										<Modal
+											show={isImageModalOpen}
+											size="xl"
+											popup
+											onClose={closeImageModal}
+										>
+											<Modal.Body>
+												<div className="flex justify-center items-center">
+													<img
+														src={selectedImage}
+														className="w-full h-auto object-cover rounded-md"
+														alt="Employee Modal"
+													/>
+												</div>
+											</Modal.Body>
+											<Modal.Footer>
+												<Button
+													onClick={closeImageModal}
+													className="bg-red-500 text-white p-2 rounded-lg"
+												>
+													Close
+												</Button>
+											</Modal.Footer>
+										</Modal>
 									</Table.Cell>
 									<Table.Cell>{employee.emp_id}</Table.Cell>
 									<Table.Cell>{employee.name_with_initials}</Table.Cell>
@@ -194,16 +309,16 @@ const StaffDirectory = () => {
 									<Table.Cell>{employee.phone}</Table.Cell>
 									<Table.Cell>{employee.gender}</Table.Cell>
 									<Table.Cell>
-										<div className="flex items-center">
+										<div className="flex items-center gap-2">
 											<button
-												onClick={() => handleEditStaff(employee)}
+												onClick={() => showUpdateEmployeeModal(employee)}
 												className="bg-green-500 text-white p-2 rounded-lg"
 											>
 												Edit
 											</button>
 											<button
-												onClick={() => handleEditStaff(employee)}
 												className="bg-red-500 text-white p-2 rounded-lg"
+												onClick={() => deleteEmployee(employee.emp_id)}
 											>
 												Delete
 											</button>
@@ -230,7 +345,7 @@ const StaffDirectory = () => {
 							Add New Staff Member
 						</h3>
 						<form
-							onSubmit={handleSubmitNew}
+							onSubmit={(e) => handleSubmitNew(e)}
 							className="space-y-6"
 							encType="multipart/form-data"
 						>
@@ -348,16 +463,18 @@ const StaffDirectory = () => {
 									/>
 								</div>
 							</div>
-							<Button
-								type="submit"
-								color="green"
-								// onClick={() => handleSubmitNew()}
-							>
-								Add Employee
-							</Button>
-							<Button color="gray" onClick={() => setShowAddModal(false)}>
-								Cancel
-							</Button>
+							<div className="flex flex-row gap-4">
+								<Button
+									type="submit"
+									color="green"
+									onClick={(e) => handleSubmitNew(e)}
+								>
+									Add Employee
+								</Button>
+								<Button color="gray" onClick={() => setShowAddModal(false)}>
+									Cancel
+								</Button>
+							</div>
 						</form>
 					</div>
 				</Modal.Body>
@@ -376,83 +493,169 @@ const StaffDirectory = () => {
 						<h3 className="text-xl font-medium text-gray-900">
 							Edit Staff Member
 						</h3>
-						<div>
-							<Label htmlFor="name" value="Name" />
-							<TextInput
-								id="name"
-								type="text"
-								value={currentStaff.name}
-								onChange={(e) =>
-									setCurrentStaff({ ...currentStaff, name: e.target.value })
-								}
-								required
+						<div className="flex justify-center items-center">
+							<img
+								src={currentStaff.photo}
+								alt=""
+								className="w-48 h-46 rounded-md"
 							/>
 						</div>
-						<div>
-							<Label htmlFor="position" value="Position" />
-							<TextInput
-								id="position"
-								type="text"
-								value={currentStaff.position}
-								onChange={(e) =>
-									setCurrentStaff({ ...currentStaff, position: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="email" value="Email" />
-							<TextInput
-								id="email"
-								type="email"
-								value={currentStaff.email}
-								onChange={(e) =>
-									setCurrentStaff({ ...currentStaff, email: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="phone" value="Phone" />
-							<TextInput
-								id="phone"
-								type="tel"
-								value={currentStaff.phone}
-								onChange={(e) =>
-									setCurrentStaff({ ...currentStaff, phone: e.target.value })
-								}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="gender" value="Gender" />
-							<Select
-								id="gender"
-								value={currentStaff.gender}
-								onChange={(e) =>
-									setCurrentStaff({ ...currentStaff, gender: e.target.value })
-								}
-								required
-							>
-								<option value="male">Male</option>
-								<option value="female">Female</option>
-								<option value="other">Other</option>
-							</Select>
-						</div>
-						<div>
-							<Label htmlFor="photo" value="Photo" />
-							<FileInput
-								id="photo"
-								onChange={(e) =>
-									setCurrentStaff({
-										...currentStaff,
-										photo: e.target.files[0],
-									})
-								}
-								required
-							/>
-						</div>
-						<Button onClick={handleSubmitEdit}>Save</Button>
+						<form
+							onSubmit={(e) => handleSubmitEdit(e)}
+							className="space-y-6"
+							encType="multipart/form-data"
+						>
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+								<div>
+									<Label htmlFor="emp_id" value="Employee ID" />
+									<TextInput
+										id="emp_id"
+										name="emp_id"
+										type="text"
+										defaultValue={currentStaff.emp_id}
+										readOnly={true}
+									/>
+								</div>
+								<div>
+									<Label
+										htmlFor="name_with_initials"
+										value="Name with Initials"
+									/>
+									<TextInput
+										id="name_with_initials"
+										name="name_with_initials"
+										type="text"
+										defaultValue={currentStaff.name_with_initials}
+										onChange={(e) =>
+											setCurrentStaff({
+												...currentStaff,
+												name_with_initials: e.target.value,
+											})
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="name" value="Full Name" />
+									<TextInput
+										id="name"
+										name="full_name"
+										type="text"
+										defaultValue={currentStaff.name}
+										onChange={(e) =>
+											setCurrentStaff({ ...currentStaff, name: e.target.value })
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="nic" value="National Identity Card Number" />
+									<TextInput
+										id="nic"
+										name="nic"
+										type="text"
+										defaultValue={currentStaff.nic}
+										onChange={(e) =>
+											setCurrentStaff({ ...currentStaff, nic: e.target.value })
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="position" value="Position" />
+									<Select
+										id="position"
+										name="position"
+										defaultValue={currentStaff.position}
+										onChange={(e) =>
+											setCurrentStaff({
+												...currentStaff,
+												position: e.target.value,
+											})
+										}
+										required
+									>
+										<option value="Manager">Manager</option>
+										<option value="Assistant Manager">Assistant Manager</option>
+										<option value="Labourer">Labourer</option>
+									</Select>
+								</div>
+								<div>
+									<Label htmlFor="email" value="Email" />
+									<TextInput
+										id="email"
+										name="email"
+										type="email"
+										defaultValue={currentStaff.email}
+										onChange={(e) =>
+											setCurrentStaff({
+												...currentStaff,
+												email: e.target.value,
+											})
+										}
+									/>
+								</div>
+								<div>
+									<Label htmlFor="phone" value="Phone" />
+									<TextInput
+										id="phone"
+										name="phone"
+										type="tel"
+										defaultValue={currentStaff.phone}
+										onChange={(e) =>
+											setCurrentStaff({
+												...currentStaff,
+												phone: e.target.value,
+											})
+										}
+										required
+									/>
+								</div>
+								<div>
+									<Label htmlFor="gender" value="Gender" />
+									<Select
+										id="gender"
+										name="gender"
+										defaultValue={currentStaff.gender}
+										onChange={(e) =>
+											setCurrentStaff({
+												...currentStaff,
+												gender: e.target.value,
+											})
+										}
+										required
+									>
+										<option value="M">Male</option>
+										<option value="F">Female</option>
+									</Select>
+								</div>
+								<div>
+									<Label htmlFor="photo" value="Photo" />
+									<FileInput
+										id="photo"
+										name="photo"
+										onChange={(e) =>
+											setCurrentStaff({
+												...currentStaff,
+												photo: e.target.files[0],
+											})
+										}
+									/>
+								</div>
+							</div>
+							<div className="flex flex-row gap-4">
+								<Button
+									type="submit"
+									color="green"
+									onClick={(e) => handleSubmitEdit(e)}
+								>
+									Update Employee
+								</Button>
+								<Button color="gray" onClick={(w) => setShowEditModal(false)}>
+									Cancel
+								</Button>
+							</div>
+						</form>
 					</div>
 				</Modal.Body>
 			</Modal>

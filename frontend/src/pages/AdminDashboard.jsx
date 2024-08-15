@@ -525,29 +525,9 @@ const AdminDashboard = () => {
 										onChange={(e) => setNutCount(e.target.value)}
 									/>
 								</div>
-								{/* <div className="flex flex-col justify-center w-full">
-									<div className="mb-2 block">
-										<Label htmlFor="formAction" value="Action" />
-									</div>
-									<Select
-										id="formAction"
-										name="formAction"
-										required={true}
-										shadow={true}
-										onChange={(e) => setFormAction(e.target.value)}
-										defaultValue={formAction}
-									>
-										<option value="search">Search</option>
-										<option value="add_update">Add/Update</option>
-										<option value="delete">Delete</option>
-									</Select>
-								</div> */}
 							</div>
 
 							<div className="grid grid-cols-3 gap-3 justify-center text-center pt-5">
-								{/* <Button type="submit" color="success">
-									Submit
-								</Button> */}
 								<Button
 									type="submit"
 									color="blue"
