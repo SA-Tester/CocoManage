@@ -1,4 +1,5 @@
 import re
+import smtplib
 
 class Common:
     # Validate Employee Form Data
@@ -42,3 +43,21 @@ class Common:
         if re.match(reg_str, url):
             return True
         return False
+    
+    def send_email(self, toEmail, fromEmail, fromEmailPassword, name, sendersMail,  message):
+        subject = "New Message from " + name
+        message = f"A new message was received from {name} ({sendersMail}) through the CoCoManage Web System.\n\nThe message reads:\n{message}"
+
+        text = f"Subject: {subject}\n\n{message}"
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+
+        try:
+            server.starttls()
+            server.login(fromEmail, fromEmailPassword)
+            server.sendmail(fromEmail, toEmail, text)
+            server.quit()
+            return True
+        
+        except Exception as e:
+            print(e)
+            return False

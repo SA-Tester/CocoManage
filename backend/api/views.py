@@ -1,9 +1,11 @@
+import os
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
+from dotenv import load_dotenv
 from .db import init_db
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
@@ -425,3 +427,29 @@ class ChangeUserPasswordView(APIView):
         if result.get("Error") is None:
             return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
         return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
+    
+# View related to sending email
+class SendMessageView(APIView):
+    common = Common()
+
+    def post(self, request, *args, **kwargs):
+        try:
+            load_dotenv()
+
+            toEmail = os.getenv("toEmail")
+            fromEmail = os.getenv("officialEmail")
+            fromEmailPassword = os.getenv("officialEmailPassword")
+
+            name = request.data.get('name')
+            sendersMail = request.data.get('sendersMail')
+            message = request.data.get('message')
+
+            common = Common()
+            isSent = common.send_email(toEmail, fromEmail, fromEmailPassword, name, sendersMail, message)
+            if isSent:  
+                return Response({"message": "Message sent successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print(e)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)

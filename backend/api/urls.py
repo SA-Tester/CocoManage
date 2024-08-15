@@ -28,4 +28,5 @@ urlpatterns = [
     path('delete_employee/', views.DeleteEmployeeView.as_view(), name='delete_employee'),
     path('view_user_profile/', views.UserProfileView.as_view(), name='view_user_profile'),
     path('change_user_password/', views.ChangeUserPasswordView.as_view(), name='change_user_password'),
+    path('send_message/', views.SendMessageView.as_view(), name='send_message'),
 ]
