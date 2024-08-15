@@ -18,6 +18,7 @@ A comprehensive estate management system for Moorcock Estate
 
 <p><b>Create a .env file in the backend folder to store database credentials and other necessary variables.</b><br> The .env file has following variables</p>
 <div>
+  <b># Firebase parameters</b> <br>
   databaseURL = # URL to the firebase database <br>
   apiKey = # API key of the database <br>
   authDomain = # The firebase domain <br>
@@ -25,5 +26,16 @@ A comprehensive estate management system for Moorcock Estate
   storageBucket = # storageBucket <br>
   messagingSenderId = # sender id for messages <br>
   appId = # app id <br>
-  measurementId = # mesaurement id <br>
+  measurementId = # mesaurement id <br><br>
+
+  <b># OpenMeteo Parameters</b><br>
+  latitude = # latitude of the location of estate <br>
+  longitude = # longitude of the location of estate <br>
+  timezone = # timezone (e.g.: "GMT") <br> 
+  past_days = # No of days which you need the weather predictions (e.g.: 7) <br><br>
+
+  <b>#Email Parameters</b><br>
+  officialEmail = # Official Email Address <br>
+  officialEmailPassword = # Password of the official email address <br>
+  toEmail = # Replace with any email you want to recieve messages <br>
 </div>
