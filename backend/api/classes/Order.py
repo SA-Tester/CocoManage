@@ -6,6 +6,7 @@ class Order():
     total_orders = 0
     first_order_date = ""
     last_order_date = ""
+    total_customers = 0
 
     def save_order(self, database_obj, name, phone, email, quantity, date, total):
         try:
@@ -88,24 +89,30 @@ class Order():
         try:
             order_table = database_obj.child("Order").get()
             
-            for year in order_table.each():
-                month = database_obj.child("Order").child(year.key()).get()
-                
-                for order in month.each():
-                    for item in order.val():
-                        if item != None and item["date"] != None:
-                            total_orders += 1
-                            dates.append(item["date"])
-                            if item["email"] not in emails:
-                                emails.append(item["email"])
+            if order_table.each():
+                for year in order_table.each():
+                    months = database_obj.child("Order").child(year.key()).get()
+                    
+                    for month in months.each():
+                        orders = database_obj.child("Order").child(year.key()).child(month.key()).get()
+                        
+                        for order in orders.each():
+                            order_data = order.val()
+                            if order_data and isinstance(order_data, dict):
+                                total_orders += 1
+                                dates.append(order_data.get("date", ""))
+                                email = order_data.get("email", "")
+                                if email and email not in emails:
+                                    emails.append(email)
 
-            self.total_orders = total_orders             
-            self.first_order_date = min(dates)
-            self.last_order_date = max(dates)
-            self.total_customers = len(emails)
-        
+                self.total_orders = total_orders
+                self.first_order_date = max(dates) if dates else ""
+                self.last_order_date = min(dates) if dates else ""
+                self.total_customers = len(emails)
+
         except Exception as e:
             print(e)
+
 
     def get_total_orders(self):
         return self.total_orders
@@ -126,48 +133,79 @@ class Order():
         total_revenue = 0
 
         try:
-            order_table = database_obj.child("Order").child(int(self.current_year)).child(int(self.current_month)).get()
+            order_table = database_obj.child("Order").child(str(self.current_year)).child(str(int(self.current_month))).get()
+            order_data = order_table.val()
             
-            for item in order_table.val():
-                if item != None and item["status"] == 1:
-                    total_revenue += item["total"]
+            if isinstance(order_data, dict):
+                for order_id, item in order_data.items():
+                    if isinstance(item, dict) and item.get("status") == 1:
+                        total_revenue += item.get("total", 0)
+
+            elif isinstance(order_data, list):
+                for item in order_data:
+                    if isinstance(item, dict) and item.get("status") == 1:
+                        total_revenue += item.get("total", 0)
                         
-            return total_revenue 
+            return total_revenue
         except Exception as e:
             print(e)
+            return 0
+
 
     def get_order_data(self, database_obj):
         i = 1
-        order_list = []
+        id = 1
+        order_dict = {}
         order_table = database_obj.child("Order").get()
             
         for year in order_table.each():
             month = database_obj.child("Order").child(year.key()).get()
             
             for order in month.each():
-                for item in order.val():
-                    if item is not None:
-                        order_id = i
-                        date = item["date"]
-                        email = item["email"]
-                        name = item["name"]
-                        phone = item["phone"]
-                        quantity = item["quantity"]
-                        status = item["status"]
-                        total = item["total"]
-                        
-                        # Append the order details to the list
-                        order_list.append({
-                            "order_id": order_id,
-                            "date": date,
-                            "email": email,
-                            "name": name,
-                            "phone": phone,
-                            "quantity": quantity,
-                            "status": status,
-                            "total": total
-                        })
-                        
-                        i += 1
-                        
-        return order_list
+                order_data = order.val()
+                if isinstance(order_data, dict):
+                    for order_id, item in order_data.items():
+                        if isinstance(item, dict):  # Ensure item is a dict
+                            date = item.get("date", "")
+                            email = item.get("email", "")
+                            name = item.get("name", "")
+                            phone = item.get("phone", "")
+                            quantity = item.get("quantity", 0)
+                            status = item.get("status", 0)
+                            total = item.get("total", 0)
+                            order_dict[i] = {
+                                "order_id": id, 
+                                "date": date, 
+                                "email": email, 
+                                "name": name, 
+                                "phone": phone, 
+                                "quantity": quantity, 
+                                "status": status, 
+                                "total": total
+                            }
+                            i += 1
+                            id += 1
+                elif isinstance(order_data, list):
+                    for item in order_data:
+                        if isinstance(item, dict):  # Ensure item is a dict
+                            date = item.get("date", "")
+                            email = item.get("email", "")
+                            name = item.get("name", "")
+                            phone = item.get("phone", "")
+                            quantity = item.get("quantity", 0)
+                            status = item.get("status", 0)
+                            total = item.get("total", 0)
+                            order_dict[i] = {
+                                "order_id": id, 
+                                "date": date, 
+                                "email": email, 
+                                "name": name, 
+                                "phone": phone, 
+                                "quantity": quantity, 
+                                "status": status, 
+                                "total": total
+                            }
+                            i += 1
+                            id += 1
+                    
+        return order_dict
