@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import searchIcon from "../assets/search-icon.png";
 import {
 	Table,
-	Pagination,
 	Button,
 	Modal,
 	Label,
@@ -14,15 +12,64 @@ import {
 } from "flowbite-react";
 
 const StaffDirectory = () => {
-	// Variables related to Searching and Pagination
-	const [searchTerm, setSearchTerm] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
-	const [staffPerPage] = useState(10);
+	// Fetch all the staff members when the page loads
+	useEffect(() => {
+		getStaff();
+	}, []);
 
-	// State to store all the staff members (Table)
+	// Variables and functions to get all the staff members
 	const [staff, setStaff] = useState([]); // Initialize as an empty array
+	const getStaff = () => {
+		axios
+			.get("http://localhost:8000/api/get_all_employees/")
+			.then((response) => {
+				const staffData = Object.values(response.data); // Convert the object to an array
+				setStaff(staffData);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
 
-	// Modals/ Variables related to Add an Employee
+	// Variables related to Searching
+	const [searchTerm, setSearchTerm] = useState("");
+
+	// Filter staff based on search term
+	const filteredStaff =
+		searchTerm.trim() === ""
+			? staff
+			: staff.filter(
+					(employee) =>
+						employee.name_with_initials
+							.toLowerCase()
+							.includes(searchTerm.toLowerCase()) ||
+						employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+						employee.emp_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+						employee.position
+							.toLowerCase()
+							.includes(searchTerm.toLowerCase()) ||
+						employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+						employee.gender.toLowerCase().includes(searchTerm.toLowerCase())
+			  );
+
+	useEffect(() => {
+		filteredStaff;
+	}, [searchTerm]);
+
+	// Variables related to Pagination
+	const [currentPage, setCurrentPage] = useState(1);
+	const [recordsPerPage] = useState(5);
+	const lastIndex = currentPage * recordsPerPage;
+	const firstIndex = lastIndex - recordsPerPage;
+	const currentEmployees = filteredStaff.slice(firstIndex, lastIndex);
+	const nPage = Math.ceil(filteredStaff.length / recordsPerPage);
+	const numbers = [...Array(nPage + 1).keys()].slice(1);
+
+	const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber);
+	};
+
+	// Modals/ Variables and functions related to Add an Employee
 	const [newStaff, setNewStaff] = useState({
 		name_with_initials: "",
 		name: "",
@@ -37,47 +84,6 @@ const StaffDirectory = () => {
 
 	const showAddEmployeeModal = () => {
 		setShowAddModal(true);
-	};
-
-	// Modals/ Variables related to Edit (Update) Employee
-	const [currentStaff, setCurrentStaff] = useState({});
-	const [showEditModal, setShowEditModal] = useState(false);
-
-	const showUpdateEmployeeModal = (staff) => {
-		setCurrentStaff(staff);
-		setShowEditModal(true);
-	};
-
-	//Modal to Display Image in the Table
-	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-	const [selectedImage, setSelectedImage] = useState(null);
-
-	const openImageModal = (imageUrl) => {
-		setSelectedImage(imageUrl);
-		setIsImageModalOpen(true);
-	};
-
-	const closeImageModal = () => {
-		setIsImageModalOpen(false);
-		setSelectedImage(null);
-	};
-
-	// Fetch all the staff members when the page loads
-	useEffect(() => {
-		getStaff();
-	}, []);
-
-	// Function to get all the staff members for table
-	const getStaff = () => {
-		axios
-			.get("http://localhost:8000/api/get_all_employees/")
-			.then((response) => {
-				const staffData = Object.values(response.data); // Convert the object to an array
-				setStaff(staffData);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
 	};
 
 	// Function to add new staff member
@@ -130,6 +136,15 @@ const StaffDirectory = () => {
 		}
 	};
 
+	// Modals/ Variables related to Edit (Update) Employee
+	const [currentStaff, setCurrentStaff] = useState({});
+	const [showEditModal, setShowEditModal] = useState(false);
+
+	const showUpdateEmployeeModal = (staff) => {
+		setCurrentStaff(staff);
+		setShowEditModal(true);
+	};
+
 	// Function to update staff member
 	const handleSubmitEdit = (e) => {
 		e.preventDefault(); // Prevent form submission from causing a page refresh
@@ -177,7 +192,7 @@ const StaffDirectory = () => {
 
 		if (confirmDelete) {
 			axios
-				.post("http://localhost:8000/api/delete_employee/", { "emp_id": emp_id })
+				.post("http://localhost:8000/api/delete_employee/", { emp_id: emp_id })
 				.then((response) => {
 					console.log(response);
 					toast.success(response.data.message);
@@ -191,27 +206,21 @@ const StaffDirectory = () => {
 					console.log(error);
 				});
 		}
-	}
-
-	const handleSearch = (e) => {
-		setSearchTerm(e.target.value);
 	};
 
-	const filteredStaff = staff.filter(
-		(employee) =>
-			employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			employee.phone.includes(searchTerm)
-	);
+	//Modal to Display Image in the Table
+	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+	const [selectedImage, setSelectedImage] = useState(null);
 
-	const onPageChange = (page) => setCurrentPage(page);
-	const indexOfLastStaff = currentPage * staffPerPage;
-	const indexOfFirstStaff = indexOfLastStaff - staffPerPage;
-	const currentStaffPage = filteredStaff.slice(
-		indexOfFirstStaff,
-		indexOfLastStaff
-	);
+	const openImageModal = (imageUrl) => {
+		setSelectedImage(imageUrl);
+		setIsImageModalOpen(true);
+	};
+
+	const closeImageModal = () => {
+		setIsImageModalOpen(false);
+		setSelectedImage(null);
+	};
 
 	return (
 		<div className="flex flex-col justify-between bg-green lg:flex-row p-8 text-white lg:items-center gap-8 absolute left-0 w-full">
@@ -221,23 +230,14 @@ const StaffDirectory = () => {
 			<div className="flex flex-col gap-6 w-full lg:w-3/4 items-start mx-auto">
 				<h1 className="font-bold text-white text-4xl pt-8">Staff Directory</h1>
 				<div className="flex flex-row items-center gap-12">
-					<form className="w-80 relative">
-						<div className="relative">
-							<input
-								type="search"
-								placeholder="Search"
-								value={searchTerm}
-								// onChange={handleSearch}
-								className="w-full p-3 rounded-xl bg-white text-black"
-							/>
-							<button
-								type="button"
-								className="absolute right-1 top-1/2 -translate-y-1/2 p-4 rounded-full"
-							>
-								<img src={searchIcon} alt="" className="w-6 opacity-50" />
-							</button>
-						</div>
-					</form>
+					<div className="relative">
+						<TextInput
+							type="search"
+							placeholder="Search"
+							className="w-full rounded-xl bg-white text-black"
+							onChange={(e) => setSearchTerm(e.target.value)}
+						/>
+					</div>
 					<button
 						onClick={showAddEmployeeModal}
 						className="flex items-center bg-blue-500 text-white p-3 rounded-lg"
@@ -260,7 +260,7 @@ const StaffDirectory = () => {
 							<Table.HeadCell>Action</Table.HeadCell>
 						</Table.Head>
 						<Table.Body className="bg-white text-black">
-							{currentStaffPage.map((employee) => (
+							{currentEmployees.map((employee) => (
 								<Table.Row
 									key={employee.emp_id}
 									className="bg-gray-50 hover:bg-gray-100"
@@ -328,6 +328,35 @@ const StaffDirectory = () => {
 							))}
 						</Table.Body>
 					</Table>
+				</div>
+				<div className="flex overflow-x-auto sm:justify-center mx-auto">
+					<button
+						className="bg-white text-green-400 px-3 py-2 mx-1 text-sm font-semibold rounded-md"
+						disabled={currentPage <= 1}
+						onClick={() => handlePageChange(currentPage - 1)}
+					>
+						Prev
+					</button>
+					{numbers.map((page) => (
+						<button
+							key={page}
+							onClick={() => handlePageChange(page)}
+							className={
+								page === currentPage
+									? "bg-green-400 text-white px-3 py-2 mx-1 text-sm font-semibold rounded-md"
+									: "bg-white text-green-400 px-3 py-2 mx-1 text-sm font-semibold rounded-md"
+							}
+						>
+							{page}
+						</button>
+					))}
+					<button
+						className="bg-white text-green-400 px-3 py-2 mx-1 text-sm font-semibold rounded-md"
+						disabled={currentPage >= nPage}
+						onClick={() => handlePageChange(currentPage + 1)}
+					>
+						Next
+					</button>
 				</div>
 			</div>
 
