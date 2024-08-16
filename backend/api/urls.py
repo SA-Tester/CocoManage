@@ -22,4 +22,5 @@ urlpatterns = [
     path('employee_data/', views.InitialSalaryDetailsView.as_view(), name='employee_data'),
     path('calculate_salary/', views.calculate_salary, name='calculate_salary'), 
     path('payroll_dashboard_data/', views.get_dashboard_data, name='payroll_dashboard_data'),
+    path('signup/', views.signup, name='signup'),
 ]
