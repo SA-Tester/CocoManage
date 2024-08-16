@@ -1,10 +1,13 @@
 import os
+import time
+import datetime
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
+from django.core.exceptions import ValidationError
 from dotenv import load_dotenv
 from .db import init_db
 from .classes.Attendance import Attendance
@@ -16,6 +19,7 @@ from .classes.Order import Order
 from .classes.User import User
 from .classes.Payroll import Payroll
 from .classes.Employee import Employee
+from .classes.Signup import Signup
 from .classes.Common import Common
 
 # Initialize the firebase database object
@@ -430,6 +434,26 @@ class ChangeUserPasswordView(APIView):
         if result.get("Error") is None:
             return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
         return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
+
+#signup
+@api_view(['POST'])
+def signup(request):
+    name = request.data.get('name')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    confirm_password = request.data.get('confirmPassword')
+
+    try:
+        signup = Signup(database_obj,name,email,password,confirm_password)
+        tokens = signup.execute()
+        return Response({"tokens": tokens}, status=status.HTTP_201_CREATED)
+    
+    except ValidationError as error:
+        error_message = ' '.join(error.messages) if isinstance(error, ValidationError) else str(error)
+        return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 # View related to sending email
 class SendMessageView(APIView):
