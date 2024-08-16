@@ -31,14 +31,39 @@ const OrderManagement = () => {
     const numbers = [...Array(nPage + 1).keys()].slice(1);
 
     useEffect(() => {
-        const filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat().filter(([subkey, subvalue]) => {
-            return search.toLowerCase() === '' ? subvalue :
-                subvalue.name.toLowerCase().includes(search) ||
-                subvalue.order_id.toLocaleString().includes(search);
-        });
-        setDataArray(filtered);
-        setCurrentPage(1);
-    }, [search]);
+    let filtered = [];
+    
+    if (toggle == 1) {
+        // All Orders
+        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat();
+    } else if (toggle == 2) {
+        // Completed Orders
+        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+            .flat()
+            .filter(([subkey, subvalue]) => subvalue.status === 1);
+    } else if (toggle == 3) {
+        // In Progress Orders
+        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+            .flat()
+            .filter(([subkey, subvalue]) => subvalue.status === 0);
+    } else if (toggle == 4) {
+        // Cancelled Orders
+        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+            .flat()
+            .filter(([subkey, subvalue]) => subvalue.status === 2);
+    }
+
+    const searchedData = filtered.filter(([subkey, subvalue]) => {
+        return search.toLowerCase() === '' ? subvalue :
+            subvalue.name.toLowerCase().includes(search.toLowerCase()) ||
+            subvalue.order_id.toString().includes(search)||
+            subvalue.email.toLowerCase().includes(search.toLowerCase());
+    });
+
+    setDataArray(searchedData);
+    setCurrentPage(1);
+}, [search, toggle, orderData]);
+
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
