@@ -74,8 +74,26 @@ const OrderManagement = () => {
             .get("http://localhost:8000/api/get_order_data/")
             .then((response) => {
                 setOrderData(response.data);
-                const initialDataArray = Object.entries(response.data).map(([key, value]) => Object.entries(value)).flat();
-                setDataArray(initialDataArray);
+                console.log(toggle);
+                if (toggle == 1) {
+                    const initialDataArray = Object.entries(response.data).map(([key, value]) => Object.entries(value)).flat();
+                    setDataArray(initialDataArray);
+                } else if (toggle == 2) {
+                    const completedOrders = Object.entries(response.data).map(([key, value]) => Object.entries(value))
+                        .flat()
+                        .filter(([subkey, subvalue]) => subvalue.status === 1);
+                    setDataArray(completedOrders);
+                } else if (toggle == 3) {
+                    const inProgressOrders = Object.entries(response.data).map(([key, value]) => Object.entries(value))
+                        .flat()
+                        .filter(([subkey, subvalue]) => subvalue.status === 0);
+                    setDataArray(inProgressOrders);
+                } else if (toggle == 4) {
+                    const cancelledOrders = Object.entries(response.data).map(([key, value]) => Object.entries(value))
+                        .flat()
+                        .filter(([subkey, subvalue]) => subvalue.status === 2);
+                    setDataArray(cancelledOrders);
+                }
             })
             .catch((error) => {
                 console.error(
@@ -85,6 +103,18 @@ const OrderManagement = () => {
             });
     }
 
+    function updateToggle(id) {
+        setToggle(id)
+        if (id == 1) {
+            setDataArray(Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat());
+        } else if (id == 2) {
+            filterCompletedOrders();
+        } else if (id == 3) {
+            filterInProgressOrders();
+        } else if (id == 4) {
+            filterCancelledOrders();
+        }
+    }
 
     useEffect(() => {
         get_coconut_plant_count();
@@ -126,10 +156,6 @@ const OrderManagement = () => {
                 toast.error("Error updating");
                 console.log(error);
             });
-    }
-
-    function updateToggle(id) {
-        setToggle(id)
     }
 
     const filterCompletedOrders = () => {
@@ -250,16 +276,16 @@ const OrderManagement = () => {
                         </div>
                     </form>
                     <div className="w-full lg:w-2/4 h-10 grid grid-cols-4 items-center rounded-lg overflow-hidden bg-white text-sm">
-                        <button className={toggle === 1 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => { updateToggle(1); setDataArray(Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat()); }}>
+                        <button className={toggle === 1 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
                             All Orders
                         </button>
-                        <button className={toggle === 2 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => { updateToggle(2); filterCompletedOrders(); }}>
+                        <button className={toggle === 2 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(2)}>
                             Completed
                         </button>
-                        <button className={toggle === 3 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => { updateToggle(3); filterInProgressOrders(); }}>
+                        <button className={toggle === 3 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(3)}>
                             In progress
                         </button>
-                        <button className={toggle === 4 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => { updateToggle(4); filterCancelledOrders(); }}>
+                        <button className={toggle === 4 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(4)}>
                             Cancelled
                         </button>
                     </div>
