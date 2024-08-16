@@ -225,7 +225,49 @@ class SaveOrderView(APIView):
         if state == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
-    
+
+# Views related to updating order status
+class UpdateOrderStatusView(APIView):
+    order = Order()
+    coconut_plants = CoconutPlants()
+
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get("order_id")
+        date = request.data.get("date")
+        quantity = request.data.get("quantity")
+        old_status = request.data.get("old_status")
+        new_status = request.data.get("status")
+        coconut_plants = request.data.get("coconutPlantsCount")
+        print(old_status)
+        print(type(old_status))
+        print(new_status)
+        print(type(new_status))
+        if(old_status=="2" and (new_status=="0" or new_status=="1")):
+            if(coconut_plants >= quantity):
+                result = self.order.update_status(database_obj, order_id, date, new_status)
+                if result == 1:
+                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+                new_plants_count = int(coconut_plants) - int(quantity)
+                result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
+                if result2 == 1:
+                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Failed to save. Not enough coconut plants"}, status=status.HTTP_400_BAD_REQUEST)
+        elif((old_status=="0" or old_status=="1") and new_status=="2"):
+            result = self.order.update_status(database_obj, order_id, date, new_status)
+            if result == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            new_plants_count = int(coconut_plants) + int(quantity)
+            result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
+            if result2 == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            result = self.order.update_status(database_obj, order_id, date, new_status)
+            if result == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+
 # Views related to updating coconut plant count    
 class UpdatePlantCountView(APIView):
     coconut_plants = CoconutPlants()
@@ -409,53 +451,7 @@ class DeleteEmployeeView(APIView):
             print("Exception in the View: ", e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
-# View related to view profile details
-class UserProfileView(APIView):
-    user = User(database_obj)
-
-    def get(self, request, *args, **kwargs):
-        user_id = request.query_params.get('user_id')
-        user = User(database_obj)
-        user_data = user.get_user(user_id)
-        if user_data.get("Error") is None:
-            return Response(user_data, status=status.HTTP_200_OK)
-        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)
-
-# View related to password change
-class ChangeUserPasswordView(APIView):
-    user = User(database_obj)
-
-    def post(self, request, *args, **kwargs):
-        user_id = request.data.get('user_id')
-        old_password = request.data.get('old_password')
-        new_password = request.data.get('new_password')
-        user = User(database_obj)
-        result = user.change_password(user_id, old_password, new_password)
-        if result.get("Error") is None:
-            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
-        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
-
-#signup
-@api_view(['POST'])
-def signup(request):
-    name = request.data.get('name')
-    email = request.data.get('email')
-    password = request.data.get('password')
-    confirm_password = request.data.get('confirmPassword')
-
-    try:
-        signup = Signup(database_obj,name,email,password,confirm_password)
-        tokens = signup.execute()
-        return Response({"tokens": tokens}, status=status.HTTP_201_CREATED)
-    
-    except ValidationError as error:
-        error_message = ' '.join(error.messages) if isinstance(error, ValidationError) else str(error)
-        return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
-    
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-# View related to sending email
+# View related to sending email (as a cutomer/ visitor)
 class SendMessageView(APIView):
     common = Common()
 
@@ -481,44 +477,48 @@ class SendMessageView(APIView):
             print(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class UpdateOrderStatusView(APIView):
-    order = Order()
-    coconut_plants = CoconutPlants()
+# View related to Signup
+@api_view(['POST'])
+def signup(request):
+    name = request.data.get('name')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    confirm_password = request.data.get('confirmPassword')
+
+    try:
+        signup = Signup(database_obj,name,email,password,confirm_password)
+        tokens = signup.execute()
+        return Response({"tokens": tokens}, status=status.HTTP_201_CREATED)
+    
+    except ValidationError as error:
+        error_message = ' '.join(error.messages) if isinstance(error, ValidationError) else str(error)
+        return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# View related to view profile details
+class UserProfileView(APIView):
+    user = User(database_obj)
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+        user = User(database_obj)
+        user_data = user.get_user(user_id)
+        if user_data.get("Error") is None:
+            return Response(user_data, status=status.HTTP_200_OK)
+        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)
+
+# View related to password change
+class ChangeUserPasswordView(APIView):
+    user = User(database_obj)
 
     def post(self, request, *args, **kwargs):
-        order_id = request.data.get("order_id")
-        date = request.data.get("date")
-        quantity = request.data.get("quantity")
-        old_status = request.data.get("old_status")
-        new_status = request.data.get("status")
-        coconut_plants = request.data.get("coconutPlantsCount")
-        print(old_status)
-        print(type(old_status))
-        print(new_status)
-        print(type(new_status))
-        if(old_status=="2" and (new_status=="0" or new_status=="1")):
-            if(coconut_plants >= quantity):
-                result = self.order.update_status(database_obj, order_id, date, new_status)
-                if result == 1:
-                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-                new_plants_count = int(coconut_plants) - int(quantity)
-                result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
-                if result2 == 1:
-                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-                return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
-            return Response({"message": "Failed to save. Not enough coconut plants"}, status=status.HTTP_400_BAD_REQUEST)
-        elif((old_status=="0" or old_status=="1") and new_status=="2"):
-            result = self.order.update_status(database_obj, order_id, date, new_status)
-            if result == 1:
-                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-            new_plants_count = int(coconut_plants) + int(quantity)
-            result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
-            if result2 == 1:
-                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
-        else:
-            result = self.order.update_status(database_obj, order_id, date, new_status)
-            if result == 1:
-                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
-
+        user_id = request.data.get('user_id')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        user = User(database_obj)
+        result = user.change_password(user_id, old_password, new_password)
+        if result.get("Error") is None:
+            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
+        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
