@@ -12,10 +12,9 @@ from .classes.Weather import Weather
 from .classes.SensorData import SensorData
 from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
-from .classes.User import User
 from .classes.Payroll import Payroll
 from .classes.Employee import Employee
-from .classes.Signup import Signup
+from .classes.User import CustomUser
 import os
 import time
 import datetime
@@ -282,7 +281,7 @@ def get_dashboard_data(request):
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 # View related to view profile details
-class UserProfileView(APIView):
+'''class UserProfileView(APIView):
     user = User(database_obj)
 
     def get(self, request, *args, **kwargs):
@@ -291,10 +290,10 @@ class UserProfileView(APIView):
         user_data = user.get_user(user_id)
         if user_data.get("Error") is None:
             return Response(user_data, status=status.HTTP_200_OK)
-        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)'''
 
 # View related to password change
-class ChangeUserPasswordView(APIView):
+'''class ChangeUserPasswordView(APIView):
     user = User(database_obj)
 
     def post(self, request, *args, **kwargs):
@@ -305,7 +304,7 @@ class ChangeUserPasswordView(APIView):
         result = user.change_password(user_id, old_password, new_password)
         if result.get("Error") is None:
             return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
-        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST)  
+        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST) ''' 
 
 #signup
 @api_view(['POST'])
@@ -316,8 +315,8 @@ def signup(request):
     confirm_password = request.data.get('confirmPassword')
 
     try:
-        signup = Signup(database_obj,name,email,password,confirm_password)
-        tokens = signup.execute()
+        user = CustomUser(database_obj,name,email,password,confirm_password)
+        tokens = user.execute()
         return Response({"tokens": tokens}, status=status.HTTP_201_CREATED)
     
     except ValidationError as error:
