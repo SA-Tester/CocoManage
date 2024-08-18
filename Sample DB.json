@@ -1,0 +1,475 @@
+{
+  "Attendance": {
+    "2024": {
+      "August": {
+        "EMP0001": {
+          "15": "12:29:56"
+        }
+      },
+      "July": {
+        "EMP0001": {
+          "5": "16:09:58",
+          "6": "15:49:22",
+          "7": "10:54:47"
+        }
+      },
+      "June": {
+        "EMP0001": {
+          "3": "11:48:03",
+          "18": "19:55:42",
+          "19": "20:10:01"
+        },
+        "EMP0002": {
+          "18": "20:44:24",
+          "19": "09:33:51"
+        },
+        "EMP0003": {
+          "18": "19:31:54",
+          "19": "09:35:33"
+        },
+        "EMP0004": {
+          "19": "09:12:12"
+        }
+      },
+      "May": {
+        "EMP0001": {
+          "15": "01:42:08",
+          "18": "01:42:36",
+          "29": "21:02:33",
+          "30": "20:58:43",
+          "31": "23:43:21"
+        },
+        "EMP0002": {
+          "4": "7:23",
+          "30": "8:00:00",
+          "31": "7:43:20"
+        }
+      }
+    }
+  },
+  "CoconutPlants": {
+    "Quantity": 10,
+    "UnitPrice": 350
+  },
+  "Employee": {
+    "EMP0001": {
+      "email": "cst20004@std.uwu.ac.lk",
+      "gender": "F",
+      "name": "Sanjana Attanayake",
+      "name_with_initials": "S.I Attanayake",
+      "nic": 200145300023,
+      "phone": 778923111,
+      "photo": "EMP0001.jpeg",
+      "position": "Manager"
+    },
+    "EMP0002": {
+      "email": "cst20002@std.uwu.ac.lk",
+      "emp_id": "EMP0002",
+      "gender": "F",
+      "name": "Kasunika Rathnayake",
+      "name_with_initials": "K. Rathnayake",
+      "nic": "200034122245",
+      "phone": "0712323121",
+      "photo": "EMP0002.jpeg",
+      "position": "Assistant Manager"
+    },
+    "EMP0003": {
+      "email": "cst20076@std.uwu.ac.lk",
+      "emp_id": "EMP0003",
+      "gender": "F",
+      "name": "Shachini Thakshila",
+      "name_with_initials": "S. Thakshila",
+      "nic": "199934200034",
+      "phone": "0718934232",
+      "photo": "EMP0003.jpeg",
+      "position": "Assistant Manager"
+    },
+    "EMP0004": {
+      "email": "cst20055@std.uwu.ac.lk",
+      "emp_id": "EMP0004",
+      "gender": "F",
+      "name": "Sewmini Rathnayake",
+      "name_with_initials": "S. Rathnayake",
+      "nic": "200034122212",
+      "phone": "0712342111",
+      "photo": "EMP0004.jpeg",
+      "position": "Labourer"
+    },
+    "EMP0005": {
+      "email": "",
+      "emp_id": "EMP0005",
+      "gender": "M",
+      "name": "Kasun Dhanapala",
+      "name_with_initials": "K. Dhanapala",
+      "nic": "195623122212",
+      "phone": "0778928222",
+      "photo": "EMP0005.jpeg",
+      "position": "Labourer"
+    },
+    "EMP0006": {
+      "email": "",
+      "emp_id": "EMP0006",
+      "gender": "M",
+      "name": "Balachadran Raja",
+      "name_with_initials": "A.B Raja",
+      "nic": "196589232312",
+      "phone": "0778943232",
+      "photo": "EMP0006.jpg",
+      "position": "Labourer"
+    }
+  },
+  "NutHarvest": {
+    "2019": [
+      null,
+      {
+        "Date": "2019/1/12",
+        "Nuts": "4511"
+      },
+      {
+        "Date": "2019/3/11",
+        "Nuts": "7654"
+      },
+      {
+        "Date": "2019/5/11",
+        "Nuts": "6123"
+      }
+    ],
+    "2020": [
+      null,
+      {
+        "Date": "2020/1/9",
+        "Nuts": "4511"
+      },
+      {
+        "Date": "2020/3/3",
+        "Nuts": "4766"
+      },
+      {
+        "Date": "2020/5/3",
+        "Nuts": "5123"
+      }
+    ],
+    "2021": [
+      null,
+      {
+        "Date": "2021/1/23",
+        "Nuts": "5433"
+      },
+      {
+        "Date": "2021/3/22",
+        "Nuts": "5433"
+      },
+      {
+        "Date": "2021/5/21",
+        "Nuts": "6744"
+      }
+    ],
+    "2022": {
+      "1": {
+        "Date": "2022/1/23",
+        "Nuts": "12324"
+      },
+      "4": {
+        "Date": "2022/8/14",
+        "Nuts": "9732"
+      }
+    },
+    "2023": [
+      null,
+      {
+        "Date": "2023/1/11",
+        "Nuts": "5000"
+      },
+      {
+        "Date": "2023/3/5",
+        "Nuts": "8500"
+      },
+      {
+        "Date": "2023/7/12",
+        "Nuts": 9500
+      }
+    ],
+    "2024": [
+      null,
+      {
+        "Date": "2024/3/12",
+        "Nuts": "8730"
+      },
+      {
+        "Date": "2024/6/15",
+        "Nuts": "4555"
+      },
+      {
+        "Date": "2024/6/11",
+        "Nuts": "10000"
+      }
+    ]
+  },
+  "Order": {
+    "2023": {
+      "12": [
+        null,
+        {
+          "date": "4/12/2023",
+          "email": "kasunikarathnayake20@gmail.com",
+          "name": "Kasunika Rathnayake",
+          "phone": "0711111111",
+          "quantity": 5,
+          "status": 1,
+          "total": 1750
+        }
+      ]
+    },
+    "2024": {
+      "7": [
+        null,
+        null,
+        {
+          "date": "2/7/2024",
+          "email": "thakshila@gmail.com",
+          "name": "Thakshila Dulanji",
+          "phone": "0762346789",
+          "quantity": 2,
+          "status": 1,
+          "total": 700
+        },
+        {
+          "date": "4/7/2024",
+          "email": "shachini@gmail.com",
+          "name": "Shachini Thakshila",
+          "phone": "0711254689",
+          "quantity": 5,
+          "status": 1,
+          "total": 1750
+        },
+        {
+          "date": "4/7/2024",
+          "email": "sanjana@gmail.com",
+          "name": "Sanjana Aththanayaka",
+          "phone": "0711111111",
+          "quantity": 7,
+          "status": 1,
+          "total": 2450
+        },
+        {
+          "date": "4/7/2024",
+          "email": "maheshi@gmail.com",
+          "name": "Maheshi Rathnayake",
+          "phone": "0711254689",
+          "quantity": 10,
+          "status": 2,
+          "total": 3500
+        },
+        {
+          "date": "5/7/2024",
+          "email": "kasunikarathnayake20@gmail.com",
+          "name": "Kasunika Rathnayake",
+          "phone": "0711254689",
+          "quantity": 3,
+          "status": 1,
+          "total": 1050
+        },
+        {
+          "date": "5/7/2024",
+          "email": "eranga@gmail.com",
+          "name": "Eranga Chamini",
+          "phone": "0711254689",
+          "quantity": 5,
+          "status": 1,
+          "total": 1750
+        },
+        {
+          "date": "5/7/2024",
+          "email": "lahirudisanayake@gmail.com",
+          "name": "Lahiru Dissanayake",
+          "phone": "0711254689",
+          "quantity": 10,
+          "status": 1,
+          "total": 3500
+        },
+        {
+          "date": "5/7/2024",
+          "email": "kasunikarathnayake20@gmail.com",
+          "name": "Kasunika Rathnayake",
+          "phone": "0711111111",
+          "quantity": 2,
+          "status": 1,
+          "total": 700
+        },
+        {
+          "date": "5/7/2024",
+          "email": "nimasha@gmail.com",
+          "name": "Nimasha Malki",
+          "phone": "077234123",
+          "quantity": 2,
+          "status": 1,
+          "total": 700
+        },
+        {
+          "date": "5/7/2024",
+          "email": "siattanayake@gmail.com",
+          "name": "Sanjana Attanayake",
+          "phone": "0777289687",
+          "quantity": 1,
+          "status": 1,
+          "total": 350
+        },
+        {
+          "date": "6/7/2024",
+          "email": "kasunikarathnayake20@gmail.com",
+          "name": "Kasunika Rathnayake",
+          "phone": "0711254689",
+          "quantity": 10,
+          "status": 0,
+          "total": 3500
+        },
+        {
+          "date": "6/7/2024",
+          "email": "kasunikarathnayake20@gmail.com",
+          "name": "Kasunika Rathnayake",
+          "phone": "0711254689",
+          "quantity": 3,
+          "status": 0,
+          "total": 1050
+        },
+        {
+          "date": "7/7/2024",
+          "email": "kasunikarathnayake20@gmail.com",
+          "name": "Kasunika Rathnayake",
+          "phone": "0711254689",
+          "quantity": 3,
+          "status": 0,
+          "total": 1050
+        },
+        {
+          "date": "7/7/2024",
+          "email": "kasunikarathnayake20@gmail.com",
+          "name": "Kasunika Rathnayake",
+          "phone": "0711111111",
+          "quantity": 10,
+          "status": 0,
+          "total": 3500
+        }
+      ],
+      "8": {
+        "16": {
+          "date": "15/8/2024",
+          "email": "kasunikamaheshi20@gmail.com",
+          "name": "Auguest Check",
+          "phone": "0711254689",
+          "quantity": 10,
+          "status": 1,
+          "total": 3500
+        }
+      }
+    }
+  },
+  "Payroll": {
+    "2024": {
+      "August": {
+        "EMP0001": {
+          "additional_payment": 95,
+          "basic_salary": 705,
+          "cash_advance": 0,
+          "employee_id": "EMP0001",
+          "epf": 64,
+          "extra_amount": 100,
+          "festival_loan": 0,
+          "name": "Sanjana Attanayake",
+          "net_salary": 808,
+          "total_deductions": 92,
+          "total_salary": 800,
+          "worked_days": 1
+        }
+      },
+      "July": {
+        "EMP0001": {
+          "additional_payment": 285,
+          "basic_salary": 2115,
+          "cash_advance": 300,
+          "employee_id": "EMP0001",
+          "epf": 192,
+          "extra_amount": 300,
+          "festival_loan": 300,
+          "name": "A.M.S.I Attanayake",
+          "net_salary": 1880,
+          "total_deductions": 820,
+          "total_salary": 2400,
+          "worked_days": 3
+        }
+      }
+    }
+  },
+  "SensorData": {
+    "Humidity": {
+      "2024": {
+        "July": {
+          "05": 74,
+          "06": 75,
+          "07": 71
+        },
+        "June": {
+          "27": 71,
+          "28": 73,
+          "01": 72
+        }
+      }
+    },
+    "Rainfall": {
+      "2024": {
+        "July": {
+          "05": 44,
+          "06": 45,
+          "07": 70
+        },
+        "June": {
+          "10": 31,
+          "11": 28,
+          "20": 29,
+          "09": 32
+        }
+      }
+    },
+    "SoilMoisture": {
+      "2024": {
+        "July": {
+          "05": 800,
+          "06": 992,
+          "07": 752
+        },
+        "June": {
+          "27": 999,
+          "28": 1024,
+          "01": 889,
+          "02": 900
+        }
+      }
+    },
+    "Temperature": {
+      "2024": {
+        "July": {
+          "03": 27,
+          "04": 26,
+          "05": 29,
+          "07": 28
+        },
+        "June": {
+          "29": 32,
+          "30": 31,
+          "01": 25,
+          "02": 25
+        }
+      }
+    }
+  },
+  "User": {
+    "EMP0001": {
+      "contactNo": 785264132,
+      "email": "sanjana@gmail.com",
+      "name": "\"A.M.S.I.Attanayake\"",
+      "password": "$2b$12$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "position": "Manager",
+      "username": "Sanjana"
+    }
+  }
+}
