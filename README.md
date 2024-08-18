@@ -1,9 +1,10 @@
 # CocoManage
 A comprehensive estate management system for Moorcock Estate
 
-<h4>To install Node packages run: </h4><p>npm install</p>
-<h4>To install Python packages run (navigate to backend folder): </h4><p>pip install -r requirements.txt</p> 
-<h5>pipreqs .</h5>
+<br>
+<b>To install Node packages run (navigate to frontend folder): </b><p>npm install</p>
+<b>To install Python packages run (navigate to backend folder): </b><p>pip install -r requirements.txt</p>
+<b>Use this command to update requirements.txt: </b><p>pipreqs .</p>
 <!--ol>
   <li>pip install djangorestframework</li>
   <li>pip install django-cors-headers</li>
@@ -16,14 +17,5 @@ A comprehensive estate management system for Moorcock Estate
   <li>pip install dotenv</li>
 </ol-->
 
-<p><b>Create a .env file in the backend folder to store database credentials and other necessary variables.</b><br> The .env file has following variables</p>
-<div>
-  databaseURL = # URL to the firebase database <br>
-  apiKey = # API key of the database <br>
-  authDomain = # The firebase domain <br>
-  projectId = # Firebase project ID <br>
-  storageBucket = # storageBucket <br>
-  messagingSenderId = # sender id for messages <br>
-  appId = # app id <br>
-  measurementId = # mesaurement id <br>
-</div>
+<p>Create a .env file in the backend folder to store database credentials and other necessary variables. Follow the .example.env file given in the code.</p>
+<p>Load the database using the Sample DB.json file, to a Firebase database and replace the credentials in the .env file created above</p>

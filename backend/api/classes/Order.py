@@ -1,9 +1,12 @@
 import smtplib
+import datetime
+import pytz
 
 class Order():
     total_orders = 0
     first_order_date = ""
     last_order_date = ""
+    total_customers = 0
 
     def save_order(self, database_obj, name, phone, email, quantity, date, total):
         try:
@@ -58,7 +61,7 @@ class Order():
             return 0
 
 
-    def send_email(self, database_obj, order_id, name, email, quantity, date, total):
+    def send_email(self, toEmail, fromEmail, fromEmailPassword, order_id, name, quantity, date, total):
 
         name = name.split(" ")[0].strip()
         subject = "Order Confirmation"
@@ -69,8 +72,8 @@ class Order():
 
         try:
             server.starttls()
-            server.login("moorockestate@gmail.com", "zrrdjnpbyrfdmguy")
-            server.sendmail("moorockestate@gmail.com", email, text)
+            server.login(fromEmail, fromEmailPassword)
+            server.sendmail(fromEmail, toEmail, text)
             server.quit()
             return 0
         except Exception as e:
@@ -80,26 +83,36 @@ class Order():
 
     def init_order_info(self, database_obj):
         dates = []
-        total_orders = 0
+        emails = []
+        total_orders = 0 
 
         try:
             order_table = database_obj.child("Order").get()
             
-            for year in order_table.each():
-                month = database_obj.child("Order").child(year.key()).get()
-                
-                for order in month.each():
-                    for item in order.val():
-                        if item != None and item["date"] != None:
-                            total_orders += 1
-                            dates.append(item["date"])
+            if order_table.each():
+                for year in order_table.each():
+                    months = database_obj.child("Order").child(year.key()).get()
+                    
+                    for month in months.each():
+                        orders = database_obj.child("Order").child(year.key()).child(month.key()).get()
+                        
+                        for order in orders.each():
+                            order_data = order.val()
+                            if order_data and isinstance(order_data, dict):
+                                total_orders += 1
+                                dates.append(order_data.get("date", ""))
+                                email = order_data.get("email", "")
+                                if email and email not in emails:
+                                    emails.append(email)
 
-            self.total_orders = total_orders             
-            self.first_order_date = min(dates)
-            self.last_order_date = max(dates)
-        
+                self.total_orders = total_orders
+                self.first_order_date = max(dates) if dates else ""
+                self.last_order_date = min(dates) if dates else ""
+                self.total_customers = len(emails)
+
         except Exception as e:
             print(e)
+
 
     def get_total_orders(self):
         return self.total_orders
@@ -109,3 +122,105 @@ class Order():
 
     def get_last_order_date(self):
         return self.last_order_date
+
+    def get_total_customers(self):
+        return self.total_customers
+
+    def get_current_month_revenue(self, database_obj):
+        current_date = datetime.datetime.now(pytz.timezone('Asia/Colombo'))
+        self.current_year = current_date.year
+        self.current_month = current_date.strftime("%m")
+        total_revenue = 0
+
+        try:
+            order_table = database_obj.child("Order").child(str(self.current_year)).child(str(int(self.current_month))).get()
+            order_data = order_table.val()
+            
+            if isinstance(order_data, dict):
+                for order_id, item in order_data.items():
+                    if isinstance(item, dict) and item.get("status") == 1:
+                        total_revenue += item.get("total", 0)
+
+            elif isinstance(order_data, list):
+                for item in order_data:
+                    if isinstance(item, dict) and item.get("status") == 1:
+                        total_revenue += item.get("total", 0)
+                        
+            return total_revenue
+        except Exception as e:
+            print(e)
+            return 0
+
+
+    def get_order_data(self, database_obj):
+        i = 1
+        id = 1
+        order_dict = {}
+        order_table = database_obj.child("Order").get()
+            
+        for year in order_table.each():
+            month = database_obj.child("Order").child(year.key()).get()
+            
+            for order in month.each():
+                order_data = order.val()
+                if isinstance(order_data, dict):
+                    for order_id, item in order_data.items():
+                        if isinstance(item, dict):  # Ensure item is a dict
+                            date = item.get("date", "")
+                            email = item.get("email", "")
+                            name = item.get("name", "")
+                            phone = item.get("phone", "")
+                            quantity = item.get("quantity", 0)
+                            status = item.get("status", 0)
+                            total = item.get("total", 0)
+                            order_dict[i] = {
+                                "order_id": id, 
+                                "date": date, 
+                                "email": email, 
+                                "name": name, 
+                                "phone": phone, 
+                                "quantity": quantity, 
+                                "status": status, 
+                                "total": total
+                            }
+                            i += 1
+                            id += 1
+                elif isinstance(order_data, list):
+                    for item in order_data:
+                        if isinstance(item, dict):  # Ensure item is a dict
+                            date = item.get("date", "")
+                            email = item.get("email", "")
+                            name = item.get("name", "")
+                            phone = item.get("phone", "")
+                            quantity = item.get("quantity", 0)
+                            status = item.get("status", 0)
+                            total = item.get("total", 0)
+                            order_dict[i] = {
+                                "order_id": id, 
+                                "date": date, 
+                                "email": email, 
+                                "name": name, 
+                                "phone": phone, 
+                                "quantity": quantity, 
+                                "status": status, 
+                                "total": total
+                            }
+                            i += 1
+                            id += 1
+                    
+        return order_dict
+
+    def update_status(self, database_obj, order_id, date, new_status):
+        try:
+            current_year = date.split("/")[2].strip()
+            current_month = date.split("/")[1].strip()
+
+            order_table = database_obj.child("Order").child(current_year).child(current_month).child(order_id)
+
+            order_table.child("status").set(int(new_status))
+            
+            return 0
+            
+        except Exception as e:
+            print(e)
+            return 1   

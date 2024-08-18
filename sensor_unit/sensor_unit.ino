@@ -5,8 +5,8 @@
 #include "time.h" // Date/ Time Library
 
 // Network Configuration
-#define FIREBASE_HOST "https://cocomanage-516c5-default-rtdb.firebaseio.com"      
-#define FIREBASE_AUTH "AIzaSyDh3E_WGJWBxcEsYGWQvHSAyFJMk5uJ7Y0"            
+#define FIREBASE_HOST "FIREBASE_PROJECT_URL" // https://XXXXXXX.com      
+#define FIREBASE_AUTH "FIREBASE API KEY"            
 #define WIFI_SSID "WIFI SSID"         
 #define WIFI_PASSWORD "WIFI PASSWORD"
 

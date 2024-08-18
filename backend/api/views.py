@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -5,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from django.core.exceptions import ValidationError
+from dotenv import load_dotenv
 from .db import init_db
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
@@ -14,10 +16,8 @@ from .classes.CoconutPlants import CoconutPlants
 from .classes.Order import Order
 from .classes.Payroll import Payroll
 from .classes.Employee import Employee
-from .classes.User import CustomUser
-import os
-import time
-import datetime
+from .classes.User import SystemUser
+from .classes.Common import Common
 
 # Initialize the firebase database object
 database_obj = init_db()
@@ -155,9 +155,10 @@ class GetHistoricalSensorDataView(APIView):
             print(e)
             return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+# Views related to retrieving Additional Admin Data for Admin Dashboard (Orders, Employees, Attendance)
 class GetAdditionalAdminDataView(APIView):      
     order = Order()
-    employee = Employee()
+    employee = Employee("", "", "", "", "", "", "", "", "")
     attendance = Attendance()
 
     def get(self, request, *args, **kwargs):
@@ -196,6 +197,9 @@ class SaveOrderView(APIView):
     coconut_plants = CoconutPlants()
 
     def post(self, request, *args, **kwargs):
+        fromEmail = os.getenv("officialEmail")
+        fromEmailPassword = os.getenv("officialEmailPassword")
+
         firstname = request.data.get("firstname")
         lastname = request.data.get("lastname")
         name = str(firstname)+ " " + str(lastname)
@@ -213,12 +217,54 @@ class SaveOrderView(APIView):
         
         if result == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
-        state = self.order.send_email(database_obj, order_id, name, email, quantity, date, total)
+        state = self.order.send_email(email, fromEmail, fromEmailPassword, order_id, name, quantity, date, total)
         
         if state == 1:
             return Response({"message": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Order save successfully"}, status=status.HTTP_201_CREATED)
-    
+
+# Views related to updating order status
+class UpdateOrderStatusView(APIView):
+    order = Order()
+    coconut_plants = CoconutPlants()
+
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get("order_id")
+        date = request.data.get("date")
+        quantity = request.data.get("quantity")
+        old_status = request.data.get("old_status")
+        new_status = request.data.get("status")
+        coconut_plants = request.data.get("coconutPlantsCount")
+        print(old_status)
+        print(type(old_status))
+        print(new_status)
+        print(type(new_status))
+        if(old_status=="2" and (new_status=="0" or new_status=="1")):
+            if(coconut_plants >= quantity):
+                result = self.order.update_status(database_obj, order_id, date, new_status)
+                if result == 1:
+                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+                new_plants_count = int(coconut_plants) - int(quantity)
+                result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
+                if result2 == 1:
+                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Failed to save. Not enough coconut plants"}, status=status.HTTP_400_BAD_REQUEST)
+        elif((old_status=="0" or old_status=="1") and new_status=="2"):
+            result = self.order.update_status(database_obj, order_id, date, new_status)
+            if result == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            new_plants_count = int(coconut_plants) + int(quantity)
+            result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
+            if result2 == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            result = self.order.update_status(database_obj, order_id, date, new_status)
+            if result == 1:
+                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
+
 # Views related to updating coconut plant count    
 class UpdatePlantCountView(APIView):
     coconut_plants = CoconutPlants()
@@ -231,7 +277,7 @@ class UpdatePlantCountView(APIView):
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
 
-# Views related to updating unit price    
+# Views related to updating unit price of a coconut plant
 class UpdateUnitPriceView(APIView):
     coconut_plants = CoconutPlants()
 
@@ -279,33 +325,155 @@ def get_dashboard_data(request):
     
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
-# View related to view profile details
-'''class UserProfileView(APIView):
-    user = User(database_obj)
+
+# View related to Get Dashboard Data for Order Management
+class GetDashboardDataOrderManagementView(APIView):
+    order = Order()
 
     def get(self, request, *args, **kwargs):
-        user_id = request.query_params.get('user_id')
-        user = User(database_obj)
-        user_data = user.get_user(user_id)
-        if user_data.get("Error") is None:
-            return Response(user_data, status=status.HTTP_200_OK)
-        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)'''
+        self.order.init_order_info(database_obj)
+        total_orders = self.order.get_total_orders()
+        total_customers = self.order.get_total_customers()
+        total_revenue = self.order.get_current_month_revenue(database_obj)
+        data = {"total_orders": total_orders,
+                "total_customers": total_customers,
+                "total_revenue": total_revenue}
+        
+        return Response(data, status=status.HTTP_200_OK)
 
-# View related to password change
-'''class ChangeUserPasswordView(APIView):
-    user = User(database_obj)
+# View related to Get Order Data
+class GetOrderView(APIView): 
+    order = Order()
+
+    def get(self, request, *args, **kwargs):
+        order_dict = self.order.get_order_data(database_obj)
+        return Response({"data": order_dict}, status=status.HTTP_200_OK)
+    
+# View related to View All Employees
+class GetAllEmployeesView(APIView):
+    employee = Employee("", "", "", "", "", "", "", "", "")
+
+    def get(self, request, *args, **kwargs):
+        employees = self.employee.get_all_employees(database_obj)
+        return Response(employees, status=status.HTTP_200_OK)
+
+# View related to Add Employee
+class AddEmployeeView(APIView):   
+    def post(self, request, *args, **kwargs):
+        #emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo
+        try:
+            emp_id = None
+            name_with_initials = request.data.get('name_with_initials')
+            full_name = request.data.get('name')
+            nic = request.data.get('nic')
+            position = request.data.get('position')
+            email = request.data.get('email')
+            phone = request.data.get('phone')
+            gender = request.data.get('gender')
+            photo = request.FILES['photo']
+
+            common = Common()
+            isValidated = common.validate_employee_form_data(name_with_initials, full_name, nic, position, email, phone, gender)
+
+            if (isValidated):
+                employee = Employee(emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo)
+                isEmployeeSaved = employee.add_employee(database_obj)
+
+                if isEmployeeSaved:
+                    return Response({"message": "Employee added successfully"}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({"message": "Failed to add employee"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                print("Form Error")
+                return Response({"message": "Invalid form data"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# View related to Updating an Employee
+class UpdateEmployeeView(APIView):   
+    def post(self, request, *args, **kwargs):
+        #emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo
+        try:
+            common = Common()
+            isNewPhotoPresent = False
+
+            emp_id = request.data.get('emp_id')
+            name_with_initials = request.data.get('name_with_initials')
+            full_name = request.data.get('name')
+            nic = request.data.get('nic')
+            position = request.data.get('position')
+            email = request.data.get('email')
+            phone = request.data.get('phone')
+            gender = request.data.get('gender')
+            photo = ""
+
+            if ('photo' in request.FILES and (common.is_url(request.FILES['photo'].name) == False)):
+                isNewPhotoPresent = True
+                photo = request.FILES['photo']
+
+            isValidated = common.validate_employee_form_data(name_with_initials, full_name, nic, position, email, phone, gender)
+            
+            if (isValidated):
+                employee = Employee(emp_id, name_with_initials, full_name, nic, position, email, phone, gender, photo)
+                isEmployeeSaved = employee.update_employee(database_obj, isNewPhotoPresent)
+
+                if isEmployeeSaved:
+                    return Response({"message": "Employee updated successfully"}, status=status.HTTP_201_CREATED)
+                else:
+                    print("Failed to update employee information")
+                    return Response({"message": "Failed to update employee information"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                print("Form Error")
+                return Response({"message": "Invalid form data"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print("Exception: ", e)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# View related to Delete an Employee
+class DeleteEmployeeView(APIView):
 
     def post(self, request, *args, **kwargs):
-        user_id = request.data.get('user_id')
-        old_password = request.data.get('old_password')
-        new_password = request.data.get('new_password')
-        user = User(database_obj)
-        result = user.change_password(user_id, old_password, new_password)
-        if result.get("Error") is None:
-            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
-        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST) ''' 
+        try:
+            emp_id = request.data.get('emp_id')
+            employee = Employee(emp_id, "", "", "", "", "", "", "", "")
+            
+            isEmployeeDeleted = employee.delete_employee(database_obj)
+            if isEmployeeDeleted:
+                return Response({"message": "Employee deleted successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Failed to delete employee"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print("Exception in the View: ", e)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+# View related to sending email (as a cutomer/ visitor)
+class SendMessageView(APIView):
+    common = Common()
 
+    def post(self, request, *args, **kwargs):
+        try:
+            load_dotenv()
+
+            toEmail = os.getenv("toEmail")
+            fromEmail = os.getenv("officialEmail")
+            fromEmailPassword = os.getenv("officialEmailPassword")
+
+            name = request.data.get('name')
+            sendersMail = request.data.get('sendersMail')
+            message = request.data.get('message')
+
+            common = Common()
+            isSent = common.send_email(toEmail, fromEmail, fromEmailPassword, name, sendersMail, message)
+            if isSent:  
+                return Response({"message": "Message sent successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print(e)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 #signup
 @api_view(['POST'])
 def signup(request):
@@ -315,7 +483,7 @@ def signup(request):
     confirm_password = request.data.get('confirmPassword')
 
     try:
-        user = CustomUser(database_obj,name,email,password,confirm_password)
+        user = SystemUser(database_obj,name,email,password,confirm_password)
         tokens = user.execute()
         return Response({"message": "User created successfully."}, status=status.HTTP_201_CREATED)
     
@@ -325,3 +493,30 @@ def signup(request):
     
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+# View related to view profile details
+'''class UserProfileView(APIView):
+    user = SystemUser(database_obj)
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+        user = SystemUser(database_obj)
+        user_data = user.get_user(user_id)
+        if user_data.get("Error") is None:
+            return Response(user_data, status=status.HTTP_200_OK)
+        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)'''
+
+# View related to password change
+'''class ChangeUserPasswordView(APIView):
+    user = SystemUser(database_obj)
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        user = SystemUser(database_obj)
+        result = user.change_password(user_id, old_password, new_password)
+        if result.get("Error") is None:
+            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
+        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST) ''' 

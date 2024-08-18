@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 
-class CustomUser:
+class SystemUser:
     def __init__(self, database_obj, name, email, password, confirm_password):
         self.email = email
         self.name = name
