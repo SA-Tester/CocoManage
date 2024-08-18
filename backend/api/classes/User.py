@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
-from ..db import init_db
 
 class CustomUser:
     def __init__(self, database_obj, name, email, password, confirm_password):
@@ -56,11 +55,15 @@ class CustomUser:
         return user,self.employee['employee_id'] 
     
     #save user data to db
-    def save_user_data(self,employee_id):
+    def save_user_data(self,employee_id,hashed_password, tokens):
         user_data = {
+            "username": self.email,
             "email": self.email,
+            "password": hashed_password,
             "name": self.name,
-            "created_at": timezone.now().isoformat()
+            "created_at": timezone.now().isoformat(),
+            "token": tokens['access'],
+            "refresh_token": tokens['refresh'],
         }
         self.database_obj.child('User').child(employee_id).set(user_data)
 
@@ -76,6 +79,6 @@ class CustomUser:
     #run the process
     def execute(self):
         user, employee_id = self.create_user()
-        self.save_user_data(employee_id)
         tokens = self.generate_tokens(user)
-        return tokens
+        hashed_password = user.password
+        self.save_user_data(employee_id, hashed_password, tokens)

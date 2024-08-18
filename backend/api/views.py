@@ -317,7 +317,7 @@ def signup(request):
     try:
         user = CustomUser(database_obj,name,email,password,confirm_password)
         tokens = user.execute()
-        return Response({"tokens": tokens}, status=status.HTTP_201_CREATED)
+        return Response({"message": "User created successfully."}, status=status.HTTP_201_CREATED)
     
     except ValidationError as error:
         error_message = ' '.join(error.messages) if isinstance(error, ValidationError) else str(error)
