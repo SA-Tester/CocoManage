@@ -474,16 +474,42 @@ class SendMessageView(APIView):
             print(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
+# View related to view profile details
+'''class UserProfileView(APIView):
+    user = User(database_obj)
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+        user = User(database_obj)
+        user_data = user.get_user(user_id)
+        if user_data.get("Error") is None:
+            return Response(user_data, status=status.HTTP_200_OK)
+        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)'''
+
+# View related to password change
+'''class ChangeUserPasswordView(APIView):
+    user = User(database_obj)
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        user = User(database_obj)
+        result = user.change_password(user_id, old_password, new_password)
+        if result.get("Error") is None:
+            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
+        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST) ''' 
+
 #signup
 @api_view(['POST'])
 def signup(request):
-    name = request.data.get('name')
+    nic = request.data.get('nic')
     email = request.data.get('email')
     password = request.data.get('password')
     confirm_password = request.data.get('confirmPassword')
 
     try:
-        user = SystemUser(database_obj,name,email,password,confirm_password)
+        user = SystemUser(database_obj,nic,email,password,confirm_password)
         tokens = user.execute()
         return Response({"message": "User created successfully."}, status=status.HTTP_201_CREATED)
     
