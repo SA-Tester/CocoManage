@@ -55,11 +55,15 @@ class SystemUser:
         return user,self.employee['employee_id'] 
     
     #save user data to db
-    def save_user_data(self,employee_id):
+    def save_user_data(self,employee_id,hashed_password, tokens):
         user_data = {
+            "username": self.email,
             "email": self.email,
+            "password": hashed_password,
             "name": self.name,
-            "created_at": timezone.now().isoformat()
+            "created_at": timezone.now().isoformat(),
+            "token": tokens['access'],
+            "refresh_token": tokens['refresh'],
         }
         self.database_obj.child('User').child(employee_id).set(user_data)
 
@@ -75,6 +79,6 @@ class SystemUser:
     #run the process
     def execute(self):
         user, employee_id = self.create_user()
-        self.save_user_data(employee_id)
         tokens = self.generate_tokens(user)
-        return tokens
+        hashed_password = user.password
+        self.save_user_data(employee_id, hashed_password, tokens)

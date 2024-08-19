@@ -54,8 +54,6 @@ const SignUp = () => {
         password,
         confirmPassword,
       });
-      localStorage.setItem("access", response.data.tokens.access);
-      localStorage.setItem("refresh", response.data.tokens.refresh);
       setSuccess("Signup Successful!");
     } catch (err) {
       setError("Signup Failed: " + (err.response?.data?.error || err.message));
