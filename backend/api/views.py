@@ -289,6 +289,29 @@ class UpdateUnitPriceView(APIView):
             return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
 
+# View related to Get Dashboard Data for Order Management
+class GetDashboardDataOrderManagementView(APIView):
+    order = Order()
+
+    def get(self, request, *args, **kwargs):
+        self.order.init_order_info(database_obj)
+        total_orders = self.order.get_total_orders()
+        total_customers = self.order.get_total_customers()
+        total_revenue = self.order.get_current_month_revenue(database_obj)
+        data = {"total_orders": total_orders,
+                "total_customers": total_customers,
+                "total_revenue": total_revenue}
+        
+        return Response(data, status=status.HTTP_200_OK)
+
+# View related to Get Order Data
+class GetOrderView(APIView): 
+    order = Order()
+
+    def get(self, request, *args, **kwargs):
+        order_dict = self.order.get_order_data(database_obj)
+        return Response({"data": order_dict}, status=status.HTTP_200_OK)
+    
 # Views related to retrieving salary details of employees
 class InitialSalaryDetailsView(APIView):
     def get(self, request, *args, **kwargs):
@@ -301,7 +324,7 @@ class InitialSalaryDetailsView(APIView):
             salary_details_list.append(salary_details)
 
         return Response(salary_details_list, status=status.HTTP_200_OK)
-    
+
 # Views related to calculating salary of an employee
 @api_view(['POST'])
 def calculate_salary(request):
@@ -325,29 +348,6 @@ def get_dashboard_data(request):
     
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-# View related to Get Dashboard Data for Order Management
-class GetDashboardDataOrderManagementView(APIView):
-    order = Order()
-
-    def get(self, request, *args, **kwargs):
-        self.order.init_order_info(database_obj)
-        total_orders = self.order.get_total_orders()
-        total_customers = self.order.get_total_customers()
-        total_revenue = self.order.get_current_month_revenue(database_obj)
-        data = {"total_orders": total_orders,
-                "total_customers": total_customers,
-                "total_revenue": total_revenue}
-        
-        return Response(data, status=status.HTTP_200_OK)
-
-# View related to Get Order Data
-class GetOrderView(APIView): 
-    order = Order()
-
-    def get(self, request, *args, **kwargs):
-        order_dict = self.order.get_order_data(database_obj)
-        return Response({"data": order_dict}, status=status.HTTP_200_OK)
     
 # View related to View All Employees
 class GetAllEmployeesView(APIView):
