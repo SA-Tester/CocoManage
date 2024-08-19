@@ -1,8 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Label, TextInput, Button } from "flowbite-react";
 import img1 from "../assets/image1.jpg"; // Ensure this image path is correct
 
 const SignIn = () => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
+	const [loading, setLoading] = useState(false);
+
+	const validateEmail = (email) => {
+		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	};
+
+	const handleLogin = async (e) => {
+		e.preventDefault();
+		setLoading(true);
+
+		if (!validateEmail(email)) {
+			setError("Invalid email address.");
+			return;
+		}
+
+		let formData = new FormData();
+		formData.append("email", email);
+		formData.append("password", password);
+
+		axios
+			.get("http://localhost:8000/api/signin/")
+			.then((response) => {
+				setLoading(false);
+				setSuccess("Login Successful!");
+				console.log(response);
+			})
+			.catch((error) => {
+				setLoading(false);
+				setError("Login Failed: " + (error.response?.data?.error || error.message));
+				console.log(error);
+			});
+	};
+
 	return (
 		<React.Fragment>
 			<div className="bg-white h-screen flex items-center justify-center">
@@ -21,8 +58,13 @@ const SignIn = () => {
 							</span>
 						</p>
 
+						<div className="mt-2 mb-3">
+							{error && <p style={{ color: "red" }}>{error}</p>}
+							{success && <p style={{ color: "green" }}>{success}</p>}
+						</div>
+
 						{/* Login form */}
-						<form className="flex items-center justify-center">
+						<form className="flex items-center justify-center" onSubmit={(e) => handleLogin()}>
 							<div className="w-full pt-5">
 								{/* Email */}
 								<div className="mb-6">
@@ -39,8 +81,9 @@ const SignIn = () => {
 										type="email"
 										placeholder="Enter Email"
 										color={"dark"}
+										onChange={(e) => setEmail(e.target.value)}
 										required
-                                        shadow
+										shadow
 									/>
 								</div>
 								{/* Password */}
@@ -58,17 +101,20 @@ const SignIn = () => {
 										type="password"
 										placeholder="Enter Password"
 										color={"dark"}
+										onChange={(e) => setPassword(e.target.value)}
 										required
-                                        shadow
+										shadow
 									/>
 								</div>
 								{/* Button */}
 								<section className="mt-9 flex items-start justify-end">
 									<Button
 										size={"xs"}
+										type="submit"
 										className="w-full rounded-lg bg-green py-1 uppercase text-white hover:!bg-light-green"
+										disabled={loading}
 									>
-										Login
+										{loading ? "Signing You In..." : "Sign In"}
 									</Button>
 								</section>
 							</div>

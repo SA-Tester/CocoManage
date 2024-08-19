@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 
-class CustomUser:
+class SystemUser:
     def __init__(self, database_obj, name, email, password, confirm_password):
         self.email = email
         self.name = name
@@ -11,7 +11,7 @@ class CustomUser:
         self.confirm_password = confirm_password
         self.database_obj = database_obj
 
-    #retrieve employee data by email
+    # retrieve employee data by email
     def get_employee_by_email1(self):
         all_employees = self.database_obj.child('Employee').get().val()
         if not all_employees:
@@ -23,7 +23,7 @@ class CustomUser:
             
         return None
 
-    #validate user inputs
+    # validate user inputs
     def validate(self):
         if not self.email or not self.name or not self.password or not self.confirm_password:
             raise ValidationError('All fields are required.')
@@ -45,7 +45,7 @@ class CustomUser:
             raise ValidationError('Only Managers or Assistant Managers can register.')
         
 
-    #create a new user   
+    # create a new user   
     def create_user(self):
         self.validate()
         hashed_password = make_password(self.password)
@@ -54,7 +54,7 @@ class CustomUser:
         user.save()
         return user,self.employee['employee_id'] 
     
-    #save user data to db
+    # save user data to db
     def save_user_data(self,employee_id,hashed_password, tokens):
         user_data = {
             "username": self.email,
@@ -67,7 +67,7 @@ class CustomUser:
         }
         self.database_obj.child('User').child(employee_id).set(user_data)
 
-    #generate JWT tokens
+    # generate JWT tokens
     def generate_tokens(self, user):
         from rest_framework_simplejwt.tokens import RefreshToken
         refresh = RefreshToken.for_user(user)
@@ -76,7 +76,7 @@ class CustomUser:
             'access': str(refresh.access_token)
         }
     
-    #run the process
+    # run the process
     def execute(self):
         user, employee_id = self.create_user()
         tokens = self.generate_tokens(user)
