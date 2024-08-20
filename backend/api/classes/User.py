@@ -4,31 +4,43 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 
 class SystemUser:
-    def __init__(self, database_obj, name, email, password, confirm_password):
+    def __init__(self, database_obj, nic, email, password, confirm_password):
         self.email = email
-        self.name = name
+        self.nic = nic
         self.password = password
         self.confirm_password = confirm_password
         self.database_obj = database_obj
 
-    # retrieve employee data by email
-    def get_employee_by_email1(self):
+    # retrieve employee data by NIC
+    def get_employee_by_nic(self):
         all_employees = self.database_obj.child('Employee').get().val()
         if not all_employees:
             return None
         
         for emp_id, details in all_employees.items():
-            if details.get('email') == self.email:
+            if details.get('nic') == self.nic:
                 return {'employee_id': emp_id, **details}
             
         return None
+    
+    #check whther email already exists
+    def check_email(self):
+        all_users = self.database_obj.child('User').get().val()
+        if not all_users:
+            return False
+        
+        for _, details in all_users.items():
+            if details.get('username') == self.email:
+                return True
+        
+        return False
 
     # validate user inputs
     def validate(self):
-        if not self.email or not self.name or not self.password or not self.confirm_password:
+        if not self.email or not self.nic or not self.password or not self.confirm_password:
             raise ValidationError('All fields are required.')
         
-        if User.objects.filter(email=self.email).exists():
+        if self.check_email():
             raise ValidationError('The Email already exists. Please use another valid email address.')
         
         if self.password != self.confirm_password:
@@ -37,7 +49,7 @@ class SystemUser:
         if len(self.password) < 6:
             raise ValidationError('Password should contain at least 6 characters.') 
         
-        self.employee = self.get_employee_by_email1()
+        self.employee = self.get_employee_by_nic()
         if not self.employee:
             raise ValidationError('Employee not found.')
         
@@ -49,8 +61,7 @@ class SystemUser:
     def create_user(self):
         self.validate()
         hashed_password = make_password(self.password)
-        user = User.objects.create(username=self.email, email=self.email, password=hashed_password)
-        user.first_name = self.name
+        user = User.objects.create(username=self.email, password=hashed_password)
         user.save()
         return user,self.employee['employee_id'] 
     
@@ -58,11 +69,10 @@ class SystemUser:
     def save_user_data(self,employee_id,hashed_password, tokens):
         user_data = {
             "username": self.email,
-            "email": self.email,
             "password": hashed_password,
-            "name": self.name,
+            "position": self.employee['position'],
             "created_at": timezone.now().isoformat(),
-            "token": tokens['access'],
+            "access_token": tokens['access'],
             "refresh_token": tokens['refresh'],
         }
         self.database_obj.child('User').child(employee_id).set(user_data)
