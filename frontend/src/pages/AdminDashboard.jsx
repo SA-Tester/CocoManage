@@ -76,7 +76,7 @@ const AdminDashboard = () => {
 			getTodaysSensorData();
 			getHistoricSensorData();
 			getAdminDashboardData();
-		}, 10000);
+		}, 60000);
 
 		return () => {
 			console.log("Clearing Interval");
