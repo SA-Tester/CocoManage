@@ -2,7 +2,7 @@ import pyrebase
 import os
 from dotenv import load_dotenv
 
-def init_db():
+def init_firebase():
     load_dotenv()
 
     config = {
@@ -17,6 +17,4 @@ def init_db():
     }
 
     firebase = pyrebase.initialize_app(config)
-    # auth = firebase.auth()
-    database = firebase.database()
-    return database
+    return firebase

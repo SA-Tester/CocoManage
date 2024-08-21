@@ -1,4 +1,4 @@
-from ..db import init_db
+from ..db import init_firebase
 import datetime
 
 class Payroll():
@@ -6,7 +6,7 @@ class Payroll():
         self.employee_id = employee_id
         self.cash_advance = float(cash_advance)
         self.festival_loan = float(festival_loan)
-        self.database = init_db()
+        self.database = init_firebase().database()
         self.employee_details = self.get_employee_details()
         self.set_current_year_month()
         self.worked_days = self.get_worked_days()
