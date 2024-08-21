@@ -40,26 +40,31 @@ class Weather():
         return response
     
     def get_weather(self):
-        response = self.get_response()
-        daily = response.Daily()
-        daily_weather_code = daily.Variables(0).ValuesAsNumpy()
-        daily_temperature = daily.Variables(1).ValuesAsNumpy()
+        try:
+            response = self.get_response()
+            daily = response.Daily()
+            daily_weather_code = daily.Variables(0).ValuesAsNumpy()
+            daily_temperature = daily.Variables(1).ValuesAsNumpy()
 
-        daily_data = {"date": pd.date_range(
-            start = pd.to_datetime(daily.Time(), unit = "s", utc = False),
-            end = pd.to_datetime(daily.TimeEnd(), unit = "s", utc = False),
-            freq = pd.Timedelta(seconds = daily.Interval()),
-            inclusive = "left"
-        )}
-        daily_data["weather_code"] = daily_weather_code
-        daily_data["temperature"] = daily_temperature
+            daily_data = {"date": pd.date_range(
+                start = pd.to_datetime(daily.Time(), unit = "s", utc = False),
+                end = pd.to_datetime(daily.TimeEnd(), unit = "s", utc = False),
+                freq = pd.Timedelta(seconds = daily.Interval()),
+                inclusive = "left"
+            )}
+            daily_data["weather_code"] = daily_weather_code
+            daily_data["temperature"] = daily_temperature
 
-        daily_dataframe = pd.DataFrame(data = daily_data)
+            daily_dataframe = pd.DataFrame(data = daily_data)
 
-        for index, row in daily_dataframe.iterrows():
-            date = str(row["date"].date())
-            self.dates.append(date)
-            self.weather_codes.append(row["weather_code"])
-            self.temperatures.append(round(row["temperature"], 2))
-            
-        return (self.dates, self.weather_codes, self.temperatures)
+            for index, row in daily_dataframe.iterrows():
+                date = str(row["date"].date())
+                self.dates.append(date)
+                self.weather_codes.append(row["weather_code"])
+                self.temperatures.append(round(row["temperature"], 2))
+                
+            return (self.dates, self.weather_codes, self.temperatures)
+        
+        except Exception as e:
+            print(e)
+            return 1
