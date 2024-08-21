@@ -3,7 +3,7 @@ import customerIcon from '../assets/customer-icons.png';
 import orderIcon from '../assets/order-icon.png';
 import revenueIcon from '../assets/revenue-icon.jpg';
 import { ToastContainer, toast } from "react-toastify";
-import { Modal, Spinner } from "flowbite-react";
+import { Modal, Spinner, Button } from "flowbite-react";
 import axios from 'axios';
 
 const OrderManagement = () => {
@@ -22,8 +22,12 @@ const OrderManagement = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [selectedOrderDate, setSelectedOrderDate] = useState(null);
     const [selectedOrderQuantity, setSelectedOrderQuantity] = useState(null);
-    const [selectedOrderStatus, setSelectedOrderStatus] = useState(null);
+    const [selectedOrderReminder, setSelectedOrderReminder] = useState(null);
+    const [selectedOrderTotal, setSelectedOrderTotal] = useState(null);
+    const [selectedOrderCustomer, setSelectedOrderCustomer] = useState(null);
+    const [selectedOrderEmail, setSelectedOrderEmail] = useState(null);
     const [openWaitingModal, setOpenWaitingModal] = useState(false);
+    const [openReminder, setReminderModal] = useState(false);
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
     const currentOrders = dataArray.slice(firstIndex, lastIndex);
@@ -31,38 +35,38 @@ const OrderManagement = () => {
     const numbers = [...Array(nPage + 1).keys()].slice(1);
 
     useEffect(() => {
-    let filtered = [];
-    
-    if (toggle == 1) {
-        // All Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat();
-    } else if (toggle == 2) {
-        // Completed Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
-            .flat()
-            .filter(([subkey, subvalue]) => subvalue.status === 1);
-    } else if (toggle == 3) {
-        // In Progress Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
-            .flat()
-            .filter(([subkey, subvalue]) => subvalue.status === 0);
-    } else if (toggle == 4) {
-        // Cancelled Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
-            .flat()
-            .filter(([subkey, subvalue]) => subvalue.status === 2);
-    }
+        let filtered = [];
 
-    const searchedData = filtered.filter(([subkey, subvalue]) => {
-        return search.toLowerCase() === '' ? subvalue :
-            subvalue.name.toLowerCase().includes(search.toLowerCase()) ||
-            subvalue.order_id.toString().includes(search)||
-            subvalue.email.toLowerCase().includes(search.toLowerCase());
-    });
+        if (toggle == 1) {
+            // All Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat();
+        } else if (toggle == 2) {
+            // Completed Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+                .flat()
+                .filter(([subkey, subvalue]) => subvalue.status === 1);
+        } else if (toggle == 3) {
+            // In Progress Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+                .flat()
+                .filter(([subkey, subvalue]) => subvalue.status === 0);
+        } else if (toggle == 4) {
+            // Cancelled Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+                .flat()
+                .filter(([subkey, subvalue]) => subvalue.status === 2);
+        }
 
-    setDataArray(searchedData);
-    setCurrentPage(1);
-}, [search, toggle, orderData]);
+        const searchedData = filtered.filter(([subkey, subvalue]) => {
+            return search.toLowerCase() === '' ? subvalue :
+                subvalue.name.toLowerCase().includes(search.toLowerCase()) ||
+                subvalue.order_id.toString().includes(search) ||
+                subvalue.email.toLowerCase().includes(search.toLowerCase());
+        });
+
+        setDataArray(searchedData);
+        setCurrentPage(1);
+    }, [search, toggle, orderData]);
 
 
     const handlePageChange = (pageNumber) => {
@@ -207,11 +211,13 @@ const OrderManagement = () => {
         setCurrentPage(1);
     };
 
-    const openStatusChangeModal = (orderId, orderDate, orderQuantity, orderStatus) => {
+    const openStatusChangeModal = (orderId, orderDate, orderQuantity, orderEmail, orderTotal, orderCustomer) => {
         setSelectedOrder(orderId);
         setSelectedOrderDate(orderDate);
         setSelectedOrderQuantity(orderQuantity);
-        setSelectedOrderStatus(orderStatus);
+        setSelectedOrderTotal(orderTotal);
+        setSelectedOrderCustomer(orderCustomer);
+        setSelectedOrderEmail(orderEmail)
         setOpenModal(true);
     };
 
@@ -220,7 +226,31 @@ const OrderManagement = () => {
         setSelectedOrder(null);
         setSelectedOrderDate(null);
         setSelectedOrderQuantity(null);
-        setSelectedOrderStatus(null);
+        setSelectedOrderEmail(null);
+        setSelectedOrderTotal(null);
+        setSelectedOrderCustomer(null);
+    };
+
+    const openSendReminderModal = (orderId, orderDate, orderQuantity, orderEmail, orderTotal, orderCustomer, orderReminder) => {
+        setSelectedOrder(orderId);
+        setSelectedOrderDate(orderDate);
+        setSelectedOrderQuantity(orderQuantity);
+        setSelectedOrderTotal(orderTotal);
+        setSelectedOrderCustomer(orderCustomer);
+        setSelectedOrderEmail(orderEmail);
+        setSelectedOrderReminder(orderReminder);
+        setReminderModal(true);
+    };
+
+    const closeSendReminderModal = () => {
+        setReminderModal(false);
+        setSelectedOrder(null);
+        setSelectedOrderDate(null);
+        setSelectedOrderQuantity(null);
+        setSelectedOrderEmail(null);
+        setSelectedOrderTotal(null);
+        setSelectedOrderCustomer(null);
+        setSelectedOrderReminder(null);
     };
 
     const handleSubmit = (event) => {
@@ -230,9 +260,11 @@ const OrderManagement = () => {
 
         formData.set("order_id", selectedOrder);
         formData.set("quantity", selectedOrderQuantity);
-        formData.set("old_status", selectedOrderStatus);
+        formData.set("email", selectedOrderEmail);
         formData.set("date", selectedOrderDate);
         formData.set("coconutPlantsCount", plantCount);
+        formData.set("total", selectedOrderTotal);
+        formData.set("customer_name", selectedOrderCustomer);
 
         axios
             .post("http://localhost:8000/api/update_order_status/", formData)
@@ -250,6 +282,44 @@ const OrderManagement = () => {
                 setOpenWaitingModal(false);
                 toast.error("Error Saving Order Status");
                 closeStatusChangeModal();
+                console.log(error);
+            });
+    }
+
+    const handleSendReminder = (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const date = today.getDate();
+        const reminderDate = `${date}/${month}/${year}`;
+
+        formData.set("order_id", selectedOrder);
+        formData.set("quantity", selectedOrderQuantity);
+        formData.set("email", selectedOrderEmail);
+        formData.set("date", selectedOrderDate);
+        formData.set("total", selectedOrderTotal);
+        formData.set("customer_name", selectedOrderCustomer);
+        formData.set("reminder_date", reminderDate);
+
+
+        axios
+            .post("http://localhost:8000/api/send_reminder/", formData)
+            .then(() => {
+                setOpenWaitingModal(false);
+                event.target.reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                toast.success("Reminder sent successfully!");
+                closeSendReminderModal();
+                get_order_data();
+            })
+            .catch((error) => {
+                setOpenWaitingModal(false);
+                toast.error("Failed to send reminder");
+                closeSendReminderModal();
                 console.log(error);
             });
     }
@@ -329,6 +399,7 @@ const OrderManagement = () => {
                                 <th className="p-3 text-sm font-semibold tracking-wide text-left">Email</th>
                                 <th className="p-3 text-sm font-semibold tracking-wide text-left">Status</th>
                                 <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
+                                <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -346,7 +417,10 @@ const OrderManagement = () => {
                                         <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
                                     </td>
                                     <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md" onClick={() => openStatusChangeModal(subValue.order_id, subValue.date, subValue.quantity, subValue.status)}>Change</button>
+                                        <button className={`${subValue.status == 0 ? "py-2 px-3 text-xs bg-gray-300 text-gray-700 font-medium rounded-md" : "hidden"}`} onClick={() => openStatusChangeModal(subValue.order_id, subValue.date, subValue.quantity, subValue.email, subValue.total, subValue.name)}>Change</button>
+                                    </td>
+                                    <td>
+                                        <button className={`${subValue.status == 0 ? "py-2 px-3 text-xs bg-gray-300 text-gray-800 font-medium rounded-md" : "hidden"}`} onClick={() => openSendReminderModal(subValue.order_id, subValue.date, subValue.quantity, subValue.email, subValue.total, subValue.name, subValue.reminder)}>Reminder</button>
                                     </td>
                                 </tr>
                             )
@@ -380,17 +454,21 @@ const OrderManagement = () => {
                                         <input type="radio" name="status" id="1" value="1" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" defaultChecked />
                                         <label htmlFor="1" className="text-gray-700 w-full">Complete</label>
                                     </div>
-                                    <div className='py-2 px-2 w-full flex flex-row gap-4 align-middle items-center border-b border-b-gray-400'>
+                                    <div className='py-2 px-2 w-full flex flex-row gap-4 align-middle items-center'>
                                         <input type="radio" name="status" id="2" value="2" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" />
                                         <label htmlFor="2" className="text-gray-700 w-full">Cancel</label>
                                     </div>
-                                    <div className='py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center'>
-                                        <input type="radio" name="status" id="0" value="0" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" />
-                                        <label htmlFor="0" className="text-gray-700 w-full">In Progress</label>
-                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="mb-5 text-lg font-normal text-gray-500">
+                                        Are you sure you want to change status this order?
+                                    </h3>
                                 </div>
                             </div>
-                            <button type="submit" className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around' onClick={() => setOpenWaitingModal(true)}>Save</button>
+                            <div className="flex justify-center gap-4">
+                                <button type="submit" className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => setOpenWaitingModal(true)}>{"Yes, I'm sure"}</button>
+                                <button className='bg-gray-200 text-gray-500 font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeStatusChangeModal()}>No, cancel</button>
+                            </div>
                         </div>
                     </form>
                 </Modal.Body>
@@ -400,6 +478,29 @@ const OrderManagement = () => {
                     <div className="flex flex-row gap-5">
                         <Spinner color="success" aria-label="Success spinner example" size="lg" />
                         <h3 className="text-lg text-gray-500">Please Wait</h3>
+                    </div>
+                </Modal.Body>
+            </Modal>
+            <Modal className="bg-opacity-70 items-center align-middle lg:pt-36" show={openReminder} size="md" popup onClose={() => closeSendReminderModal()}>
+                <Modal.Header />
+                <Modal.Body>
+                    <div className={`${selectedOrderReminder == "null" ? "space-y-6 text-center" : "hidden"}`}>
+                        <form onSubmit={handleSendReminder}>
+                            <h3 className="mb-5 text-lg font-normal text-gray-500">
+                                Are you sure you want to send this reminder?
+                            </h3>
+                            <div className="flex justify-center gap-4">
+                                <button type="submit" className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => setOpenWaitingModal(true)}>{"Yes, I'm sure"}</button>
+                                <button className='bg-gray-200 text-gray-500 font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeSendReminderModal()}>No, cancel</button>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div className={`${selectedOrderReminder != "null" ? "space-y-6 text-center" : "hidden"}`}>
+                        <h3 className="text-lg font-normal text-gray-500">
+                            Reminder already sent on {selectedOrderReminder}.
+                        </h3>
+                        <button className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeSendReminderModal()}>Okay</button>
                     </div>
                 </Modal.Body>
             </Modal>

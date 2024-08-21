@@ -52,6 +52,7 @@ class Order():
                 "date": date,
                 "total": int(total),
                 "status": 0,
+                "reminder": "null",
             })
 
             return next_order_id
@@ -64,8 +65,9 @@ class Order():
     def send_email(self, toEmail, fromEmail, fromEmailPassword, order_id, name, quantity, date, total):
 
         name = name.split(" ")[0].strip()
+        orderID = str(order_id).zfill(7) 
         subject = "Order Confirmation"
-        message = f"Dear {name},\n\nWe are pleased to confirm that we have successfully received your order. Here are the details of your purchase:\n\nOrderID: 00000{order_id}\nOrder Date: {date}\nQuantity: {quantity}\nTotal Amount: Rs. {total}.00\n\nYour order will be processed within 2-3 days. You can pick up your order at our estate.\n\nAddress : MOOROCK ESTATE, Thalgaspitiya, Ambakote, Mawathagama, Sri Lanka.\n\nFor your convenience, you can choose one of the following payment methods:\n1. You can pay for your order when you come to pick it up at estate.\n2. You can deposit the payment into our bank account. Please use the following bank details:\n\nBank Name: People's Bank\nAccount Name: Moorock Estate\nAccount Number: 1234567890\nBranch: Thalgaspitiya\n\nIf you choose to pay by bank deposit, please bring the deposit receipt when you come to pick up your order.\n\nIf you have any questions or need further assistance, please do not hesitate to contact us at moorockestate@gmail.com or call us at 071-2345678.\n\nThank you for your order!\n\n\nBest regards,\nAdmin\nCocomanage"
+        message = f"Dear {name},\n\nWe are pleased to confirm that we have successfully received your order. Here are the details of your purchase:\n\nOrderID: {orderID}\nOrder Date: {date}\nQuantity: {quantity}\nTotal Amount: Rs. {total}.00\n\nYour order will be processed within 2-3 days. You can pick up your order at our estate.\n\nAddress : MOOROCK ESTATE, Thalgaspitiya, Ambakote, Mawathagama, Sri Lanka.\n\nFor your convenience, you can choose one of the following payment methods:\n1. You can pay for your order when you come to pick it up at estate.\n2. You can deposit the payment into our bank account. Please use the following bank details:\n\nBank Name: People's Bank\nAccount Name: Moorock Estate\nAccount Number: 1234567890\nBranch: Thalgaspitiya\n\nIf you choose to pay by bank deposit, please bring the deposit receipt when you come to pick up your order.\n\nIf you have any questions or need further assistance, please do not hesitate to contact us at moorockestate@gmail.com or call us at 071-2345678.\n\nThank you for your order!\n\n\nBest regards,\nAdmin\nCocomanage"
 
         text = f"Subject: {subject}\n\n{message}"
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -173,6 +175,7 @@ class Order():
                             quantity = item.get("quantity", 0)
                             status = item.get("status", 0)
                             total = item.get("total", 0)
+                            reminder = item.get("reminder", "")
                             order_dict[i] = {
                                 "order_id": id, 
                                 "date": date, 
@@ -181,7 +184,8 @@ class Order():
                                 "phone": phone, 
                                 "quantity": quantity, 
                                 "status": status, 
-                                "total": total
+                                "total": total,
+                                "reminder": reminder
                             }
                             i += 1
                             id += 1
@@ -195,6 +199,7 @@ class Order():
                             quantity = item.get("quantity", 0)
                             status = item.get("status", 0)
                             total = item.get("total", 0)
+                            reminder = item.get("reminder", "")
                             order_dict[i] = {
                                 "order_id": id, 
                                 "date": date, 
@@ -203,7 +208,8 @@ class Order():
                                 "phone": phone, 
                                 "quantity": quantity, 
                                 "status": status, 
-                                "total": total
+                                "total": total,
+                                "reminder": reminder
                             }
                             i += 1
                             id += 1
@@ -224,3 +230,75 @@ class Order():
         except Exception as e:
             print(e)
             return 1   
+
+    def send_reminder(self, toEmail, fromEmail, fromEmailPassword, order_id, name, quantity, date, total):
+        name = name.split(" ")[0].strip()
+        orderID = str(order_id).zfill(7) 
+        subject = "Reminder: Pick Up Your Order"
+        message = f"Dear {name},\n\nThis is a kindly reminder that your order is ready for pickup. We kindly request that you pick up your order within 7 days. Here are the details of your purchase:\n\nOrderID: {orderID}\nOrder Date: {date}\nQuantity: {quantity}\nTotal Amount: Rs. {total}.00\n\nYou can pick up your order at our estate.\n\nAddress : MOOROCK ESTATE, Thalgaspitiya, Ambakote, Mawathagama, Sri Lanka.\n\nFor your convenience, you can choose one of the following payment methods:\n1. You can pay for your order when you come to pick it up at estate.\n2. You can deposit the payment into our bank account. Please use the following bank details:\n\nBank Name: People's Bank\nAccount Name: Moorock Estate\nAccount Number: 1234567890\nBranch: Thalgaspitiya\n\nIf you choose to pay by bank deposit, please bring the deposit receipt when you come to pick up your order.\n\nIf you have any questions or need further assistance, please contact us at moorockestate@gmail.com or call us at 071-2345678.\n\nThank you for your order!\n\n\nBest regards,\nAdmin\nCocomanage"
+
+        text = f"Subject: {subject}\n\n{message}"
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+
+        try:
+            server.starttls()
+            server.login(fromEmail, fromEmailPassword)
+            server.sendmail(fromEmail, toEmail, text)
+            server.quit()
+            return 0
+        except Exception as e:
+            print(e)
+            return 1
+
+    def send_completed_order_notification(self, toEmail, fromEmail, fromEmailPassword, order_id, name, quantity, date, total):
+        name = name.split(" ")[0].strip()
+        orderID = str(order_id).zfill(7) 
+        subject = "Thank You for Your Purchase"
+        message = f"Dear {name},\n\nWe are delighted to inform you that your order has been successfully completed. Here are the details of your purchase:\n\nOrderID: {orderID}\nOrder Date: {date}\nQuantity: {quantity}\nTotal Amount: Rs. {total}.00\n\nThank you for choosing our service. We look forward to serving you again.\n\n\nBest regards,\nAdmin\nCocomanage"
+
+        text = f"Subject: {subject}\n\n{message}"
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+
+        try:
+            server.starttls()
+            server.login(fromEmail, fromEmailPassword)
+            server.sendmail(fromEmail, toEmail, text)
+            server.quit()
+            return 0
+        except Exception as e:
+            print(e)
+            return 1
+
+    def send_cancel_order_notification(self, toEmail, fromEmail, fromEmailPassword, order_id, name, quantity, date, total):
+        name = name.split(" ")[0].strip()
+        orderID = str(order_id).zfill(7) 
+        subject = "Your Order Has Been Canceled"
+        message = f"Dear {name},\n\nWe regret to inform you that your order has been canceled. Here are the details of your cancelled order:\n\nOrderID: {orderID}\nOrder Date: {date}\nQuantity: {quantity}\nTotal Amount: Rs. {total}.00\n\nWe apologize for any inconvenience this may have caused. If you would like to place a new order or have any questions, please contact us at moorockestate@gmail.com or call us at 071-2345678.\n\nThank you for understanding.\n\n\nBest regards,\nAdmin\nCocomanage"
+
+        text = f"Subject: {subject}\n\n{message}"
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+
+        try:
+            server.starttls()
+            server.login(fromEmail, fromEmailPassword)
+            server.sendmail(fromEmail, toEmail, text)
+            server.quit()
+            return 0
+        except Exception as e:
+            print(e)
+            return 1
+
+    def set_reminder_date(self, database_obj, order_id, date, reminder_date):
+        try:
+            current_year = date.split("/")[2].strip()
+            current_month = date.split("/")[1].strip()
+
+            order_table = database_obj.child("Order").child(current_year).child(current_month).child(order_id)
+
+            order_table.child("reminder").set(reminder_date)
+            
+            return 0
+            
+        except Exception as e:
+            print(e)
+            return 1

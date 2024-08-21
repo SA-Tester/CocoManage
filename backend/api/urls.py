@@ -32,4 +32,5 @@ urlpatterns = [
     path('signin/', views.SignInView.as_view(), name='signin'),
     # path('view_user_profile/', views.UserProfileView.as_view(), name='view_user_profile'),
     # path('change_user_password/', views.ChangeUserPasswordView.as_view(), name='change_user_password'),
+    path('send_reminder/', views.SendReminderView.as_view(), name='send_reminder'),
 ]
