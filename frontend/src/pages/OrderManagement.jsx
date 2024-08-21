@@ -460,7 +460,7 @@ const OrderManagement = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 className="mb-5 text-lg font-normal text-gray-500">
+                                    <h3 className="mb-5 text-lg font-normal text-gray-500 text-center">
                                         Are you sure you want to change status this order?
                                     </h3>
                                 </div>
