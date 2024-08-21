@@ -13,7 +13,7 @@ const Order = () => {
     const [unitPrice, setUnitPrice] = useState(0);
     const [maximumQuantity, setMaximumQuantity] = useState(1);
 
-
+    // useEffect hook to retrieve stored values for notification and quantity from local storage on component mount
     useEffect(() => {
         const storedNotification = parseInt(localStorage.getItem('notification'), 10);
         const storedQuantity = parseInt(localStorage.getItem('quantity'), 10);
@@ -28,7 +28,7 @@ const Order = () => {
         }
     }, []);
 
-
+    // Function to update the quantity and notification state when an item is added to the cart
     function updateQuantity(id) {
         if (amount !== 0) {
             setQuantity(id);
@@ -38,6 +38,7 @@ const Order = () => {
         }
     }
 
+    // Function to fetch the coconut plant count and unit price from the backend
     function get_coconut_plant_count() {
         axios
             .get("http://localhost:8000/api/get_coconut_plant_count/")
@@ -54,6 +55,7 @@ const Order = () => {
         get_coconut_plant_count();
     }, []);
 
+    // useEffect hook to reset quantity and notification if the selected quantity exceeds the maximum available quantity
     useEffect(() => {
         if (quantity > maximumQuantity) {
             setQuantity(0);
@@ -64,6 +66,8 @@ const Order = () => {
     }, [maximumQuantity]);
 
     const navigate = useNavigate();
+
+    // Function to navigate to the cart page with the current quantity in the state
     const goToCart = () => {
         navigate('/cart', { replace: true, state: { quantity: quantity } })
     };
@@ -97,7 +101,7 @@ const Order = () => {
                     <button className={`text-green-600 font-semibold py-2 px-14 rounded-xl text-md h-12 ${amount === 0 ? "bg-gray-300" : "bg-white"}`} onClick={() => updateQuantity({ amount })}>Add to Cart</button>
                     <div onClick={goToCart} className='w-10 h-10 bg-white rounded-full flex justify-center items-center relative'>
                         <img src={cartIcon} alt="" className='w-6' />
-                        <span className={`absolute top-2/3 right-1/2 text-sm w-5 h-5 rounded-full flex justify-center items-center text-white ${quantity === "0" ? "bg-green-400" : "bg-red-500"}`}>{notification}</span>
+                        <span className={`absolute top-2/3 right-1/2 text-sm w-5 h-5 rounded-full flex justify-center items-center text-white ${quantity === 0 ? "bg-green-400" : "bg-red-500"}`}>{notification}</span>
                     </div>
                 </div>
             </div>

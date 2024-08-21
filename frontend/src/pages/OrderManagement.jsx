@@ -28,12 +28,19 @@ const OrderManagement = () => {
     const [selectedOrderEmail, setSelectedOrderEmail] = useState(null);
     const [openWaitingModal, setOpenWaitingModal] = useState(false);
     const [openReminder, setReminderModal] = useState(false);
+
+    // Calculate the index range for the current page
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
+
+    // Slice the filtered data for the current page
     const currentOrders = dataArray.slice(firstIndex, lastIndex);
+
+    // Calculate the total number of pages for pagination
     const nPage = Math.ceil(dataArray.length / recordsPerPage);
     const numbers = [...Array(nPage + 1).keys()].slice(1);
 
+    // useEffect hook to filter orders based on the toggle state and search query
     useEffect(() => {
         let filtered = [];
 
@@ -57,22 +64,24 @@ const OrderManagement = () => {
                 .filter(([subkey, subvalue]) => subvalue.status === 2);
         }
 
+        // Filter data based on the search query
         const searchedData = filtered.filter(([subkey, subvalue]) => {
             return search.toLowerCase() === '' ? subvalue :
                 subvalue.name.toLowerCase().includes(search.toLowerCase()) ||
                 subvalue.order_id.toString().includes(search) ||
                 subvalue.email.toLowerCase().includes(search.toLowerCase());
         });
-
+        // Update the data array and reset the current page
         setDataArray(searchedData);
         setCurrentPage(1);
     }, [search, toggle, orderData]);
 
-
+    // Function to handle page change for pagination
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     }
 
+    // Function to fetch coconut plant count and unit price from the backend
     function get_coconut_plant_count() {
         axios
             .get("http://localhost:8000/api/get_coconut_plant_count/")
@@ -85,6 +94,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to fetch dashboard data from the backend
     const getDashboardData = () => {
         axios
             .get("http://localhost:8000/api/get_dashboard_data/")
@@ -98,6 +108,7 @@ const OrderManagement = () => {
             });
     };
 
+    // Function to fetch order data from the backend and update the data array based on the toggle state
     function get_order_data() {
         axios
             .get("http://localhost:8000/api/get_order_data/")
@@ -132,6 +143,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to update the toggle state and filter data accordingly
     function updateToggle(id) {
         setToggle(id)
         if (id == 1) {
@@ -145,12 +157,14 @@ const OrderManagement = () => {
         }
     }
 
+    // useEffect hook to fetch initial data when the component mounts
     useEffect(() => {
         get_coconut_plant_count();
         getDashboardData();
         get_order_data();
     }, []);
 
+    // Function to handle the submission of the coconut plant count update form
     const handleChangePlantCount = (event) => {
         event.preventDefault();
 
@@ -169,6 +183,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to handle the submission of the unit price update form
     const handleChangeUnitPrice = (event) => {
         event.preventDefault();
 
@@ -187,6 +202,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to filter and set the data array to only completed orders
     const filterCompletedOrders = () => {
         const completedOrders = Object.entries(orderData).map(([key, value]) => Object.entries(value))
             .flat()
@@ -195,6 +211,7 @@ const OrderManagement = () => {
         setCurrentPage(1);
     };
 
+    // Function to filter and set the data array to only in-progress orders
     const filterInProgressOrders = () => {
         const inProgressOrders = Object.entries(orderData).map(([key, value]) => Object.entries(value))
             .flat()
@@ -203,6 +220,7 @@ const OrderManagement = () => {
         setCurrentPage(1);
     };
 
+    // Function to filter and set the data array to only cancelled orders
     const filterCancelledOrders = () => {
         const cancelledOrders = Object.entries(orderData).map(([key, value]) => Object.entries(value))
             .flat()
@@ -211,6 +229,7 @@ const OrderManagement = () => {
         setCurrentPage(1);
     };
 
+    // When click on Change button on a particular order, set that order's details and open model for change status
     const openStatusChangeModal = (orderId, orderDate, orderQuantity, orderEmail, orderTotal, orderCustomer) => {
         setSelectedOrder(orderId);
         setSelectedOrderDate(orderDate);
@@ -221,6 +240,7 @@ const OrderManagement = () => {
         setOpenModal(true);
     };
 
+    // Close model of change status and reset details
     const closeStatusChangeModal = () => {
         setOpenModal(false);
         setSelectedOrder(null);
@@ -231,6 +251,7 @@ const OrderManagement = () => {
         setSelectedOrderCustomer(null);
     };
 
+    // When click on Reminder button on a particular order, set that order's details and open model for send reminder
     const openSendReminderModal = (orderId, orderDate, orderQuantity, orderEmail, orderTotal, orderCustomer, orderReminder) => {
         setSelectedOrder(orderId);
         setSelectedOrderDate(orderDate);
@@ -242,6 +263,7 @@ const OrderManagement = () => {
         setReminderModal(true);
     };
 
+    // Close model of send reminder and reset details
     const closeSendReminderModal = () => {
         setReminderModal(false);
         setSelectedOrder(null);
@@ -253,6 +275,7 @@ const OrderManagement = () => {
         setSelectedOrderReminder(null);
     };
 
+    // Function to handle the status change form submission and send an email notification to the customer
     const handleSubmit = (event) => {
         event.preventDefault();
 
@@ -286,6 +309,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to handle the submission of the reminder form and update the reminder status of the order
     const handleSendReminder = (event) => {
         event.preventDefault();
 
@@ -370,6 +394,7 @@ const OrderManagement = () => {
                             <input type="search" placeholder='Search Order' onChange={(e) => setSearch(e.target.value)} className='w-full p-2 rounded-lg bg-white text-gray-600 placeholder:pl-2 focus:ring-green-500 focus:border-green-500' />
                         </div>
                     </form>
+                    {/* Toggle buttons to switch between order status */}
                     <div className="w-full lg:w-2/4 h-10 grid grid-cols-4 items-center rounded-lg overflow-hidden bg-white text-sm">
                         <button className={toggle === 1 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
                             All Orders
@@ -439,6 +464,7 @@ const OrderManagement = () => {
                     <button className="bg-white text-green-400 px-3 py-2 mx-1 text-sm font-semibold rounded-md" disabled={currentPage >= nPage} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
                 </div>
             </div>
+            {/* Modals for updating status */}
             <Modal className="bg-opacity-70 items-center align-middle lg:pt-28" show={openModal} size="md" popup onClose={() => closeStatusChangeModal()}>
                 <Modal.Header />
                 <Modal.Body>
@@ -473,6 +499,7 @@ const OrderManagement = () => {
                     </form>
                 </Modal.Body>
             </Modal>
+            {/* Modals for showing loading */}
             <Modal className="bg-opacity-70 items-center align-middle lg:pt-56" show={openWaitingModal} size="sm" popup>
                 <Modal.Body className="mx-auto">
                     <div className="flex flex-row gap-5">
@@ -481,6 +508,7 @@ const OrderManagement = () => {
                     </div>
                 </Modal.Body>
             </Modal>
+            {/* Modals for sending reminders */}
             <Modal className="bg-opacity-70 items-center align-middle lg:pt-36" show={openReminder} size="md" popup onClose={() => closeSendReminderModal()}>
                 <Modal.Header />
                 <Modal.Body>
