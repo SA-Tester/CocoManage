@@ -234,37 +234,33 @@ class UpdateOrderStatusView(APIView):
         order_id = request.data.get("order_id")
         date = request.data.get("date")
         quantity = request.data.get("quantity")
-        old_status = request.data.get("old_status")
+        email = request.data.get("email")
         new_status = request.data.get("status")
         coconut_plants = request.data.get("coconutPlantsCount")
-        print(old_status)
-        print(type(old_status))
-        print(new_status)
-        print(type(new_status))
-        if(old_status=="2" and (new_status=="0" or new_status=="1")):
-            if(coconut_plants >= quantity):
-                result = self.order.update_status(database_obj, order_id, date, new_status)
-                if result == 1:
-                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-                new_plants_count = int(coconut_plants) - int(quantity)
-                result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
-                if result2 == 1:
-                    return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
-                return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
-            return Response({"message": "Failed to save. Not enough coconut plants"}, status=status.HTTP_400_BAD_REQUEST)
-        elif((old_status=="0" or old_status=="1") and new_status=="2"):
+        total = request.data.get("total")
+        name = request.data.get("customer_name")
+        fromEmail = os.getenv("officialEmail")
+        fromEmailPassword = os.getenv("officialEmailPassword")
+
+        if(new_status=="2"):
             result = self.order.update_status(database_obj, order_id, date, new_status)
             if result == 1:
                 return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
             new_plants_count = int(coconut_plants) + int(quantity)
             result2 = self.coconut_plants.update_coconut_plant_count(database_obj, new_plants_count)
             if result2 == 1:
-                return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Failed to add quantity to stock"}, status=status.HTTP_400_BAD_REQUEST)
+            result3 = self.order.send_cancel_order_notification(email, fromEmail, fromEmailPassword, order_id, name, quantity, date, total)
+            if result3 == 1:
+                return Response({"message": "Failed to send email"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
         else:
             result = self.order.update_status(database_obj, order_id, date, new_status)
             if result == 1:
                 return Response({"message": "Failed to save"}, status=status.HTTP_400_BAD_REQUEST)
+            result2 = self.order.send_completed_order_notification(email, fromEmail, fromEmailPassword, order_id, name, quantity, date, total)
+            if result2 == 1:
+                return Response({"message": "Failed to send email"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"message": "Save successfully"}, status=status.HTTP_201_CREATED)
 
 # Views related to updating coconut plant count    
@@ -590,3 +586,26 @@ class RefreshTokenView(APIView):
         if result.get("Error") is None:
             return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
         return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST) ''' 
+
+# Views related to send reminder
+class SendReminderView(APIView):
+    order = Order()
+
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get("order_id")
+        date = request.data.get("date")
+        quantity = request.data.get("quantity")
+        email = request.data.get("email")
+        reminder_date = request.data.get("reminder_date")
+        total = request.data.get("total")
+        name = request.data.get("customer_name")
+        fromEmail = os.getenv("officialEmail")
+        fromEmailPassword = os.getenv("officialEmailPassword")
+
+        result = self.order.send_reminder(email, fromEmail, fromEmailPassword, order_id, name, quantity, date, total)
+        if result == 1:
+            return Response({"message": "Failed to send reminder"}, status=status.HTTP_400_BAD_REQUEST)
+        result2 = self.order.set_reminder_date(database_obj, order_id, date, reminder_date)
+        if result2 == 1:
+            return Response({"message": "Failed to set reminder date"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Reminder send successfully"}, status=status.HTTP_201_CREATED)

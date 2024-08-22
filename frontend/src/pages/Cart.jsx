@@ -8,15 +8,10 @@ import { ToastContainer, toast } from "react-toastify";
 import { Button, Modal, Spinner } from "flowbite-react";
 
 const Cart = () => {
-	//get selected quantity value from order page
+	// Retrieve selected quantity value from the order page
 	const location = useLocation();
 	console.log(location);
-	const quantity =
-		location.state.quantity === 0
-			? location.state.quantity
-			: location.state.quantity.amount == null
-			? location.state.quantity
-			: location.state.quantity.amount;
+	const quantity = location.state.quantity === 0 ? location.state.quantity : location.state.quantity.amount == null ? location.state.quantity : location.state.quantity.amount;
 	const [amount, setAmount] = useState(quantity);
 	const [unitPrice, setUnitPrice] = useState(1);
 	const totalPrice = amount * unitPrice;
@@ -42,6 +37,7 @@ const Cart = () => {
 		get_coconut_plant_count();
 	}, []);
 
+	// Store the amount in local storage and set a notification flag based on the amount
 	useEffect(() => {
 		localStorage.setItem("quantity", amount);
 		if (amount > 0) {
@@ -52,6 +48,7 @@ const Cart = () => {
 	}, [amount]);
 
 	const navigate = useNavigate();
+
 	const goToOrder = () => {
 		navigate("/order");
 	};

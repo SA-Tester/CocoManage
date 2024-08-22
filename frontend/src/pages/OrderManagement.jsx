@@ -3,7 +3,7 @@ import customerIcon from '../assets/customer-icons.png';
 import orderIcon from '../assets/order-icon.png';
 import revenueIcon from '../assets/revenue-icon.jpg';
 import { ToastContainer, toast } from "react-toastify";
-import { Modal, Spinner } from "flowbite-react";
+import { Modal, Spinner, Button } from "flowbite-react";
 import axios from 'axios';
 
 const OrderManagement = () => {
@@ -22,53 +22,66 @@ const OrderManagement = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [selectedOrderDate, setSelectedOrderDate] = useState(null);
     const [selectedOrderQuantity, setSelectedOrderQuantity] = useState(null);
-    const [selectedOrderStatus, setSelectedOrderStatus] = useState(null);
+    const [selectedOrderReminder, setSelectedOrderReminder] = useState(null);
+    const [selectedOrderTotal, setSelectedOrderTotal] = useState(null);
+    const [selectedOrderCustomer, setSelectedOrderCustomer] = useState(null);
+    const [selectedOrderEmail, setSelectedOrderEmail] = useState(null);
     const [openWaitingModal, setOpenWaitingModal] = useState(false);
+    const [openReminder, setReminderModal] = useState(false);
+
+    // Calculate the index range for the current page
     const lastIndex = currentPage * recordsPerPage;
     const firstIndex = lastIndex - recordsPerPage;
+
+    // Slice the filtered data for the current page
     const currentOrders = dataArray.slice(firstIndex, lastIndex);
+
+    // Calculate the total number of pages for pagination
     const nPage = Math.ceil(dataArray.length / recordsPerPage);
     const numbers = [...Array(nPage + 1).keys()].slice(1);
 
+    // useEffect hook to filter orders based on the toggle state and search query
     useEffect(() => {
-    let filtered = [];
-    
-    if (toggle == 1) {
-        // All Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat();
-    } else if (toggle == 2) {
-        // Completed Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
-            .flat()
-            .filter(([subkey, subvalue]) => subvalue.status === 1);
-    } else if (toggle == 3) {
-        // In Progress Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
-            .flat()
-            .filter(([subkey, subvalue]) => subvalue.status === 0);
-    } else if (toggle == 4) {
-        // Cancelled Orders
-        filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
-            .flat()
-            .filter(([subkey, subvalue]) => subvalue.status === 2);
-    }
+        let filtered = [];
 
-    const searchedData = filtered.filter(([subkey, subvalue]) => {
-        return search.toLowerCase() === '' ? subvalue :
-            subvalue.name.toLowerCase().includes(search.toLowerCase()) ||
-            subvalue.order_id.toString().includes(search)||
-            subvalue.email.toLowerCase().includes(search.toLowerCase());
-    });
+        if (toggle == 1) {
+            // All Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value)).flat();
+        } else if (toggle == 2) {
+            // Completed Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+                .flat()
+                .filter(([subkey, subvalue]) => subvalue.status === 1);
+        } else if (toggle == 3) {
+            // In Progress Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+                .flat()
+                .filter(([subkey, subvalue]) => subvalue.status === 0);
+        } else if (toggle == 4) {
+            // Cancelled Orders
+            filtered = Object.entries(orderData).map(([key, value]) => Object.entries(value))
+                .flat()
+                .filter(([subkey, subvalue]) => subvalue.status === 2);
+        }
 
-    setDataArray(searchedData);
-    setCurrentPage(1);
-}, [search, toggle, orderData]);
+        // Filter data based on the search query
+        const searchedData = filtered.filter(([subkey, subvalue]) => {
+            return search.toLowerCase() === '' ? subvalue :
+                subvalue.name.toLowerCase().includes(search.toLowerCase()) ||
+                subvalue.order_id.toString().includes(search) ||
+                subvalue.email.toLowerCase().includes(search.toLowerCase());
+        });
+        // Update the data array and reset the current page
+        setDataArray(searchedData);
+        setCurrentPage(1);
+    }, [search, toggle, orderData]);
 
-
+    // Function to handle page change for pagination
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     }
 
+    // Function to fetch coconut plant count and unit price from the backend
     function get_coconut_plant_count() {
         axios
             .get("http://localhost:8000/api/get_coconut_plant_count/")
@@ -81,6 +94,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to fetch dashboard data from the backend
     const getDashboardData = () => {
         axios
             .get("http://localhost:8000/api/get_dashboard_data/")
@@ -94,6 +108,7 @@ const OrderManagement = () => {
             });
     };
 
+    // Function to fetch order data from the backend and update the data array based on the toggle state
     function get_order_data() {
         axios
             .get("http://localhost:8000/api/get_order_data/")
@@ -128,6 +143,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to update the toggle state and filter data accordingly
     function updateToggle(id) {
         setToggle(id)
         if (id == 1) {
@@ -141,12 +157,14 @@ const OrderManagement = () => {
         }
     }
 
+    // useEffect hook to fetch initial data when the component mounts
     useEffect(() => {
         get_coconut_plant_count();
         getDashboardData();
         get_order_data();
     }, []);
 
+    // Function to handle the submission of the coconut plant count update form
     const handleChangePlantCount = (event) => {
         event.preventDefault();
 
@@ -165,6 +183,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to handle the submission of the unit price update form
     const handleChangeUnitPrice = (event) => {
         event.preventDefault();
 
@@ -183,6 +202,7 @@ const OrderManagement = () => {
             });
     }
 
+    // Function to filter and set the data array to only completed orders
     const filterCompletedOrders = () => {
         const completedOrders = Object.entries(orderData).map(([key, value]) => Object.entries(value))
             .flat()
@@ -191,6 +211,7 @@ const OrderManagement = () => {
         setCurrentPage(1);
     };
 
+    // Function to filter and set the data array to only in-progress orders
     const filterInProgressOrders = () => {
         const inProgressOrders = Object.entries(orderData).map(([key, value]) => Object.entries(value))
             .flat()
@@ -199,6 +220,7 @@ const OrderManagement = () => {
         setCurrentPage(1);
     };
 
+    // Function to filter and set the data array to only cancelled orders
     const filterCancelledOrders = () => {
         const cancelledOrders = Object.entries(orderData).map(([key, value]) => Object.entries(value))
             .flat()
@@ -207,22 +229,53 @@ const OrderManagement = () => {
         setCurrentPage(1);
     };
 
-    const openStatusChangeModal = (orderId, orderDate, orderQuantity, orderStatus) => {
+    // When click on Change button on a particular order, set that order's details and open model for change status
+    const openStatusChangeModal = (orderId, orderDate, orderQuantity, orderEmail, orderTotal, orderCustomer) => {
         setSelectedOrder(orderId);
         setSelectedOrderDate(orderDate);
         setSelectedOrderQuantity(orderQuantity);
-        setSelectedOrderStatus(orderStatus);
+        setSelectedOrderTotal(orderTotal);
+        setSelectedOrderCustomer(orderCustomer);
+        setSelectedOrderEmail(orderEmail)
         setOpenModal(true);
     };
 
+    // Close model of change status and reset details
     const closeStatusChangeModal = () => {
         setOpenModal(false);
         setSelectedOrder(null);
         setSelectedOrderDate(null);
         setSelectedOrderQuantity(null);
-        setSelectedOrderStatus(null);
+        setSelectedOrderEmail(null);
+        setSelectedOrderTotal(null);
+        setSelectedOrderCustomer(null);
     };
 
+    // When click on Reminder button on a particular order, set that order's details and open model for send reminder
+    const openSendReminderModal = (orderId, orderDate, orderQuantity, orderEmail, orderTotal, orderCustomer, orderReminder) => {
+        setSelectedOrder(orderId);
+        setSelectedOrderDate(orderDate);
+        setSelectedOrderQuantity(orderQuantity);
+        setSelectedOrderTotal(orderTotal);
+        setSelectedOrderCustomer(orderCustomer);
+        setSelectedOrderEmail(orderEmail);
+        setSelectedOrderReminder(orderReminder);
+        setReminderModal(true);
+    };
+
+    // Close model of send reminder and reset details
+    const closeSendReminderModal = () => {
+        setReminderModal(false);
+        setSelectedOrder(null);
+        setSelectedOrderDate(null);
+        setSelectedOrderQuantity(null);
+        setSelectedOrderEmail(null);
+        setSelectedOrderTotal(null);
+        setSelectedOrderCustomer(null);
+        setSelectedOrderReminder(null);
+    };
+
+    // Function to handle the status change form submission and send an email notification to the customer
     const handleSubmit = (event) => {
         event.preventDefault();
 
@@ -230,9 +283,11 @@ const OrderManagement = () => {
 
         formData.set("order_id", selectedOrder);
         formData.set("quantity", selectedOrderQuantity);
-        formData.set("old_status", selectedOrderStatus);
+        formData.set("email", selectedOrderEmail);
         formData.set("date", selectedOrderDate);
         formData.set("coconutPlantsCount", plantCount);
+        formData.set("total", selectedOrderTotal);
+        formData.set("customer_name", selectedOrderCustomer);
 
         axios
             .post("http://localhost:8000/api/update_order_status/", formData)
@@ -252,6 +307,59 @@ const OrderManagement = () => {
                 closeStatusChangeModal();
                 console.log(error);
             });
+    }
+
+    // Function to handle the submission of the reminder form and update the reminder status of the order
+    const handleSendReminder = (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const date = today.getDate();
+        const reminderDate = `${date}/${month}/${year}`;
+
+        formData.set("order_id", selectedOrder);
+        formData.set("quantity", selectedOrderQuantity);
+        formData.set("email", selectedOrderEmail);
+        formData.set("date", selectedOrderDate);
+        formData.set("total", selectedOrderTotal);
+        formData.set("customer_name", selectedOrderCustomer);
+        formData.set("reminder_date", reminderDate);
+
+
+        axios
+            .post("http://localhost:8000/api/send_reminder/", formData)
+            .then(() => {
+                setOpenWaitingModal(false);
+                event.target.reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                toast.success("Reminder sent successfully!");
+                closeSendReminderModal();
+                get_order_data();
+            })
+            .catch((error) => {
+                setOpenWaitingModal(false);
+                toast.error("Failed to send reminder");
+                closeSendReminderModal();
+                console.log(error);
+            });
+    }
+
+    // Calculate the difference between a particular date and today
+    function getDaysDifferenceFromToday(targetDate) {
+        const [day, month, year] = targetDate.split('/');
+        const targetDateObject = new Date(`${month}/${day}/${year}`);
+
+        const today = new Date();
+
+        const diffInMilliseconds = targetDateObject - today;
+
+        const diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+        return diffInDays;
     }
 
     return (
@@ -300,6 +408,7 @@ const OrderManagement = () => {
                             <input type="search" placeholder='Search Order' onChange={(e) => setSearch(e.target.value)} className='w-full p-2 rounded-lg bg-white text-gray-600 placeholder:pl-2 focus:ring-green-500 focus:border-green-500' />
                         </div>
                     </form>
+                    {/* Toggle buttons to switch between order status */}
                     <div className="w-full lg:w-2/4 h-10 grid grid-cols-4 items-center rounded-lg overflow-hidden bg-white text-sm">
                         <button className={toggle === 1 ? "relative block h-10 rounded-lg text-black bg-green-400" : "bg-white text-grey"} onClick={() => updateToggle(1)}>
                             All Orders
@@ -329,6 +438,7 @@ const OrderManagement = () => {
                                 <th className="p-3 text-sm font-semibold tracking-wide text-left">Email</th>
                                 <th className="p-3 text-sm font-semibold tracking-wide text-left">Status</th>
                                 <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
+                                <th className="p-3 text-sm font-semibold tracking-wide text-left"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -336,7 +446,7 @@ const OrderManagement = () => {
                                 <tr key={subValue.order_id} className="bg-white hover:bg-gray-100">
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{(currentPage - 1) * recordsPerPage + index + 1}</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7, '0')}</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date} ({subValue.date==null? 0: (-1 *getDaysDifferenceFromToday(subValue.date)==1? "1 day ago":`${-1 *getDaysDifferenceFromToday(subValue.date)} days ago`)})</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
@@ -346,7 +456,10 @@ const OrderManagement = () => {
                                         <span className={`p-2 text-xs font-medium uppercase tracking-wider rounded-lg bg-opacity-50 ${subValue.status == 0 ? "text-yellow-800 bg-yellow-200" : subValue.status == 1 ? "text-green-800 bg-green-200" : "text-red-800 bg-red-200"}`}>{subValue.status == 0 ? "In Progress" : subValue.status == 1 ? "Completed" : "Cancelled"}</span>
                                     </td>
                                     <td>
-                                        <button className="py-2 px-3 text-xs bg-gray-200 text-gray-600 font-medium rounded-md" onClick={() => openStatusChangeModal(subValue.order_id, subValue.date, subValue.quantity, subValue.status)}>Change</button>
+                                        <button className={`${subValue.status == 0 ? "py-2 px-3 text-xs bg-gray-300 text-gray-700 font-medium rounded-md" : "hidden"}`} onClick={() => openStatusChangeModal(subValue.order_id, subValue.date, subValue.quantity, subValue.email, subValue.total, subValue.name)}>Change</button>
+                                    </td>
+                                    <td>
+                                        <button className={`${subValue.status == 0 ? "py-2 px-3 text-xs bg-gray-300 text-gray-800 font-medium rounded-md" : "hidden"}`} onClick={() => openSendReminderModal(subValue.order_id, subValue.date, subValue.quantity, subValue.email, subValue.total, subValue.name, subValue.reminder)}>Reminder</button>
                                     </td>
                                 </tr>
                             )
@@ -365,6 +478,7 @@ const OrderManagement = () => {
                     <button className="bg-white text-green-400 px-3 py-2 mx-1 text-sm font-semibold rounded-md" disabled={currentPage >= nPage} onClick={() => handlePageChange(currentPage + 1)}>Next</button>
                 </div>
             </div>
+            {/* Modals for updating status */}
             <Modal className="bg-opacity-70 items-center align-middle lg:pt-28" show={openModal} size="md" popup onClose={() => closeStatusChangeModal()}>
                 <Modal.Header />
                 <Modal.Body>
@@ -380,26 +494,55 @@ const OrderManagement = () => {
                                         <input type="radio" name="status" id="1" value="1" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" defaultChecked />
                                         <label htmlFor="1" className="text-gray-700 w-full">Complete</label>
                                     </div>
-                                    <div className='py-2 px-2 w-full flex flex-row gap-4 align-middle items-center border-b border-b-gray-400'>
+                                    <div className='py-2 px-2 w-full flex flex-row gap-4 align-middle items-center'>
                                         <input type="radio" name="status" id="2" value="2" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" />
                                         <label htmlFor="2" className="text-gray-700 w-full">Cancel</label>
                                     </div>
-                                    <div className='py-2 px-2 w-full rounded-md flex flex-row gap-4 align-middle items-center'>
-                                        <input type="radio" name="status" id="0" value="0" className="text-green-500 py-2 px-2 rounded-full focus:ring-green-500" />
-                                        <label htmlFor="0" className="text-gray-700 w-full">In Progress</label>
-                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="mb-5 text-lg font-normal text-gray-500 text-center">
+                                        Are you sure you want to change status this order?
+                                    </h3>
                                 </div>
                             </div>
-                            <button type="submit" className='bg-green-500 text-white font-semibold w-full py-3 rounded-xl justify-around' onClick={() => setOpenWaitingModal(true)}>Save</button>
+                            <div className="flex justify-center gap-4">
+                                <button type="submit" className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => setOpenWaitingModal(true)}>{"Yes, I'm sure"}</button>
+                                <button className='bg-gray-200 text-gray-500 font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeStatusChangeModal()}>No, cancel</button>
+                            </div>
                         </div>
                     </form>
                 </Modal.Body>
             </Modal>
+            {/* Modals for showing loading */}
             <Modal className="bg-opacity-70 items-center align-middle lg:pt-56" show={openWaitingModal} size="sm" popup>
                 <Modal.Body className="mx-auto">
                     <div className="flex flex-row gap-5">
                         <Spinner color="success" aria-label="Success spinner example" size="lg" />
                         <h3 className="text-lg text-gray-500">Please Wait</h3>
+                    </div>
+                </Modal.Body>
+            </Modal>
+            {/* Modals for sending reminders */}
+            <Modal className="bg-opacity-70 items-center align-middle lg:pt-36" show={openReminder} size="md" popup onClose={() => closeSendReminderModal()}>
+                <Modal.Header />
+                <Modal.Body>
+                    <div className={`${selectedOrderReminder == "null" ? "space-y-6 text-center" : "hidden"}`}>
+                        <form onSubmit={handleSendReminder}>
+                            <h3 className="mb-5 text-lg font-normal text-gray-500">
+                                Are you sure you want to send this reminder?
+                            </h3>
+                            <div className="flex justify-center gap-4">
+                                <button type="submit" className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => setOpenWaitingModal(true)}>{"Yes, I'm sure"}</button>
+                                <button className='bg-gray-200 text-gray-500 font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeSendReminderModal()}>No, cancel</button>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div className={`${selectedOrderReminder != "null" ? "space-y-6 text-center" : "hidden"}`}>
+                        <h3 className="text-lg font-normal text-gray-500 text-center">
+                            A reminder was already sent on {selectedOrderReminder} <br />({selectedOrderReminder==null? 0: (-1 *getDaysDifferenceFromToday(selectedOrderReminder)==1? "1 day ago":`${-1 *getDaysDifferenceFromToday(selectedOrderReminder)} days ago`)})
+                        </h3>
+                        <button className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeSendReminderModal()}>Okay</button>
                     </div>
                 </Modal.Body>
             </Modal>
