@@ -30,6 +30,8 @@ urlpatterns = [
     path('send_message/', views.SendMessageView.as_view(), name='send_message'),
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('signin/', views.SignInView.as_view(), name='signin'),
+    path('signout/', views.SignOutView.as_view(), name='signout'),
+    path('refresh_token/', views.RefreshTokenView.as_view(), name='refresh_token'),
     # path('view_user_profile/', views.UserProfileView.as_view(), name='view_user_profile'),
     # path('change_user_password/', views.ChangeUserPasswordView.as_view(), name='change_user_password'),
 ]

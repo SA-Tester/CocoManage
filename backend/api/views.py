@@ -1,5 +1,4 @@
 import os
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,7 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from django.core.exceptions import ValidationError
 from dotenv import load_dotenv
-from .db import init_db
+from .db import init_firebase
 from .classes.Attendance import Attendance
 from .classes.NutHarvest import NutHarvest
 from .classes.Weather import Weather
@@ -20,7 +19,10 @@ from .classes.User import SystemUser
 from .classes.Common import Common
 
 # Initialize the firebase database object
-database_obj = init_db()
+database_obj = init_firebase().database()
+
+# Initialize the firebase authentication object
+auth_obj = init_firebase().auth()
 
 # View related to Verifying Employee Attendance
 class VerifyEmployeeView(APIView):
@@ -474,53 +476,95 @@ class SendMessageView(APIView):
             print(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
-# View related to view profile details
-'''class UserProfileView(APIView):
-    user = User(database_obj)
-
-    def get(self, request, *args, **kwargs):
-        user_id = request.query_params.get('user_id')
-        user = User(database_obj)
-        user_data = user.get_user(user_id)
-        if user_data.get("Error") is None:
-            return Response(user_data, status=status.HTTP_200_OK)
-        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)'''
-
-# View related to password change
-'''class ChangeUserPasswordView(APIView):
-    user = User(database_obj)
-
+# Sign up a User
+class SignUpView(APIView):
     def post(self, request, *args, **kwargs):
-        user_id = request.data.get('user_id')
-        old_password = request.data.get('old_password')
-        new_password = request.data.get('new_password')
-        user = User(database_obj)
-        result = user.change_password(user_id, old_password, new_password)
-        if result.get("Error") is None:
-            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
-        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST) ''' 
+        nic = request.data.get('nic')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        confirm_password = request.data.get('confirmPassword')
 
-#signup
-@api_view(['POST'])
-def signup(request):
-    nic = request.data.get('nic')
-    email = request.data.get('email')
-    password = request.data.get('password')
-    confirm_password = request.data.get('confirmPassword')
+        try:
+            user = SystemUser()
+            user.validate_signup(database_obj, nic, email, password, confirm_password)
+            
+            if(user.checkEligibility(database_obj, nic)):
+                user.signup(database_obj, auth_obj, email, password)
+                return Response({"message": "User created successfully."}, status=status.HTTP_201_CREATED)
+            
+            else:
+                return Response({"message": "User not eligible to signup."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except ValidationError as error:
+            error_message = ' '.join(error.messages) if isinstance(error, ValidationError) else str(error)
+            print(error_message)
+            return Response({"error": error.message}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print(e)
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# Login a User
+class SignInView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
 
-    try:
-        user = SystemUser(database_obj,nic,email,password,confirm_password)
-        tokens = user.execute()
-        return Response({"message": "User created successfully."}, status=status.HTTP_201_CREATED)
-    
-    except ValidationError as error:
-        error_message = ' '.join(error.messages) if isinstance(error, ValidationError) else str(error)
-        return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
-    
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+        if not email or not password:
+            return Response({'error': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
+        user = SystemUser()
+
+        try:
+            loggedIn = user.login(database_obj, auth_obj, email, password)
+            if loggedIn != None:
+                return Response({"message": "User logged in successfully.", 
+                                 "id_token": loggedIn["id_token"], 
+                                 "refresh_token": loggedIn["refresh_token"],
+                                 "access_level": loggedIn["access_level"]},
+                                status=status.HTTP_200_OK)
+
+            return Response({"message": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except ValidationError as e:
+            print(e)
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+# Logout a User
+class SignOutView(APIView):
+    def post(self, request, *args, **kwargs):
+        id_token = request.data.get('id_token')
+
+        user = SystemUser()
+
+        try:
+            isLoggedOut = user.logout(database_obj, auth_obj, id_token)
+            if isLoggedOut:
+                return Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
+            return Response({"message": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+# Refresh a User's Token
+class RefreshTokenView(APIView):
+    def post(self, request, *args, **kwargs):
+        id_token = request.data.get('id_token')
+        refresh_token = request.data.get('refresh_token')
+
+        user = SystemUser()
+
+        try:
+            isValidToken = user.isValidToken(auth_obj, id_token, refresh_token)
+            if isValidToken != None:
+                return Response({"message": "Token refreshed successfully.", "id_token": isValidToken}, status=status.HTTP_200_OK)
+            return Response({"message": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 # View related to view profile details
 '''class UserProfileView(APIView):
     user = SystemUser(database_obj)
