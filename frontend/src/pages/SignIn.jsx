@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Label, TextInput, Button } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import img1 from "../assets/image1.jpg"; // Ensure this image path is correct
 
 const SignIn = () => {
+	// Use the useNavigate hook to navigate to a different page
+	const navigate = useNavigate();
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -16,6 +21,7 @@ const SignIn = () => {
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		setLoading(true);
+		setError("");
 
 		if (!validateEmail(email)) {
 			setError("Invalid email address.");
@@ -27,15 +33,18 @@ const SignIn = () => {
 		formData.append("password", password);
 
 		axios
-			.get("http://localhost:8000/api/signin/")
+			.post("http://localhost:8000/api/signin/", formData)
 			.then((response) => {
 				setLoading(false);
+				localStorage.setItem("idToken", response.data.id_token);
+				localStorage.setItem("refreshToken", response.data.refresh_token);
+				localStorage.setItem("accessLevel", response.data.access_level);
 				setSuccess("Login Successful!");
-				console.log(response);
+				navigate("/admin_dashboard");
 			})
 			.catch((error) => {
 				setLoading(false);
-				setError("Login Failed: " + (error.response?.data?.error || error.message));
+				setError("Login Failed. Please try again.");
 				console.log(error);
 			});
 	};
@@ -64,7 +73,10 @@ const SignIn = () => {
 						</div>
 
 						{/* Login form */}
-						<form className="flex items-center justify-center" onSubmit={(e) => handleLogin()}>
+						<form
+							className="flex items-center justify-center"
+							onSubmit={handleLogin}
+						>
 							<div className="w-full pt-5">
 								{/* Email */}
 								<div className="mb-6">
