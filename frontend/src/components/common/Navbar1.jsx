@@ -5,12 +5,19 @@ import { Avatar } from "flowbite-react";
 // Navbar for Admin Side of the Application
 const Navbar1 = () => {
 	const [isOpen, setIsOpen] = useState(false);
+	const [dropdownVisible, setDropdownVisible] = useState(false);
+
+	const toggleDropdown = () => {
+		setDropdownVisible(!dropdownVisible);
+	};
 
 	return (
 		<nav className="bg-badge text-black fixed w-full top-0 left-0 shadow-md z-10">
 			<div className="container mx-auto px-4 py-3 flex justify-between items-center">
 				<div className="text-lg font-bold">
-					<img src={logo} alt="Logo" className="w-24 md:w-32 lg:w-40" />
+					<a href="/admin_dashboard">
+						<img src={logo} alt="Logo" className="w-24 md:w-32 lg:w-40" />
+					</a>
 				</div>
 
 				<div className="hidden md:flex space-x-6">
@@ -44,14 +51,30 @@ const Navbar1 = () => {
 					>
 						Payroll
 					</a>
-					<div className="flex items-center space-x-2">
-						<a href="/client_account">
+					<div className="relative flex items-center space-x-2">
+						<a href="#" onClick={toggleDropdown}>
 							<Avatar
 								placeholderInitials="RR"
 								rounded
 								className="hover:shadow-lg shadow-gray-500 transition duration-300 ease-in-out"
 							/>
 						</a>
+						{dropdownVisible && (
+							<div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+								<a
+									href="/client_account"
+									className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+								>
+									View Settings
+								</a>
+								<a
+									href="/signout"
+									className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+								>
+									Logout
+								</a>
+							</div>
+						)}
 					</div>
 				</div>
 				<div className="md:hidden">

@@ -9,7 +9,9 @@ const Navbar2 = () => {
 		<nav className="bg-badge text-black fixed w-full top-0 left-0 shadow-md z-10">
 			<div className="container mx-auto px-4 py-3 flex justify-between items-center">
 				<div className="text-lg font-bold">
-					<img src={logo} alt="Logo" className="w-24 md:w-32 lg:w-40" />
+					<a href="/admin_dashboard">
+						<img src={logo} alt="Logo" className="w-24 md:w-32 lg:w-40" />
+					</a>
 				</div>
 
 				<div className="hidden md:flex space-x-4">
