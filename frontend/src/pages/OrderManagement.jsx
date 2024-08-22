@@ -526,7 +526,7 @@ const OrderManagement = () => {
                     </div>
                     <div className={`${selectedOrderReminder != "null" ? "space-y-6 text-center" : "hidden"}`}>
                         <h3 className="text-lg font-normal text-gray-500">
-                            Reminder already sent on {selectedOrderReminder}.
+                            A reminder was already sent on {selectedOrderReminder}.
                         </h3>
                         <button className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeSendReminderModal()}>Okay</button>
                     </div>
