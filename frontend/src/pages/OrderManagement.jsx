@@ -348,6 +348,20 @@ const OrderManagement = () => {
             });
     }
 
+    // Calculate the difference between a particular date and today
+    function getDaysDifferenceFromToday(targetDate) {
+        const [day, month, year] = targetDate.split('/');
+        const targetDateObject = new Date(`${month}/${day}/${year}`);
+
+        const today = new Date();
+
+        const diffInMilliseconds = targetDateObject - today;
+
+        const diffInDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+        return diffInDays;
+    }
+
     return (
         <div className="flex flex-col justify-between bg-green lg:flex-col p-8 text-white lg:items-center gap-8 absolute left-0 w-full  max-h-fit">
             <ToastContainer />
@@ -432,7 +446,7 @@ const OrderManagement = () => {
                                 <tr key={subValue.order_id} className="bg-white hover:bg-gray-100">
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{(currentPage - 1) * recordsPerPage + index + 1}</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.order_id.toString().padStart(7, '0')}</td>
-                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date}</td>
+                                    <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.date} ({subValue.date==null? 0: (-1 *getDaysDifferenceFromToday(subValue.date)==1? "1 day ago":`${-1 *getDaysDifferenceFromToday(subValue.date)} days ago`)})</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.name}</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">{subValue.quantity}</td>
                                     <td className="p-3 text-sm text-gray-700 whitespace-nowrap">Rs. {subValue.total.toLocaleString()}.00</td>
@@ -525,8 +539,8 @@ const OrderManagement = () => {
                         </form>
                     </div>
                     <div className={`${selectedOrderReminder != "null" ? "space-y-6 text-center" : "hidden"}`}>
-                        <h3 className="text-lg font-normal text-gray-500">
-                            A reminder was already sent on {selectedOrderReminder}.
+                        <h3 className="text-lg font-normal text-gray-500 text-center">
+                            A reminder was already sent on {selectedOrderReminder} <br />({selectedOrderReminder==null? 0: (-1 *getDaysDifferenceFromToday(selectedOrderReminder)==1? "1 day ago":`${-1 *getDaysDifferenceFromToday(selectedOrderReminder)} days ago`)})
                         </h3>
                         <button className='bg-green-500 text-white font-semibold w-28 py-3 rounded-xl justify-around' onClick={() => closeSendReminderModal()}>Okay</button>
                     </div>
