@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import ValidationError
 from dotenv import load_dotenv
 from .db import init_firebase
@@ -561,31 +562,38 @@ class RefreshTokenView(APIView):
             print(e)
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-# View related to view profile details
-'''class UserProfileView(APIView):
-    user = SystemUser(database_obj)
-
-    def get(self, request, *args, **kwargs):
-        user_id = request.query_params.get('user_id')
-        user = SystemUser(database_obj)
-        user_data = user.get_user(user_id)
-        if user_data.get("Error") is None:
-            return Response(user_data, status=status.HTTP_200_OK)
-        return Response({"message": user_data["Error"]}, status=status.HTTP_404_NOT_FOUND)'''
-
-# View related to password change
-'''class ChangeUserPasswordView(APIView):
-    user = SystemUser(database_obj)
-
+#view related to fetch employee details
+class UserProfileView(APIView):
     def post(self, request, *args, **kwargs):
-        user_id = request.data.get('user_id')
-        old_password = request.data.get('old_password')
-        new_password = request.data.get('new_password')
-        user = SystemUser(database_obj)
-        result = user.change_password(user_id, old_password, new_password)
-        if result.get("Error") is None:
-            return Response({"message": result["Message"]}, status=status.HTTP_200_OK)
-        return Response({"message": result["Error"]}, status=status.HTTP_400_BAD_REQUEST) ''' 
+        id_token = request.data.get('idToken')
+
+        if not id_token:
+            return Response({'error': 'idToken is missing'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = SystemUser()
+
+        try:   
+            employee_data = user.get_employee_details(database_obj, auth_obj, id_token)
+
+            if employee_data:
+                return Response({
+                "name": employee_data.get("name"),
+                "nic": employee_data.get("nic"),
+                "position": employee_data.get("position"),
+                "contact": employee_data.get("phone"),
+                "email": employee_data.get("email"),
+            }, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Employee not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            print(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# View related to change password
+
+
 
 # Views related to send reminder
 class SendReminderView(APIView):

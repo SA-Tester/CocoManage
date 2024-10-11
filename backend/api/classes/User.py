@@ -161,3 +161,24 @@ class SystemUser:
             return user['idToken']
         except Exception as e:
             raise ValidationError(e)
+
+    #Get logged user's details   
+    def get_employee_details(self, database_obj, auth_obj, id_token):
+        try:
+            Employee = database_obj.child('Employee').get().val()
+
+            currentUser = auth_obj.get_account_info(id_token)
+            currentUserEmail = currentUser['users'][0]['email']
+
+            for id, details in Employee.items():
+                if details['email'] == currentUserEmail:
+                    return details  
+
+            return None  
+
+        except Exception as e:
+            raise ValidationError(e)
+        
+   
+    
+
