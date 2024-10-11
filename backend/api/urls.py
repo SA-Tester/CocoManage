@@ -32,7 +32,7 @@ urlpatterns = [
     path('signin/', views.SignInView.as_view(), name='signin'),
     path('signout/', views.SignOutView.as_view(), name='signout'),
     path('refresh_token/', views.RefreshTokenView.as_view(), name='refresh_token'),
-    # path('view_user_profile/', views.UserProfileView.as_view(), name='view_user_profile'),
-    # path('change_user_password/', views.ChangeUserPasswordView.as_view(), name='change_user_password'),
+    path('profile/', views.UserProfileView.as_view(), name='profile'),
+    #path('change_password/', views.ChangePasswordView.as_view(), name='change_password'),
     path('send_reminder/', views.SendReminderView.as_view(), name='send_reminder'),
 ]
