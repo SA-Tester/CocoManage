@@ -592,7 +592,22 @@ class UserProfileView(APIView):
 
 
 # View related to change password
+class ChangePasswordView(APIView):
+    def post(self, request, *args, **kwargs):
+        id_token = request.data.get('idToken')
 
+        user = SystemUser()
+
+        try:
+            # cchange_password(self, auth_obj, database_object, id_token):
+            isPasswordChanged = user.change_password(auth_obj, database_obj, id_token)
+            if isPasswordChanged:
+                return Response({"message": "Check your email to change the password."}, status=status.HTTP_200_OK)
+            return Response({"message": "Sorry an error occured"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            print(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # Views related to send reminder

@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError
-from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from requests.exceptions import HTTPError
 import json
@@ -53,7 +52,6 @@ class SystemUser:
             auth_obj.create_user_with_email_and_password(email, password)
             database_obj.child('User').child(self.emp_id).set({
                 "username": email,
-                "password": make_password(password),
                 "access_level": self.access_level,
                 "created_at": self.created_at
             })
@@ -162,6 +160,7 @@ class SystemUser:
         except Exception as e:
             raise ValidationError(e)
 
+    
     #Get logged user's details   
     def get_employee_details(self, database_obj, auth_obj, id_token):
         try:
@@ -180,5 +179,19 @@ class SystemUser:
             raise ValidationError(e)
         
    
-    
+    # Change User Password
+    def change_password(self, auth_obj, database_object, id_token):
+        try:
+            user = SystemUser()
+            user_details = user.get_employee_details(database_object, auth_obj, id_token)
+            
+            if user_details != None:
+                auth_obj.send_password_reset_email(user_details['email'])
+                return True
+            
+            else:
+                return False
+        
+        except Exception as e:
+            raise ValidationError(e)
 
