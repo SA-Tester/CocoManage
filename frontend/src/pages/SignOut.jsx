@@ -22,6 +22,7 @@ const SignOut = () => {
 			navigate("/signin");
             
 		} catch (error) {
+			navigate("/signin");
 			console.log(error);
 		}
 	};
