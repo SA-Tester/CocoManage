@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from requests.exceptions import HTTPError
+from ..db import init_firebase_admin
+from firebase_admin import auth as firebase_admin_auth
 import json
-
 
 class SystemUser:
     PASSWORD_LENGTH = 8
@@ -195,3 +196,17 @@ class SystemUser:
         except Exception as e:
             raise ValidationError(e)
 
+
+    # Delete User
+    def delete_user(self, database_obj, employee_id):
+        try:
+            init_firebase_admin()
+            database_obj.child("User").child(employee_id).remove()
+            username = database_obj.child("User").child(employee_id).child("username").get().val()
+            user_record = firebase_admin_auth.get_user_by_email(username)
+            user_id = user_record.uid
+            firebase_admin_auth.delete_user(user_id)
+
+        except Exception as e:
+            print(ValidationError(e))
+            return False

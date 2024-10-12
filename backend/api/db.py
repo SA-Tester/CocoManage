@@ -1,5 +1,7 @@
 import pyrebase
 import os
+import firebase_admin
+from firebase_admin import credentials
 from dotenv import load_dotenv
 
 def init_firebase():
@@ -18,3 +20,11 @@ def init_firebase():
 
     firebase = pyrebase.initialize_app(config)
     return firebase
+
+
+def init_firebase_admin():
+    load_dotenv()
+
+    cred = credentials.Certificate(os.getenv("FIREBASE_ADMIN_KEY_PATH"))
+    firebase_admin.initialize_app(cred)
+    return firebase_admin

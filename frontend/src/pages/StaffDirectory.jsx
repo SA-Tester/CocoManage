@@ -7,6 +7,7 @@ import {
 	Modal,
 	Label,
 	TextInput,
+	Checkbox,
 	FileInput,
 	Select,
 } from "flowbite-react";
@@ -257,6 +258,7 @@ const StaffDirectory = () => {
 							<Table.HeadCell>Email</Table.HeadCell>
 							<Table.HeadCell>Phone</Table.HeadCell>
 							<Table.HeadCell>Gender</Table.HeadCell>
+							<Table.HeadCell>Is User</Table.HeadCell>
 							<Table.HeadCell>Action</Table.HeadCell>
 						</Table.Head>
 						<Table.Body className="bg-white text-black">
@@ -308,6 +310,12 @@ const StaffDirectory = () => {
 									<Table.Cell>{employee.email}</Table.Cell>
 									<Table.Cell>{employee.phone}</Table.Cell>
 									<Table.Cell>{employee.gender}</Table.Cell>
+									<Table.Cell>
+										<Checkbox
+											checked={employee.is_user}
+											readOnly
+										/>
+									</Table.Cell>
 									<Table.Cell>
 										<div className="flex items-center gap-2">
 											<button

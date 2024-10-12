@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import ValidationError
 from dotenv import load_dotenv
 from .db import init_firebase
@@ -351,7 +350,7 @@ def get_dashboard_data(request):
 # View related to View All Employees
 class GetAllEmployeesView(APIView):
     employee = Employee("", "", "", "", "", "", "", "", "")
-
+    
     def get(self, request, *args, **kwargs):
         employees = self.employee.get_all_employees(database_obj)
         return Response(employees, status=status.HTTP_200_OK)
@@ -437,8 +436,9 @@ class DeleteEmployeeView(APIView):
         try:
             emp_id = request.data.get('emp_id')
             employee = Employee(emp_id, "", "", "", "", "", "", "", "")
+            user = SystemUser()
             
-            isEmployeeDeleted = employee.delete_employee(database_obj)
+            isEmployeeDeleted = employee.delete_employee(database_obj, user)
             if isEmployeeDeleted:
                 return Response({"message": "Employee deleted successfully"}, status=status.HTTP_201_CREATED)
             return Response({"message": "Failed to delete employee"}, status=status.HTTP_400_BAD_REQUEST)
@@ -590,7 +590,6 @@ class UserProfileView(APIView):
             print(e)
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 # View related to change password
 class ChangePasswordView(APIView):
     def post(self, request, *args, **kwargs):
@@ -608,7 +607,6 @@ class ChangePasswordView(APIView):
         except Exception as e:
             print(e)
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 # Views related to send reminder
 class SendReminderView(APIView):

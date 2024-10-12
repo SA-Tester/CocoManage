@@ -79,6 +79,7 @@ class Employee():
                 employee_data = employee.val()
                 employee_data["emp_id"] = employee.key()
                 employee_data["photo"] = "http://localhost:8000/media/registry/" + employee_data["photo"]
+                employee_data["is_user"] = database_obj.child("User").child(employee_data["emp_id"]).get().val()
                 employees.append(employee_data)
             
             return employees
@@ -159,10 +160,11 @@ class Employee():
                 return False
 
     # Delete an Employee
-    def delete_employee(self, database_obj):
+    def delete_employee(self, database_obj, user_obj):
         try:
             self.delete_employee_photo(database_obj, self.emp_id)
             database_obj.child("Employee").child(self.emp_id).remove()
+            user_obj.delete_user(database_obj, self.emp_id)
             return True
         
         except Exception as e:
