@@ -179,6 +179,23 @@ class SystemUser:
         except Exception as e:
             raise ValidationError(e)
         
+    #Update user details
+    def update_user_details(self, auth_obj, database_obj, id_token, name, nic, contact):
+        try:
+            Employee = database_obj.child('Employee').get().val()
+
+            currentUser = auth_obj.get_account_info(id_token)
+            currentUserEmail = currentUser['users'][0]['email']
+
+            for id, details in Employee.items():
+                if details['email'] == currentUserEmail:
+                    updated_user = database_obj.child('Employee').child(id).update({'name': name, 'nic': nic, 'phone': contact})
+                    return True
+                
+            return False
+
+        except Exception as e:
+            raise ValidationError(e)
    
     # Change User Password
     def change_password(self, auth_obj, database_object, id_token):

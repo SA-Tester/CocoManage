@@ -589,7 +589,27 @@ class UserProfileView(APIView):
         except Exception as e:
             print(e)
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+#view related to update user details
+class UpdateUserProfileView(APIView):
+    def post(self, request, *args, **kwargs):
+        id_token = request.data.get('idToken')
+        name = request.data.get('name')
+        nic = request.data.get('nic')
+        contact = request.data.get('contact')
 
+        user = SystemUser()
+
+        try:
+            isUserDetailsChanged = user.update_user_details(auth_obj, database_obj, id_token, name, nic, contact)
+            if isUserDetailsChanged:
+                return Response({"message": "Your details have been updated successfully!."}, status=status.HTTP_200_OK)
+            return Response({"message": "Sorry an error occured"}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print(e)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 # View related to change password
 class ChangePasswordView(APIView):
     def post(self, request, *args, **kwargs):

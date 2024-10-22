@@ -33,6 +33,7 @@ urlpatterns = [
     path('signout/', views.SignOutView.as_view(), name='signout'),
     path('refresh_token/', views.RefreshTokenView.as_view(), name='refresh_token'),
     path('profile/', views.UserProfileView.as_view(), name='profile'),
+    path('update_profile/', views.UpdateUserProfileView.as_view(), name='update_profile'),
     path('change_password/', views.ChangePasswordView.as_view(), name='change_password'),
     path('send_reminder/', views.SendReminderView.as_view(), name='send_reminder'),
 ]
