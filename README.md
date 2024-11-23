@@ -2,7 +2,7 @@
 A comprehensive estate management system for Moorcock Estate
 
 <br>
-<b>To install Node packages run (navigate to frontend folder): </b><p>npm install</p>
+<b>To install Node packages run (navigate to frontend folder): </b><p>npm install (Node Version: v20.10.0)</p>
 <b>To install Python packages run (navigate to backend folder): </b><p>pip install -r requirements.txt</p>
 <b>Use this command to update requirements.txt: </b><p>pipreqs .</p>
 <!--ol>
