@@ -439,7 +439,8 @@ class DeleteEmployeeView(APIView):
             user = SystemUser()
             
             isEmployeeDeleted = employee.delete_employee(database_obj, user)
-            if isEmployeeDeleted:
+            # isUserDeleted = user.delete_user(database_obj, emp_id)
+            if isEmployeeDeleted: # and isUserDeleted:
                 return Response({"message": "Employee deleted successfully"}, status=status.HTTP_201_CREATED)
             return Response({"message": "Failed to delete employee"}, status=status.HTTP_400_BAD_REQUEST)
         
